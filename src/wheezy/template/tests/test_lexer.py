@@ -14,10 +14,13 @@ class LexerTestCase(unittest.TestCase):
         """
         import re
         from wheezy.template.lexer import Lexer
+
         def word_token(m):
             return m.end(), 'w', m.group()
+
         def blank_token(m):
             return m.end(), 'b', m.group()
+
         lexer = Lexer([
             (re.compile(r'\w+'), word_token),
             (re.compile(r'\s+'), blank_token),

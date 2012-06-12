@@ -12,8 +12,11 @@ class Lexer(object):
 
     def tokenize(self, source):
         source = clean_source(source)
-        tokens = [] ; append = tokens.append
-        pos = 0 ; lineno = 1 ; end = len(source)
+        tokens = []
+        append = tokens.append
+        pos = 0
+        lineno = 1
+        end = len(source)
         while pos < end:
             for regex, tokenizer in self.rules:
                 m = regex.match(source, pos, end)
@@ -32,6 +35,7 @@ class Lexer(object):
 
 RE_CLEAN1 = re.compile('^([ ]+)@(?!@)', re.S)
 RE_CLEAN2 = re.compile('\n([ ]+)@(?!@)', re.S)
+
 
 def clean_source(source):
     return RE_CLEAN2.sub('\n@', RE_CLEAN1.sub('@',
