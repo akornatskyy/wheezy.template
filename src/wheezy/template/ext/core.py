@@ -33,6 +33,8 @@ def clean_source(source):
 # region: lexer extensions
 
 def stmt_token(m):
+    """ Produces statement token.
+    """
     return m.end(), m.group(2), m.group(1)
 
 
@@ -40,6 +42,8 @@ RE_VAR = re.compile('(\.\w+)+')
 
 
 def var_token(m):
+    """ Produces variable token.
+    """
     start = m.start(1)
     pos = m.end()
     source = m.string
@@ -55,12 +59,16 @@ def var_token(m):
 
 
 def markup_token(m):
+    """ Produces markup token.
+    """
     return m.end(), 'markup', m.group().replace('@@', '@')
 
 
 # region: core extension
 
 class CoreExtension(object):
+    """ Includes basic statements, variables processing and markup.
+    """
 
     lexer_rules = {
             100: (re.compile(r'@((%s).*?(?<!\\))\n'

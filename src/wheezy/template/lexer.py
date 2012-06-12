@@ -4,6 +4,9 @@
 
 
 def lexer_scan(extensions):
+    """ Scans extensions for ``lexer_rules`` and ``preprocessors``
+        attributes.
+    """
     lexer_rules = {}
     preprocessors = []
     for extension in extensions:
@@ -31,6 +34,9 @@ class Lexer(object):
         self.preprocessors = preprocessors or []
 
     def tokenize(self, source):
+        """ Translates ``source`` accoring to lexer rules into
+            an iteratable of tokens.
+        """
         for preprocessor in self.preprocessors:
             source = preprocessor(source)
         tokens = []
