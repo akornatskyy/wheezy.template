@@ -43,8 +43,8 @@ setup(
         'Topic :: Software Development :: Widget Sets',
         'Topic :: Text Processing :: Markup :: HTML'
     ],
-    keywords='html widget markup template preprocessor',
-    packages=['wheezy', 'wheezy.template', 'wheezy.template'],
+    keywords='html markup template preprocessor',
+    packages=['wheezy', 'wheezy.template', 'wheezy.template.ext'],
     package_dir={'': 'src'},
     namespace_packages=['wheezy'],
 
