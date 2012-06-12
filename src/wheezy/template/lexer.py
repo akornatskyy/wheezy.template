@@ -2,14 +2,24 @@
 """
 """
 
-import re
+
+def lexer_scan(extensions):
+    lexer_rules = {}
+    preprocessors = []
+    for extension in extensions:
+        if hasattr(extension, 'lexer_rules'):
+            lexer_rules.update(extension.lexer_rules)
+        if hasattr(extension, 'preprocessors'):
+            preprocessors.extend(extension.preprocessors)
+    return ([lexer_rules[k] for k in sorted(lexer_rules.keys())],
+            preprocessors)
 
 
 class Lexer(object):
     """ Tokenizes input source per rules supplied.
     """
 
-    def __init__(self, rules):
+    def __init__(self, rules, preprocessors=None):
         """ Initializes with ``rules``. Rules must be a list of
             two elements tuple: ``(regex, tokenizer)`` where
             tokenizer if a callable of the following contract::
@@ -18,9 +28,11 @@ class Lexer(object):
                 return end_index, token, value
         """
         self.rules = rules
+        self.preprocessors = preprocessors or []
 
     def tokenize(self, source):
-        source = clean_source(source)
+        for preprocessor in self.preprocessors:
+            source = preprocessor(source)
         tokens = []
         append = tokens.append
         pos = 0
@@ -38,51 +50,3 @@ class Lexer(object):
             else:
                 assert False, 'Lexer pattern mismatch.'
         return tokens
-
-
-# region: utils
-
-RE_CLEAN1 = re.compile('^([ ]+)@(?!@)', re.S)
-RE_CLEAN2 = re.compile('\n([ ]+)@(?!@)', re.S)
-
-
-def clean_source(source):
-    """ Cleans leading whitespace before @. Ignores escaped (@@).
-    """
-    return RE_CLEAN2.sub('\n@', RE_CLEAN1.sub('@',
-        source.replace('\r\n', '\n')))
-
-
-def find_all_balanced(text, start=0):
-    """ Finds balanced ``([`` with ``])`` assuming
-        that ``start`` is pointing to ``(`` or ``[`` in ``text``.
-    """
-    if start >= len(text) or text[start] not in '([':
-        return start
-    while(1):
-        pos = find_balanced(text, start)
-        pos = find_balanced(text, pos, '[', ']')
-        if pos != start:
-            start = pos
-        else:
-            return pos
-
-
-def find_balanced(text, start=0, start_sep='(', end_sep=')'):
-    """ Finds balanced ``start_sep`` with ``end_sep`` assuming
-        that ``start`` is pointing to ``start_sep`` in ``text``.
-    """
-    if start >= len(text) or start_sep != text[start]:
-        return start
-    balanced = 1
-    pos = start + 1
-    while pos < len(text):
-        token = text[pos]
-        pos += 1
-        if token == end_sep:
-            if balanced == 1:
-                return pos
-            balanced -= 1
-        elif token == start_sep:
-            balanced += 1
-    return start
