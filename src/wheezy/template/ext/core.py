@@ -64,6 +64,15 @@ def markup_token(m):
     return m.end(), 'markup', m.group().replace('@@', '@')
 
 
+# region: parser config
+
+def configure_parser(parser):
+    parser.end_tokens.extend(end_tokens)
+    parser.continue_tokens.extend(continue_tokens)
+    parser.compound_tokens.extend(compound_tokens)
+    parser.out_tokens.extend(out_tokens)
+
+
 # region: core extension
 
 class CoreExtension(object):
@@ -81,3 +90,7 @@ class CoreExtension(object):
     }
 
     preprocessors = [clean_source]
+
+    parser_rules = {}
+
+    parser_configs = [configure_parser]
