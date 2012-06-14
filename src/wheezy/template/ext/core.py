@@ -73,6 +73,24 @@ def configure_parser(parser):
     parser.out_tokens.extend(out_tokens)
 
 
+# region: parser
+
+def parse_require(value):
+    return map(lambda s: s.strip(' '), value.rstrip()[8:-1].split(','))
+
+
+def parse_extends(value):
+    return value.rstrip()[8:-1]
+
+
+def parse_include(value):
+    return value.rstrip()[8:-1]
+
+
+def parse_markup(value):
+    return '"""' + repr(value.replace('\\\n', ''))[1:-1] + '"""'
+
+
 # region: core extension
 
 class CoreExtension(object):
@@ -91,6 +109,11 @@ class CoreExtension(object):
 
     preprocessors = [clean_source]
 
-    parser_rules = {}
+    parser_rules = {
+            'require': parse_require,
+            'extends': parse_extends,
+            'include': parse_include,
+            'markup': parse_markup
+    }
 
     parser_configs = [configure_parser]

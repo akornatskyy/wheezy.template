@@ -67,3 +67,49 @@ class LexerTestCase(unittest.TestCase):
         tokens = self.lexer.tokenize('support@@acme.org')
         assert 1 == len(tokens)
         assert (1, 'markup', 'support@acme.org') == tokens[0]
+
+
+class ParserTestCase(unittest.TestCase):
+    """ Test the ``CoreExtension``.
+    """
+
+    def setUp(self):
+        from wheezy.template.engine import Engine
+        from wheezy.template.ext.core import CoreExtension
+        self.engine = Engine(extensions=[CoreExtension()])
+
+    def parse(self, source):
+        return list(self.engine.parser.parse(
+            self.engine.lexer.tokenize(source)))
+
+    def test_require(self):
+        """ Test parse_require.
+        """
+        nodes = self.parse('@require(title, users)\n')
+        assert [(1, 'require', ['title', 'users'])] == nodes
+
+    def test_extends(self):
+        """ Test parse_extends.
+        """
+        nodes = self.parse('@extends("shared/master.html")\n')
+        assert [(1, 'extends', '"shared/master.html"')] == nodes
+
+    def test_include(self):
+        """ Test parse_include.
+        """
+        nodes = self.parse('@include("shared/scripts.html")\n')
+        assert [(1, 'out', [
+                    (1, 'include', '"shared/scripts.html"')
+                ])] == nodes
+
+    def test_markup(self):
+        """ Test parse_markup.
+        """
+        nodes = self.parse("""
+ Welcome, @name!
+""")
+        assert [(1, 'out', [
+                    (1, 'markup', '"""\\n Welcome, """'),
+                    (2, 'var', 'name'),
+                    (2, 'markup', '"""!\\n"""')
+                ])] == nodes
