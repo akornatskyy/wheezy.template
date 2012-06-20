@@ -70,8 +70,6 @@ class ParserTestCase(unittest.TestCase):
         self.parser.compound_tokens = ['b']
         self.parser.end_tokens = ['c']
         nodes = list(self.parser.parse(self.tokens))
-        assert 5 == len(nodes)
-        assert (2, 'b', 12) == nodes[1]
-        assert (2, 'block', [(3, 'c', 13)]) == nodes[2]
-        assert (4, 'b', 14) == nodes[3]
-        assert (4, 'block', [(5, 'c', 15)]) == nodes[4]
+        assert 3 == len(nodes)
+        assert (2, 'b', (12, [])) == nodes[1]
+        assert (4, 'b', (14, [])) == nodes[2]
