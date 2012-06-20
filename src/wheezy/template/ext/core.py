@@ -88,7 +88,59 @@ def parse_include(value):
 
 
 def parse_markup(value):
-    return '"""' + repr(value.replace('\\\n', ''))[1:-1] + '"""'
+    return repr(value.replace('\\\n', ''))
+
+
+# region: block_builders
+
+def build_render(builder, lineno, token, nodes):
+    assert lineno <= -1
+    builder.add(lineno, 'def render(ctx, local_defs, super_defs):')
+    builder.start_block()
+    builder.add(lineno + 1, '_b = []; w = _b.append')
+    builder.build_block(nodes)
+    lineno = builder.lineno
+    builder.add(lineno + 1, "return ''.join(_b)")
+
+
+def build_extends(builder, lineno, token, value):
+    assert lineno <= -1
+    extends, nodes = value
+    builder.add(lineno, 'def render(ctx, local_defs, super_defs):')
+    builder.start_block()
+    builder.add(lineno + 1, '_b = []; w = _b.append')
+    builder.build_block(nodes)
+    lineno = builder.lineno
+    builder.add(lineno + 1,
+            "return includes[%s](ctx, local_defs, super_defs)" % extends)
+
+
+def build_out(builder, lineno, token, nodes):
+    for lineno, token, value in nodes:
+        builder.add(lineno, 'w(%s)' % value)
+
+
+def build_def(builder, lineno, token, value):
+    stmt, nodes = value
+    def_name = stmt[4:stmt.index('(', 5)]
+    builder.add(lineno, stmt)
+    builder.start_block()
+    builder.add(lineno + 1, '_b = []; w = _b.append')
+    builder.build_block(nodes)
+    lineno = builder.lineno
+    builder.add(lineno, "return ''.join(_b)")
+    builder.end_block()
+    builder.add(lineno + 1, "local_defs['%s'] = %s" % tuple(
+                    [def_name] * 2))
+    return True
+
+
+def build_compound(builder, lineno, token, value):
+    stmt, nodes = value
+    builder.add(lineno, stmt)
+    builder.start_block()
+    builder.build_block(nodes)
+    builder.end_block()
 
 
 # region: core extension
@@ -117,3 +169,13 @@ class CoreExtension(object):
     }
 
     parser_configs = [configure_parser]
+
+    builder_rules = [
+            ('render', build_render),
+            ('extends', build_extends),
+            ('def', build_def),
+            ('out', build_out),
+            ('if', build_compound),
+            ('elif', build_compound),
+            ('else', build_compound),
+    ]

@@ -111,7 +111,99 @@ class ParserTestCase(unittest.TestCase):
  Welcome, @name!
 """)
         assert [(1, 'out', [
-                    (1, 'markup', '"""\\n Welcome, """'),
+                    (1, 'markup', "'\\n Welcome, '"),
                     (2, 'var', 'name'),
-                    (2, 'markup', '"""!\\n"""')
+                    (2, 'markup', "'!\\n'")
                 ])] == nodes
+
+
+class BuilderTestCase(unittest.TestCase):
+    """ Test the ``CoreExtension`` generators.
+    """
+
+    def setUp(self):
+        from wheezy.template.engine import Engine
+        from wheezy.template.ext.core import CoreExtension
+        self.engine = Engine(extensions=[CoreExtension()])
+
+    def build_source(self, source):
+        nodes = list(self.engine.parser.parse(
+                    self.engine.lexer.tokenize(source)))
+        return self.engine.builder.build_source(nodes)
+
+    def build_render(self, source):
+        nodes = list(self.engine.parser.parse(
+                    self.engine.lexer.tokenize(source)))
+        return self.engine.builder.build_render(nodes)
+
+    def build_extends(self, name, source):
+        nodes = list(self.engine.parser.parse(
+                    self.engine.lexer.tokenize(source)))
+        return self.engine.builder.build_extends(name, nodes)
+
+    def test_out(self):
+        """ Test build_out.
+        """
+        assert "w('Welcome, '); w(username); w('!')" == self.build_source(
+                'Welcome, @username!')
+        assert """\
+w('\\n<i>\\n')
+
+w(username); w('\\n</i>')""" == self.build_source("""
+<i>
+    @username
+</i>""")
+
+    def test_if(self):
+        """ Test if elif else statements.
+        """
+        assert """\
+if n > 0:
+    w('    Positive\\n')
+elif n == 0:
+    w('    Zero\\n')
+else:
+    w('    Negative\\n')""" == self.build_source("""\
+@if n > 0:
+    Positive
+@elif n == 0:
+    Zero
+@else:
+    Negative
+@end
+""")
+
+    def test_def(self):
+        """ Test def statement.
+        """
+        assert """\
+def link(url, text):
+    _b = []; w = _b.append; w('        <a href="'); w(url); \
+w('">'); w(text); w('</a>\\n'); return ''.join(_b)
+local_defs['link'] = link
+w('    Please '); w(link('/en/signin', 'sign in')); w('.\\n')\
+""" == self.build_source("""\
+    @def link(url, text):
+        <a href="@url">@text</a>
+    @end
+    Please @link('/en/signin', 'sign in').
+""")
+
+    def test_render(self):
+        """ Test build_render.
+        """
+        assert """\
+def render(ctx, local_defs, super_defs):
+    _b = []; w = _b.append
+    w('Hello')
+    return ''.join(_b)""" == self.build_render("Hello")
+
+    def test_extends(self):
+        """ Test build_extends.
+        """
+        assert """\
+def render(ctx, local_defs, super_defs):
+    _b = []; w = _b.append
+    w('Hello')
+    return includes["base.html"](ctx, local_defs, super_defs)\
+""" == self.build_extends('"base.html"', 'Hello')
