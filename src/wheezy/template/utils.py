@@ -38,7 +38,7 @@ def find_balanced(text, start=0, start_sep='(', end_sep=')'):
     return start
 
 
-def print_source(source, lineno=1):
+def print_source(source, lineno=1):  # pragma: nocover
     lines = []
     for line in source.split('\n'):
         lines.append("%02d " % lineno + line)
