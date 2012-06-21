@@ -35,7 +35,7 @@ def clean_source(source):
 def stmt_token(m):
     """ Produces statement token.
     """
-    return m.end(), m.group(2), m.group(1)
+    return m.end(), str(m.group(2)), str(m.group(1))
 
 
 RE_VAR = re.compile('(\.\w+)+')
@@ -55,7 +55,7 @@ def var_token(m):
         if not m:
             break
         pos = m.end()
-    return end, 'var', source[start:end]
+    return end, 'var', str(source[start:end])
 
 
 def markup_token(m):
@@ -101,6 +101,7 @@ def build_render(builder, lineno, token, nodes):
     builder.build_block(nodes)
     lineno = builder.lineno
     builder.add(lineno + 1, "return ''.join(_b)")
+    return True
 
 
 def build_extends(builder, lineno, token, value):
@@ -113,11 +114,7 @@ def build_extends(builder, lineno, token, value):
     lineno = builder.lineno
     builder.add(lineno + 1,
             "return includes[%s](ctx, local_defs, super_defs)" % extends)
-
-
-def build_out(builder, lineno, token, nodes):
-    for lineno, token, value in nodes:
-        builder.add(lineno, 'w(%s)' % value)
+    return True
 
 
 def build_def(builder, lineno, token, value):
@@ -135,12 +132,30 @@ def build_def(builder, lineno, token, value):
     return True
 
 
+def build_out(builder, lineno, token, nodes):
+    for lineno, token, value in nodes:
+        builder.add(lineno, 'w(%s)' % value)
+    return True
+
+
 def build_compound(builder, lineno, token, value):
     stmt, nodes = value
     builder.add(lineno, stmt)
     builder.start_block()
     builder.build_block(nodes)
     builder.end_block()
+    return True
+
+
+def build_require(builder, lineno, token, variables):
+    builder.add(lineno, '; '.join([
+                name + " = ctx['" + name + "']" for name in variables]))
+    return True
+
+
+def build_comment(builder, lineno, token, comment):
+    builder.add(lineno, comment)
+    return True
 
 
 # region: core extension
@@ -155,8 +170,8 @@ class CoreExtension(object):
                 stmt_token),
             200: (re.compile(r'@(\w+(\.\w+)*)'),
                 var_token),
-            999: (re.compile(r'.*?(?=(?<!@)@(?!@))|.*', re.S),
-                markup_token)
+            999: (re.compile(r'.+?(?=(?<!@)@(?!@))|.+', re.S),
+                markup_token),
     }
 
     preprocessors = [clean_source]
@@ -173,9 +188,12 @@ class CoreExtension(object):
     builder_rules = [
             ('render', build_render),
             ('extends', build_extends),
-            ('def', build_def),
+            ('require', build_require),
             ('out', build_out),
+            ('def', build_def),
             ('if', build_compound),
             ('elif', build_compound),
             ('else', build_compound),
+            ('for', build_compound),
+            ('#', build_comment),
     ]
