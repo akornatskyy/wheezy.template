@@ -43,3 +43,17 @@ class FileLoader(object):
                 f.close()
         else:
             return None
+
+
+class DictLoader(object):
+
+    def __init__(self, templates):
+        self.templates = templates
+
+    def list_names(self):
+        return list(self.templates.keys())
+
+    def load(self, name):
+        if name not in self.templates:
+            return None
+        return self.templates[name]
