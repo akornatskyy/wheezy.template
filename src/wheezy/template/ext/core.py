@@ -11,8 +11,8 @@ from wheezy.template.utils import find_all_balanced
 
 end_tokens = ['end']
 continue_tokens = ['else', 'elif']
-compound_tokens = ['for', 'if', 'def'] + continue_tokens
-reserved_tokens = ['require', '#', 'extends', 'include']
+compound_tokens = ['for', 'if', 'def', 'extends'] + continue_tokens
+reserved_tokens = ['require', '#', 'include']
 all_tokens = end_tokens + compound_tokens + reserved_tokens
 out_tokens = ['markup', 'var', 'include']
 
@@ -93,31 +93,35 @@ def parse_markup(value):
 
 # region: block_builders
 
+def build_extends(builder, lineno, token, nodes):
+    assert token == 'render'
+    if len(nodes) != 1:
+        return False
+    lineno, token, value = nodes[0]
+    if token != 'extends':
+        return False
+    extends, nodes = value
+    for lineno, token, value in nodes:
+        if token == 'def':
+            builder.build_token(lineno, 'def', value)
+    lineno = builder.lineno
+    builder.add(lineno + 1, 'return renders[' + extends +
+            '](ctx, local_defs, super_defs)')
+    return True
+
+
 def build_render(builder, lineno, token, nodes):
-    assert lineno <= -1
-    builder.add(lineno, 'def render(ctx, local_defs, super_defs):')
-    builder.start_block()
-    builder.add(lineno + 1, '_b = []; w = _b.append')
+    assert lineno <= 0
+    assert token == 'render'
+    builder.add(lineno, '_b = []; w = _b.append')
     builder.build_block(nodes)
     lineno = builder.lineno
     builder.add(lineno + 1, "return ''.join(_b)")
     return True
 
 
-def build_extends(builder, lineno, token, value):
-    assert lineno <= -1
-    extends, nodes = value
-    builder.add(lineno, 'def render(ctx, local_defs, super_defs):')
-    builder.start_block()
-    builder.add(lineno + 1, '_b = []; w = _b.append')
-    builder.build_block(nodes)
-    lineno = builder.lineno
-    builder.add(lineno + 1,
-            "return includes[%s](ctx, local_defs, super_defs)" % extends)
-    return True
-
-
 def build_def(builder, lineno, token, value):
+    assert token == 'def'
     stmt, nodes = value
     def_name = stmt[4:stmt.index('(', 5)]
     builder.add(lineno, stmt)
@@ -127,18 +131,25 @@ def build_def(builder, lineno, token, value):
     lineno = builder.lineno
     builder.add(lineno, "return ''.join(_b)")
     builder.end_block()
-    builder.add(lineno + 1, "local_defs['%s'] = %s" % tuple(
-                    [def_name] * 2))
+    builder.add(lineno + 1, "super_defs['%s'] = %s; "\
+            "%s = local_defs.setdefault('%s', %s)" % tuple(
+                    [def_name] * 5))
     return True
 
 
 def build_out(builder, lineno, token, nodes):
+    assert token == 'out'
     for lineno, token, value in nodes:
-        builder.add(lineno, 'w(%s)' % value)
+        if token == 'include':
+            builder.add(lineno, 'w(renders[' + value +
+                '](ctx, local_defs, super_defs))')
+        else:
+            builder.add(lineno, 'w(' + value + ')')
     return True
 
 
 def build_compound(builder, lineno, token, value):
+    assert token in compound_tokens
     stmt, nodes = value
     builder.add(lineno, stmt)
     builder.start_block()
@@ -186,8 +197,8 @@ class CoreExtension(object):
     parser_configs = [configure_parser]
 
     builder_rules = [
+            ('render', build_extends),
             ('render', build_render),
-            ('extends', build_extends),
             ('require', build_require),
             ('out', build_out),
             ('def', build_def),

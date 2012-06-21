@@ -100,7 +100,7 @@ class ParserTestCase(unittest.TestCase):
         """ Test parse_extends.
         """
         nodes = self.parse('@extends("shared/master.html")\n')
-        assert [(1, 'extends', '"shared/master.html"')] == nodes
+        assert [(1, 'extends', ('"shared/master.html"', []))] == nodes
 
     def test_include(self):
         """ Test parse_include.
@@ -217,7 +217,7 @@ for color in colors:
 def link(url, text):
     _b = []; w = _b.append; w('        <a href="'); w(url); \
 w('">'); w(text); w('</a>\\n'); return ''.join(_b)
-local_defs['link'] = link
+super_defs['link'] = link; link = local_defs.setdefault('link', link)
 w('    Please '); w(link('/en/signin', 'sign in')); w('.\\n')\
 """ == self.build_source("""\
     @def link(url, text):
@@ -240,10 +240,10 @@ def render(ctx, local_defs, super_defs):
         """
         assert """\
 def render(ctx, local_defs, super_defs):
-    _b = []; w = _b.append
-    w('Hello')
-    return includes["base.html"](ctx, local_defs, super_defs)\
-""" == self.build_extends('"base.html"', 'Hello')
+    return renders["base.html"](ctx, local_defs, super_defs)\
+""" == self.build_render("""\
+@extends("base.html")
+""")
 
 
 class TemplateTestCase(unittest.TestCase):
@@ -314,3 +314,54 @@ Welcome, @username!""")
 Welcome, @name!\\
 @end
 @welcome('John')""")
+
+
+class MultiTemplateTestCase(unittest.TestCase):
+    """ Test the ``CoreExtension`` compiled templates.
+    """
+
+    def setUp(self):
+        from wheezy.template.engine import Engine
+        from wheezy.template.ext.core import CoreExtension
+        from wheezy.template.loader import DictLoader
+        self.templates = {}
+        self.engine = Engine(
+                loader=DictLoader(templates=self.templates),
+                extensions=[CoreExtension()])
+
+    def render(self, name, ctx):
+        template = self.engine.get_template(name)
+        return template.render(ctx)
+
+    def test_extends(self):
+        self.templates.update({
+                'master.html': """\
+@def say_hi(name):
+    Hello, @name!
+@end
+@say_hi('John')""",
+                'tmpl.html': """\
+@extends('master.html')
+@def say_hi(name):
+    Hi, @name!
+@end
+"""
+        })
+        assert '    Hello, John!\n' == self.render('master.html', {})
+        assert '    Hi, John!\n' == self.render('tmpl.html', {})
+
+    def test_include(self):
+        self.templates.update({
+                'footer.html': """\
+@require(name)
+Thanks, @name""",
+                'tmpl.html': """\
+Welcome to my site.
+@include('footer.html')
+"""
+        })
+        ctx = {'name': 'John'}
+        assert 'Thanks, John' == self.render('footer.html', ctx)
+        assert """\
+Welcome to my site.
+Thanks, John""" == self.render('tmpl.html', ctx)
