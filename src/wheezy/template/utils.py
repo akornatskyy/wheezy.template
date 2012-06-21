@@ -36,3 +36,11 @@ def find_balanced(text, start=0, start_sep='(', end_sep=')'):
         elif token == start_sep:
             balanced += 1
     return start
+
+
+def print_source(source, lineno=1):
+    lines = []
+    for line in source.split('\n'):
+        lines.append("%02d " % lineno + line)
+        lineno += line.count('\n') + 1
+    print('\n'.join(lines))
