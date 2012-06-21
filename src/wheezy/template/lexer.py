@@ -49,6 +49,7 @@ class Lexer(object):
                 m = regex.match(source, pos, end)
                 if m:
                     npos, token, value = tokenizer(m)
+                    assert npos > pos
                     append((lineno, token, value))
                     lineno += source[pos:npos].count('\n')
                     pos = npos
