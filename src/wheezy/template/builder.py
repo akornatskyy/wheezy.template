@@ -67,17 +67,14 @@ class SourceBuilder(object):
         self.lineno = 0 - offset
 
     def build_source(self, nodes):
-        block_builder = BlockBuilder(self.rules)
-        block_builder.build_block(nodes)
-        return block_builder.to_string()
+        builder = BlockBuilder(self.rules)
+        builder.build_block(nodes)
+        return builder.to_string()
 
     def build_render(self, nodes):
-        block_builder = BlockBuilder(self.rules, lineno=self.lineno)
-        block_builder.build_token(self.lineno + 1, 'render', nodes)
-        return block_builder.to_string()
-
-    def build_extends(self, name, nodes):
-        block_builder = BlockBuilder(self.rules, lineno=self.lineno)
-        block_builder.build_token(self.lineno + 1, 'extends',
-                (name, nodes))
-        return block_builder.to_string()
+        builder = BlockBuilder(self.rules, lineno=self.lineno)
+        builder.add(self.lineno + 1,
+                'def render(ctx, local_defs, super_defs):')
+        builder.start_block()
+        builder.build_token(self.lineno + 2, 'render', nodes)
+        return builder.to_string()
