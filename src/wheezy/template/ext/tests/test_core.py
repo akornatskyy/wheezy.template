@@ -37,7 +37,10 @@ class LexerTestCase(unittest.TestCase):
     def setUp(self):
         from wheezy.template.engine import Engine
         from wheezy.template.ext.core import CoreExtension
-        self.engine = Engine(extensions=[CoreExtension()])
+        from wheezy.template.loader import DictLoader
+        self.engine = Engine(
+                loader=DictLoader({}),
+                extensions=[CoreExtension()])
 
     def tokenize(self, source):
         return self.engine.lexer.tokenize(source)
@@ -78,7 +81,10 @@ class ParserTestCase(unittest.TestCase):
     def setUp(self):
         from wheezy.template.engine import Engine
         from wheezy.template.ext.core import CoreExtension
-        self.engine = Engine(extensions=[CoreExtension()])
+        from wheezy.template.loader import DictLoader
+        self.engine = Engine(
+                loader=DictLoader({}),
+                extensions=[CoreExtension()])
 
     def parse(self, source):
         return list(self.engine.parser.parse(
@@ -124,7 +130,10 @@ class BuilderTestCase(unittest.TestCase):
     def setUp(self):
         from wheezy.template.engine import Engine
         from wheezy.template.ext.core import CoreExtension
-        self.engine = Engine(extensions=[CoreExtension()])
+        from wheezy.template.loader import DictLoader
+        self.engine = Engine(
+                loader=DictLoader({}),
+                extensions=[CoreExtension()])
 
     def build_source(self, source):
         nodes = list(self.engine.parser.parse(
@@ -140,6 +149,25 @@ class BuilderTestCase(unittest.TestCase):
         nodes = list(self.engine.parser.parse(
                     self.engine.lexer.tokenize(source)))
         return self.engine.builder.build_extends(name, nodes)
+
+    def test_markup(self):
+        assert "w('Hello')" == self.build_source('Hello')
+
+    def test_comment(self):
+        assert """\
+w('Hello')
+# comment
+w(' World')""" == self.build_source("""\
+Hello\\
+@# comment
+ World""")
+
+    def test_require(self):
+        assert """\
+title = ctx['title']; username = ctx['username']
+w(username)""" == self.build_source("""\
+@require(title, username)
+@username""")
 
     def test_out(self):
         """ Test build_out.
@@ -170,6 +198,15 @@ else:
     Zero
 @else:
     Negative
+@end
+""")
+
+    def test_for(self):
+        assert """\
+for color in colors:
+    w(color); w('\\n')""" == self.build_source("""\
+@for color in colors:
+    @color
 @end
 """)
 
@@ -207,3 +244,73 @@ def render(ctx, local_defs, super_defs):
     w('Hello')
     return includes["base.html"](ctx, local_defs, super_defs)\
 """ == self.build_extends('"base.html"', 'Hello')
+
+
+class TemplateTestCase(unittest.TestCase):
+    """ Test the ``CoreExtension`` compiled templates.
+    """
+
+    def setUp(self):
+        from wheezy.template.engine import Engine
+        from wheezy.template.ext.core import CoreExtension
+        from wheezy.template.loader import DictLoader
+        self.templates = {}
+        self.engine = Engine(
+                loader=DictLoader(templates=self.templates),
+                extensions=[CoreExtension()])
+
+    def render(self, ctx, source):
+        self.templates['test.html'] = source
+        template = self.engine.get_template('test.html')
+        return template.render(ctx)
+
+    def test_markup(self):
+        ctx = {}
+        assert 'Hello' == self.render(ctx, 'Hello')
+
+    def test_comment(self):
+        assert 'Hello World' == self.render({}, """\
+Hello\\
+@# comment
+ World""")
+
+    def test_var(self):
+        ctx = {
+                'username': 'John'
+        }
+        assert 'Welcome, John!' == self.render(ctx, """\
+@require(username)
+Welcome, @username!""")
+
+    def test_if(self):
+        template = """\
+@require(n)
+@if n > 0:
+    Positive\\
+@elif n == 0:
+    Zero\\
+@else:
+    Negative\\
+@end
+"""
+        assert '    Positive' == self.render({'n': 1}, template)
+        assert '    Zero' == self.render({'n': 0}, template)
+        assert '    Negative' == self.render({'n': -1}, template)
+
+    def test_for(self):
+        ctx = {
+                'colors': ['red', 'yellow']
+        }
+        assert 'red\nyellow\n' == self.render(ctx, """\
+@require(colors)
+@for color in colors:
+    @color
+@end
+""")
+
+    def test_def(self):
+        assert 'Welcome, John!' == self.render({}, """\
+@def welcome(name):
+Welcome, @name!\\
+@end
+@welcome('John')""")
