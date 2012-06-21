@@ -22,6 +22,7 @@ class Engine(object):
         self.builder = SourceBuilder(builder_rules)
         self.loader = loader
         self.templates = {}
+        self.global_vars = {'renders': {}}
 
     def get_template(self, name):
         try:
@@ -34,14 +35,15 @@ class Engine(object):
         template_source = self.loader.load(name)
         tokens = self.lexer.tokenize(template_source)
         nodes = list(self.parser.parse(tokens))
-        from pprint import pprint
-        pprint(nodes)
+        #from pprint import pprint
+        #pprint(nodes)
         module_source = self.builder.build_render(nodes)
-        from wheezy.template.utils import print_source
-        print_source(module_source, -1)
-        global_vars = {}
-        return Template(compile_source(
-            module_source, name, global_vars, -2))
+        #from wheezy.template.utils import print_source
+        #print_source(module_source, -1)
+        render_template = compile_source(
+            module_source, name, self.global_vars, -2)
+        self.global_vars['renders'][name] = render_template
+        return Template(render_template)
 
 
 class Template(object):
