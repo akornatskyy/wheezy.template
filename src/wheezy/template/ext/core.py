@@ -76,7 +76,7 @@ def configure_parser(parser):
 # region: parser
 
 def parse_require(value):
-    return map(lambda s: s.strip(' '), value.rstrip()[8:-1].split(','))
+    return [v.strip(' ') for v in value.rstrip()[8:-1].split(',')]
 
 
 def parse_extends(value):
