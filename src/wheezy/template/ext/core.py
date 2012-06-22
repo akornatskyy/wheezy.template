@@ -105,8 +105,8 @@ def build_extends(builder, lineno, token, nodes):
         if token == 'def':
             builder.build_token(lineno, 'def', value)
     lineno = builder.lineno
-    builder.add(lineno + 1, 'return renders[' + extends +
-            '](ctx, local_defs, super_defs)')
+    builder.add(lineno + 1, 'return _r(' + extends +
+            ')(ctx, local_defs, super_defs)')
     return True
 
 
@@ -141,8 +141,8 @@ def build_out(builder, lineno, token, nodes):
     assert token == 'out'
     for lineno, token, value in nodes:
         if token == 'include':
-            builder.add(lineno, 'w(renders[' + value +
-                '](ctx, local_defs, super_defs))')
+            builder.add(lineno, 'w(_r(' + value +
+                ')(ctx, local_defs, super_defs))')
         else:
             builder.add(lineno, 'w(' + value + ')')
     return True

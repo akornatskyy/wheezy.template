@@ -240,7 +240,7 @@ def render(ctx, local_defs, super_defs):
         """
         assert """\
 def render(ctx, local_defs, super_defs):
-    return renders["base.html"](ctx, local_defs, super_defs)\
+    return _r("base.html")(ctx, local_defs, super_defs)\
 """ == self.build_render("""\
 @extends("base.html")
 """)
@@ -347,8 +347,8 @@ class MultiTemplateTestCase(unittest.TestCase):
 @end
 """
         })
-        assert '    Hello, John!\n' == self.render('master.html', {})
         assert '    Hi, John!\n' == self.render('tmpl.html', {})
+        assert '    Hello, John!\n' == self.render('master.html', {})
 
     def test_include(self):
         self.templates.update({
@@ -361,7 +361,7 @@ Welcome to my site.
 """
         })
         ctx = {'name': 'John'}
-        assert 'Thanks, John' == self.render('footer.html', ctx)
         assert """\
 Welcome to my site.
 Thanks, John""" == self.render('tmpl.html', ctx)
+        assert 'Thanks, John' == self.render('footer.html', ctx)

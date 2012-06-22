@@ -7,6 +7,12 @@ import sys
 
 PY3 = sys.version_info[0] >= 3
 
+
+if PY3:  # pragma: nocover
+    from _thread import allocate_lock
+else:  # pragma: nocover
+    from thread import allocate_lock
+
 try:  # pragma: nocover
     import ast
 
