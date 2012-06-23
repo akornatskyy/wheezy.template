@@ -4,6 +4,7 @@
 
 import re
 
+from wheezy.template.comp import PY3
 from wheezy.template.utils import find_all_balanced
 
 
@@ -15,7 +16,9 @@ compound_tokens = ['for ', 'if ', 'def ', 'extends'] + continue_tokens
 reserved_tokens = ['require', '#', 'include']
 all_tokens = end_tokens + compound_tokens + reserved_tokens
 out_tokens = ['markup', 'var', 'include']
-
+known_var_filters = {
+        's': PY3 and 'str' or 'unicode'
+}
 
 # region: preprocessors
 
@@ -182,7 +185,7 @@ def build_out(builder, lineno, token, nodes):
             var, var_filters = value
             if var_filters:
                 for f in reversed(var_filters):
-                    var = f + '(' + var + ')'
+                    var = known_var_filters.get(f, f) + '(' + var + ')'
             builder.add(lineno, 'w(' + var + ')')
         elif value:
             builder.add(lineno, 'w(' + value + ')')
@@ -217,7 +220,7 @@ class CoreExtension(object):
     """
 
     lexer_rules = {
-            100: (re.compile(r'@((%s).*?(?<!\\))\n'
+            100: (re.compile(r'@((%s).*?(?<!\\))\n|$'
                     % '|'.join(all_tokens), re.S),
                 stmt_token),
             200: (re.compile(r'@(\w+(\.\w+)*)'),
