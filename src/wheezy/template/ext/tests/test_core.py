@@ -59,6 +59,21 @@ class LexerTestCase(unittest.TestCase):
         tokens = self.tokenize('@user.pref[i].fmt() ')
         assert (1, 'var', 'user.pref[i].fmt()') == tokens[0]
 
+    def test_var_token_filter(self):
+        """ Test variable token filter.
+        """
+        tokens = self.tokenize('@user.age!s')
+        assert (1, 'var', 'user.age!!s') == tokens[0]
+        tokens = self.tokenize('@user.age!s!h')
+        assert (1, 'var', 'user.age!!s!h') == tokens[0]
+        # escape or ignore !
+        tokens = self.tokenize('@user.age!s!')
+        assert (1, 'var', 'user.age!!s') == tokens[0]
+        tokens = self.tokenize('@user.age!!s')
+        assert (1, 'var', 'user.age') == tokens[0]
+        tokens = self.tokenize('@user! ')
+        assert (1, 'var', 'user') == tokens[0]
+
     def test_markup_token(self):
         """ Test markup token.
         """
@@ -118,8 +133,22 @@ class ParserTestCase(unittest.TestCase):
 """)
         assert [(1, 'out', [
                     (1, 'markup', "'\\n Welcome, '"),
-                    (2, 'var', 'name'),
+                    (2, 'var', ('name', None)),
                     (2, 'markup', "'!\\n'")
+                ])] == nodes
+
+    def test_var(self):
+        """ Test parse_markup.
+        """
+        nodes = self.parse("""@name!h!""")
+        assert [(1, 'out', [
+                    (1, 'var', ('name', ['h'])),
+                    (1, 'markup', "'!'")
+                ])] == nodes
+        nodes = self.parse("""@name!s!h!""")
+        assert [(1, 'out', [
+                    (1, 'var', ('name', ['s', 'h'])),
+                    (1, 'markup', "'!'")
                 ])] == nodes
 
 
@@ -240,7 +269,7 @@ def render(ctx, local_defs, super_defs):
         """
         assert """\
 def render(ctx, local_defs, super_defs):
-    return _r("base.html")(ctx, local_defs, super_defs)\
+    return _r("base.html", ctx, local_defs, super_defs)\
 """ == self.build_render("""\
 @extends("base.html")
 """)

@@ -10,8 +10,8 @@ from wheezy.template.utils import find_all_balanced
 # region: config
 
 end_tokens = ['end']
-continue_tokens = ['else', 'elif']
-compound_tokens = ['for', 'if', 'def', 'extends'] + continue_tokens
+continue_tokens = ['else:', 'elif ']
+compound_tokens = ['for ', 'if ', 'def ', 'extends'] + continue_tokens
 reserved_tokens = ['require', '#', 'include']
 all_tokens = end_tokens + compound_tokens + reserved_tokens
 out_tokens = ['markup', 'var', 'include']
@@ -39,6 +39,7 @@ def stmt_token(m):
 
 
 RE_VAR = re.compile('(\.\w+)+')
+RE_VAR_FILTER = re.compile('(?<!!)!\w+(!\w+)*')
 
 
 def var_token(m):
@@ -55,7 +56,12 @@ def var_token(m):
         if not m:
             break
         pos = m.end()
-    return end, 'var', str(source[start:end])
+    value = str(source[start:end])
+    m = RE_VAR_FILTER.match(source, end)
+    if m:
+        end = m.end()
+        value += '!' + m.group()
+    return end, 'var', value
 
 
 def markup_token(m):
@@ -87,8 +93,19 @@ def parse_include(value):
     return value.rstrip()[8:-1]
 
 
+def parse_var(value):
+    if '!!' not in value:
+        return value, None
+    var, var_filter = value.rsplit('!!', 1)
+    return var, var_filter.split('!')
+
+
 def parse_markup(value):
-    return repr(value.replace('\\\n', ''))
+    value = value.replace('\\\n', '')
+    if value:
+        return repr(value)
+    else:
+        return None
 
 
 # region: block_builders
@@ -102,11 +119,11 @@ def build_extends(builder, lineno, token, nodes):
         return False
     extends, nodes = value
     for lineno, token, value in nodes:
-        if token == 'def':
-            builder.build_token(lineno, 'def', value)
+        if token in ('def ', 'require'):
+            builder.build_token(lineno, token, value)
     lineno = builder.lineno
     builder.add(lineno + 1, 'return _r(' + extends +
-            ')(ctx, local_defs, super_defs)')
+            ', ctx, local_defs, super_defs)')
     return True
 
 
@@ -120,8 +137,25 @@ def build_render(builder, lineno, token, nodes):
     return True
 
 
+def build_def_empty(builder, lineno, token, value):
+    assert token == 'def '
+    stmt, nodes = value
+    if nodes:
+        return False
+    def_name = stmt[4:stmt.index('(', 5)]
+    builder.add(lineno, stmt)
+    builder.start_block()
+    builder.add(lineno, "return ''")
+    builder.end_block()
+    builder.add(lineno + 1, def_name.join([
+        "super_defs['", "'] = ", "; ",
+        " = local_defs.setdefault('", "', ", ")"
+    ]))
+    return True
+
+
 def build_def(builder, lineno, token, value):
-    assert token == 'def'
+    assert token == 'def '
     stmt, nodes = value
     def_name = stmt[4:stmt.index('(', 5)]
     builder.add(lineno, stmt)
@@ -131,9 +165,10 @@ def build_def(builder, lineno, token, value):
     lineno = builder.lineno
     builder.add(lineno, "return ''.join(_b)")
     builder.end_block()
-    builder.add(lineno + 1, "super_defs['%s'] = %s; "\
-            "%s = local_defs.setdefault('%s', %s)" % tuple(
-                    [def_name] * 5))
+    builder.add(lineno + 1, def_name.join([
+        "super_defs['", "'] = ", "; ",
+        " = local_defs.setdefault('", "', ", ")"
+    ]))
     return True
 
 
@@ -141,9 +176,15 @@ def build_out(builder, lineno, token, nodes):
     assert token == 'out'
     for lineno, token, value in nodes:
         if token == 'include':
-            builder.add(lineno, 'w(_r(' + value +
-                ')(ctx, local_defs, super_defs))')
-        else:
+            builder.add(lineno, 'w(' + '_r(' + value +
+                ', ctx, local_defs, super_defs)' + ')')
+        elif token == 'var':
+            var, var_filters = value
+            if var_filters:
+                for f in reversed(var_filters):
+                    var = f + '(' + var + ')'
+            builder.add(lineno, 'w(' + var + ')')
+        elif value:
             builder.add(lineno, 'w(' + value + ')')
     return True
 
@@ -191,7 +232,8 @@ class CoreExtension(object):
             'require': parse_require,
             'extends': parse_extends,
             'include': parse_include,
-            'markup': parse_markup
+            'var': parse_var,
+            'markup': parse_markup,
     }
 
     parser_configs = [configure_parser]
@@ -201,10 +243,11 @@ class CoreExtension(object):
             ('render', build_render),
             ('require', build_require),
             ('out', build_out),
-            ('def', build_def),
-            ('if', build_compound),
-            ('elif', build_compound),
-            ('else', build_compound),
-            ('for', build_compound),
+            ('def ', build_def_empty),
+            ('def ', build_def),
+            ('if ', build_compound),
+            ('elif ', build_compound),
+            ('else:', build_compound),
+            ('for ', build_compound),
             ('#', build_comment),
     ]
