@@ -4,7 +4,6 @@
 
 from wheezy.template.builder import SourceBuilder
 from wheezy.template.builder import builder_scan
-from wheezy.template.comp import PY3
 from wheezy.template.comp import allocate_lock
 from wheezy.template.comp import compile_source
 from wheezy.template.lexer import Lexer
@@ -27,7 +26,7 @@ class Engine(object):
         self.parser = Parser(parser_rules, parser_configs)
         builder_rules = builder_scan(extensions)
         self.builder = SourceBuilder(builder_rules)
-        self.global_vars = {'_r': self.render, 's': PY3 and str or unicode}
+        self.global_vars = {'_r': self.render}
 
     def get_template(self, name):
         try:
@@ -42,6 +41,10 @@ class Engine(object):
         except KeyError:
             self.compile_template(name)
             return self.renders[name](ctx, local_defs, super_defs)
+
+    def preload(self):
+        for name in self.loader.list_names():
+            self.compile_template(name)
 
     # region: internal details
 
