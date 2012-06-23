@@ -34,7 +34,10 @@ class BlockBuilder(object):
         if lineno == self.lineno:
             line = self.buf[-1]
             if line:
-                self.buf[-1] = line + '; ' + code
+                if line[-1:] == ':':
+                    self.buf[-1] = line + code
+                else:
+                    self.buf[-1] = line + '; ' + code
             else:
                 self.buf[-1] = code
         else:
