@@ -220,7 +220,7 @@ class CoreExtension(object):
     """
 
     lexer_rules = {
-            100: (re.compile(r'@((%s).*?(?<!\\))\n|$'
+            100: (re.compile(r'@((%s).*?(?<!\\))(\n|$)'
                     % '|'.join(all_tokens), re.S),
                 stmt_token),
             200: (re.compile(r'@(\w+(\.\w+)*)'),
