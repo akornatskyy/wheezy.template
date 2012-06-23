@@ -4,6 +4,7 @@
 
 from wheezy.template.builder import SourceBuilder
 from wheezy.template.builder import builder_scan
+from wheezy.template.comp import PY3
 from wheezy.template.comp import allocate_lock
 from wheezy.template.comp import compile_source
 from wheezy.template.lexer import Lexer
@@ -26,7 +27,7 @@ class Engine(object):
         self.parser = Parser(parser_rules, parser_configs)
         builder_rules = builder_scan(extensions)
         self.builder = SourceBuilder(builder_rules)
-        self.global_vars = {'_r': self.get_render}
+        self.global_vars = {'_r': self.render, 's': PY3 and str or unicode}
 
     def get_template(self, name):
         try:
@@ -35,12 +36,12 @@ class Engine(object):
             self.compile_template(name)
             return self.templates[name]
 
-    def get_render(self, name):
+    def render(self, name, ctx, local_defs, super_defs):
         try:
-            return self.renders[name]
+            return self.renders[name](ctx, local_defs, super_defs)
         except KeyError:
             self.compile_template(name)
-            return self.renders[name]
+            return self.renders[name](ctx, local_defs, super_defs)
 
     # region: internal details
 
@@ -49,11 +50,14 @@ class Engine(object):
         try:
             if name not in self.renders:
                 template_source = self.loader.load(name)
+                if template_source == None:
+                    raise IOError('Template "%s" not found.' % name)
                 tokens = self.lexer.tokenize(template_source)
                 nodes = list(self.parser.parse(tokens))
                 #from pprint import pprint
                 #pprint(nodes)
                 module_source = self.builder.build_render(nodes)
+                #print(name.center(80, '-'))
                 #from wheezy.template.utils import print_source
                 #print_source(module_source, -1)
                 render_template = compile_source(
