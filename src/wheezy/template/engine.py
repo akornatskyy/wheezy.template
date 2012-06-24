@@ -90,20 +90,20 @@ class Engine(object):
                 nodes = list(self.parser.parse(tokens))
                 source = self.builder.build_module(nodes)
 
-                #self.print_debug(name, tokens, nodes, module_source)
+                #self.print_debug(name, tokens, nodes, source)
 
                 self.modules[name] = self.compiler.compile_module(
                         source, name)
         finally:
             self.lock.release()
 
-    def print_debug(self, name, tokens, nodes, module_source):
+    def print_debug(self, name, tokens, nodes, source):
         print(name.center(80, '-'))
         from pprint import pprint
         pprint(tokens)
         pprint(nodes)
         from wheezy.template.utils import print_source
-        print_source(module_source, -1)
+        print_source(source, -1)
 
 
 class Template(object):
