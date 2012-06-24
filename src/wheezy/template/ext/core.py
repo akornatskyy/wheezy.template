@@ -13,7 +13,7 @@ from wheezy.template.utils import find_all_balanced
 end_tokens = ['end']
 continue_tokens = ['else:', 'elif ']
 compound_tokens = ['for ', 'if ', 'def ', 'extends'] + continue_tokens
-reserved_tokens = ['require', '#', 'include']
+reserved_tokens = ['require', '#', 'include', 'import ', 'from ']
 all_tokens = end_tokens + compound_tokens + reserved_tokens
 out_tokens = ['markup', 'var', 'include']
 known_var_filters = {
@@ -96,6 +96,21 @@ def parse_include(value):
     return value.rstrip()[8:-1]
 
 
+def parse_import(value):
+    name, var = value[7:].rsplit(' as ', 1)
+    return name, var
+
+
+def parse_from(value):
+    name, var = value[5:].rsplit(' import ', 1)
+    s = var.rsplit(' as ', 1)
+    if len(s) == 2:
+        var, alias = s
+    else:
+        alias = var
+    return name, var, alias
+
+
 def parse_var(value):
     if '!!' not in value:
         return value, None
@@ -127,6 +142,21 @@ def build_extends(builder, lineno, token, nodes):
     lineno = builder.lineno
     builder.add(lineno + 1, 'return _r(' + extends +
             ', ctx, local_defs, super_defs)')
+    return True
+
+
+def build_import(builder, lineno, token, value):
+    assert token == 'import '
+    name, var = value
+    builder.add(lineno, var + ' = ' + '_i(' + name + ')')
+    return True
+
+
+def build_from(builder, lineno, token, value):
+    assert token == 'from '
+    name, var, alias = value
+    builder.add(lineno, alias + ' = ' + '_i(' + name
+            + ').local_defs[\'' + var + '\']')
     return True
 
 
@@ -235,6 +265,8 @@ class CoreExtension(object):
             'require': parse_require,
             'extends': parse_extends,
             'include': parse_include,
+            'import ': parse_import,
+            'from ': parse_from,
             'var': parse_var,
             'markup': parse_markup,
     }
@@ -244,6 +276,8 @@ class CoreExtension(object):
     builder_rules = [
             ('render', build_extends),
             ('render', build_render),
+            ('import ', build_import),
+            ('from ', build_from),
             ('require', build_require),
             ('out', build_out),
             ('def ', build_def_empty),

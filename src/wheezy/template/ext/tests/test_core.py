@@ -394,3 +394,70 @@ Welcome to my site.
 Welcome to my site.
 Thanks, John""" == self.render('tmpl.html', ctx)
         assert 'Thanks, John' == self.render('footer.html', ctx)
+
+    def test_import(self):
+        self.templates.update({
+                'helpers.html': """\
+@def say_hi(name):
+Hi, @name\
+@end""",
+                'tmpl.html': """\
+@import 'helpers.html' as helpers
+@helpers.say_hi('John')"""
+        })
+        assert """\
+Hi, John""" == self.render('tmpl.html', {})
+
+    def test_import_dynamic(self):
+        self.templates.update({
+                'helpers.html': """\
+@def say_hi(name):
+Hi, @name\
+@end""",
+                'tmpl.html': """\
+@require(helpers_impl)
+@import helpers_impl as helpers
+@helpers.say_hi('John')"""
+        })
+        assert """\
+Hi, John""" == self.render('tmpl.html', {'helpers_impl': 'helpers.html'})
+
+    def test_from_import(self):
+        self.templates.update({
+                'helpers.html': """\
+@def say_hi(name):
+Hi, @name\
+@end""",
+                'tmpl.html': """\
+@from 'helpers.html' import say_hi
+@say_hi('John')"""
+        })
+        assert """\
+Hi, John""" == self.render('tmpl.html', {})
+
+    def test_from_import_dynamic(self):
+        self.templates.update({
+                'helpers.html': """\
+@def say_hi(name):
+Hi, @name\
+@end""",
+                'tmpl.html': """\
+@require(helpers_impl)
+@from helpers_impl import say_hi
+@say_hi('John')"""
+        })
+        assert """\
+Hi, John""" == self.render('tmpl.html', {'helpers_impl': 'helpers.html'})
+
+    def test_from_import_as(self):
+        self.templates.update({
+                'share/helpers.html': """\
+@def say_hi(name):
+Hi, @name\
+@end""",
+                'tmpl.html': """\
+@from 'share/helpers.html' import say_hi as hi
+@hi('John')"""
+        })
+        assert """\
+Hi, John""" == self.render('tmpl.html', {})
