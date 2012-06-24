@@ -57,7 +57,8 @@ class BlockBuilder(object):
                 if rule(self, lineno, token, value):
                     break
         else:
-            raise ValueError('No rule to build "%s" token.' % token)
+            raise ValueError('No rule to build "%s" token at line %d.' %
+                    (token, lineno))
 
     def to_string(self):
         return '\n'.join(self.buf)
