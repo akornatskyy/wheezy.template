@@ -15,12 +15,12 @@ class Compiler(object):
 
     def compile_module(self, source, name):
         compiled = compile(source, name, 'exec')
-        mod = imp.new_module(name)
-        mod.__name__ = name
-        mod.__dict__.update(self.global_vars)
-        mod.__dict__.update({'local_defs': {}, 'super_defs': {}})
-        exec(compiled, mod.__dict__)
-        return mod
+        module = imp.new_module(name)
+        module.__name__ = name
+        module.__dict__.update(self.global_vars)
+        module.__dict__.update({'local_defs': {}, 'super_defs': {}})
+        exec(compiled, module.__dict__)
+        return module
 
     def compile_source(self, source, name):
         source = adjust_source_lineno(source, name, self.source_lineno)
