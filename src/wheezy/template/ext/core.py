@@ -145,6 +145,14 @@ def build_extends(builder, lineno, token, nodes):
     return True
 
 
+def build_module(builder, lineno, token, nodes):
+    assert token == 'module'
+    for lineno, token, value in nodes:
+        if token == 'def ':
+            builder.build_token(lineno, token, value)
+    return True
+
+
 def build_import(builder, lineno, token, value):
     assert token == 'import '
     name, var = value
@@ -276,6 +284,7 @@ class CoreExtension(object):
     builder_rules = [
             ('render', build_extends),
             ('render', build_render),
+            ('module', build_module),
             ('import ', build_import),
             ('from ', build_from),
             ('require', build_require),
