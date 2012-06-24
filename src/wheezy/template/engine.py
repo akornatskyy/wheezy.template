@@ -88,7 +88,7 @@ class Engine(object):
                     raise IOError('Import "%s" not found.' % name)
                 tokens = self.lexer.tokenize(template_source)
                 nodes = list(self.parser.parse(tokens))
-                source = self.builder.build_source(nodes)
+                source = self.builder.build_module(nodes)
 
                 #self.print_debug(name, tokens, nodes, module_source)
 
