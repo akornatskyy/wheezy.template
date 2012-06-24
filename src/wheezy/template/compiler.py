@@ -18,7 +18,6 @@ class Compiler(object):
         module = imp.new_module(name)
         module.__name__ = name
         module.__dict__.update(self.global_vars)
-        module.__dict__.update({'local_defs': {}, 'super_defs': {}})
         exec(compiled, module.__dict__)
         return module
 
