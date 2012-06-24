@@ -82,3 +82,9 @@ class SourceBuilder(object):
         builder.start_block()
         builder.build_token(self.lineno + 2, 'render', nodes)
         return builder.to_string()
+
+    def build_module(self, nodes):
+        builder = BlockBuilder(self.rules, lineno=self.lineno)
+        builder.add(self.lineno + 1, 'local_defs = {}; super_defs = {}')
+        builder.build_token(self.lineno + 2, 'module', nodes)
+        return builder.to_string()
