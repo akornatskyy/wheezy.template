@@ -13,21 +13,16 @@ if PY3:  # pragma: nocover
 else:  # pragma: nocover
     from thread import allocate_lock
 
+
 try:  # pragma: nocover
     import ast
 
-    def compile_source(source, name, global_vars, lineno):
-        source_tree = compile(source, name, 'exec', ast.PyCF_ONLY_AST)
-        ast.increment_lineno(source_tree, lineno)
-        compiled = compile(source_tree, name, 'exec')
-        local_vars = {}
-        exec(compiled, global_vars, local_vars)
-        return local_vars['render']
+    def adjust_source_lineno(source, name, lineno):
+        source = compile(source, name, 'exec', ast.PyCF_ONLY_AST)
+        ast.increment_lineno(source, lineno)
+        return source
 
 except ImportError:  # pragma: nocover
 
-    def compile_source(source, name, global_vars, lineno):
-        compiled = compile(source, name, 'exec')
-        local_vars = {}
-        exec(compiled, global_vars, local_vars)
-        return local_vars['render']
+    def adjust_source_lineno(source, name, lineno):
+        return source
