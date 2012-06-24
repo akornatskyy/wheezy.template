@@ -29,20 +29,26 @@ class FileLoader(object):
                     names.append(name)
         return names
 
-    def load(self, name):
+    def get_fullname(self, name):
         for path in self.searchpath:
             filename = os.path.join(path, name)
             if not os.path.exists(filename):
                 continue
             if not os.path.isfile(filename):
                 continue
+            return filename
+        else:
+            None
+
+    def load(self, name):
+        filename = self.get_fullname(name)
+        if filename:
             f = open(filename, 'rb')
             try:
                 return f.read().decode(self.encoding)
             finally:
                 f.close()
-        else:
-            return None
+        return None
 
 
 class DictLoader(object):
@@ -57,3 +63,24 @@ class DictLoader(object):
         if name not in self.templates:
             return None
         return self.templates[name]
+
+
+def uwsgi_autoreload(loader, signum=0, enabled=True):
+    if enabled:
+        try:
+            import uwsgi
+        except ImportError:
+            pass
+        else:
+            if uwsgi.masterpid() == 0:
+                from warnings import warn
+                warn('uwsgi_autoreload: '
+                     'You have to enable the uwsgi master process',
+                     stacklevel=2)
+            else:
+                if not uwsgi.signal_registered(signum):
+                    uwsgi.register_signal(signum, '', uwsgi.reload)
+                    for name in loader.list_names():
+                        fullname = loader.get_fullname(name)
+                        uwsgi.add_file_monitor(signum, fullname)
+    return loader

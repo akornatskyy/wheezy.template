@@ -15,6 +15,7 @@ class Engine(object):
 
     def __init__(self, loader, extensions, template_class=None,
             compiler_class=None):
+        self.lock = allocate_lock()
         self.templates = {}
         self.renders = {}
         self.modules = {}
@@ -23,10 +24,7 @@ class Engine(object):
         self.template_class = template_class or Template
         if not compiler_class:
             from wheezy.template.compiler import Compiler as compiler_class
-        self.compiler = compiler_class(
-                global_vars=self.global_vars,
-                source_lineno=-2)
-        self.lock = allocate_lock()
+        self.compiler = compiler_class(self.global_vars, -2)
         self.lexer = Lexer(*lexer_scan(extensions))
         self.parser = Parser(*parser_scan(extensions))
         self.builder = SourceBuilder(builder_scan(extensions))
@@ -44,10 +42,6 @@ class Engine(object):
         except KeyError:
             self.compile_template(name)
             return self.renders[name](ctx, local_defs, super_defs)
-
-    def preload(self):
-        for name in self.loader.list_names():
-            self.compile_template(name)
 
     # region: internal details
 
