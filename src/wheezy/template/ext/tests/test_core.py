@@ -379,6 +379,22 @@ class MultiTemplateTestCase(unittest.TestCase):
         assert '    Hi, John!\n' == self.render('tmpl.html', {})
         assert '    Hello, John!\n' == self.render('master.html', {})
 
+    def test_super(self):
+        self.templates.update({
+                'master.html': """\
+@def say_hi(name):
+    Hello, @name!\
+@end
+@say_hi('John')""",
+                'tmpl.html': """\
+@extends('master.html')
+@def say_hi(name):
+    @super_defs['say_hi'](name)!!\
+@end
+"""
+        })
+        assert '    Hello, John!!!' == self.render('tmpl.html', {})
+
     def test_include(self):
         self.templates.update({
                 'footer.html': """\
