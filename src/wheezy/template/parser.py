@@ -55,7 +55,7 @@ class Parser(object):
                     operands = []
                 if token in self.compound_tokens:
                     yield lineno, token, (
-                            value, list(self.parse_iter(tokens)))
+                        value, list(self.parse_iter(tokens)))
                 else:
                     if token in self.end_tokens:
                         break

@@ -30,7 +30,7 @@ class BlockBuilder(object):
     def add(self, lineno, code):
         if lineno < self.lineno:
             raise ValueError('Inconsistence at %s : %s' %
-                    (self.lineno, lineno))
+                             (self.lineno, lineno))
         if lineno == self.lineno:
             line = self.buf[-1]
             if line:
@@ -58,7 +58,7 @@ class BlockBuilder(object):
                     break
         else:
             raise ValueError('No rule to build "%s" token at line %d.' %
-                    (token, lineno))
+                             (token, lineno))
 
     def to_string(self):
         return '\n'.join(self.buf)
@@ -78,7 +78,7 @@ class SourceBuilder(object):
     def build_render(self, nodes):
         builder = BlockBuilder(self.rules, lineno=self.lineno)
         builder.add(self.lineno + 1,
-                'def render(ctx, local_defs, super_defs):')
+                    'def render(ctx, local_defs, super_defs):')
         builder.start_block()
         builder.build_token(self.lineno + 2, 'render', nodes)
         return builder.to_string()

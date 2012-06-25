@@ -14,7 +14,7 @@ from wheezy.template.parser import parser_scan
 class Engine(object):
 
     def __init__(self, loader, extensions, template_class=None,
-            compiler_class=None):
+                 compiler_class=None):
         self.lock = allocate_lock()
         self.templates = {}
         self.renders = {}
@@ -57,7 +57,7 @@ class Engine(object):
         try:
             if name not in self.renders:
                 template_source = self.loader.load(name)
-                if template_source == None:
+                if template_source is None:
                     raise IOError('Template "%s" not found.' % name)
                 tokens = self.lexer.tokenize(template_source)
                 nodes = list(self.parser.parse(tokens))
@@ -66,10 +66,10 @@ class Engine(object):
                 #self.print_debug(name, tokens, nodes, source)
 
                 render_template = self.compiler.compile_source(
-                        source, name)['render']
+                    source, name)['render']
                 self.renders[name] = render_template
                 self.templates[name] = self.template_class(
-                        name, render_template)
+                    name, render_template)
         finally:
             self.lock.release()
 
@@ -78,7 +78,7 @@ class Engine(object):
         try:
             if name not in self.modules:
                 template_source = self.loader.load(name)
-                if template_source == None:
+                if template_source is None:
                     raise IOError('Import "%s" not found.' % name)
                 tokens = self.lexer.tokenize(template_source)
                 nodes = list(self.parser.parse(tokens))
@@ -87,7 +87,7 @@ class Engine(object):
                 #self.print_debug(name, tokens, nodes, source)
 
                 self.modules[name] = self.compiler.compile_module(
-                        source, name)
+                    source, name)
         finally:
             self.lock.release()
 

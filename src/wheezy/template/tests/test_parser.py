@@ -13,11 +13,11 @@ class ParserTestCase(unittest.TestCase):
         from wheezy.template.parser import Parser
         self.parser = Parser({})
         self.tokens = [
-                (1, 'a', 11),
-                (2, 'b', 12),
-                (3, 'c', 13),
-                (4, 'b', 14),
-                (5, 'c', 15),
+            (1, 'a', 11),
+            (2, 'b', 12),
+            (3, 'c', 13),
+            (4, 'b', 14),
+            (5, 'c', 15),
         ]
 
     def test_end_continue(self):

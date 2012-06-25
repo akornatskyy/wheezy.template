@@ -27,8 +27,7 @@ class LexerTestCase(unittest.TestCase):
         ])
         assert [(1, 'w', 'hello'),
                 (1, 'b', '\n '),
-                (2, 'w', 'world')
-            ] == lexer.tokenize('hello\n world')
+                (2, 'w', 'world')] == lexer.tokenize('hello\n world')
 
     def test_trivial(self):
         """ Empty rules and source

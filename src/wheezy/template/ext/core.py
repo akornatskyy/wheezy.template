@@ -17,7 +17,7 @@ reserved_tokens = ['require', '#', 'include', 'import ', 'from ']
 all_tokens = end_tokens + compound_tokens + reserved_tokens
 out_tokens = ['markup', 'var', 'include']
 known_var_filters = {
-        's': PY3 and 'str' or 'unicode'
+    's': PY3 and 'str' or 'unicode'
 }
 
 # region: preprocessors
@@ -29,8 +29,8 @@ RE_CLEAN2 = re.compile('\n([ ]+)@(?!@)', re.S)
 def clean_source(source):
     """ Cleans leading whitespace before @. Ignores escaped (@@).
     """
-    return RE_CLEAN2.sub('\n@', RE_CLEAN1.sub('@',
-        source.replace('\r\n', '\n')))
+    return RE_CLEAN2.sub('\n@', RE_CLEAN1.sub(
+        '@', source.replace('\r\n', '\n')))
 
 
 # region: lexer extensions
@@ -141,7 +141,7 @@ def build_extends(builder, lineno, token, nodes):
             builder.build_token(lineno, token, value)
     lineno = builder.lineno
     builder.add(lineno + 1, 'return _r(' + extends +
-            ', ctx, local_defs, super_defs)')
+                ', ctx, local_defs, super_defs)')
     return True
 
 
@@ -164,7 +164,7 @@ def build_from(builder, lineno, token, value):
     assert token == 'from '
     name, var, alias = value
     builder.add(lineno, alias + ' = ' + '_i(' + name
-            + ').local_defs[\'' + var + '\']')
+                + ').local_defs[\'' + var + '\']')
     return True
 
 
@@ -218,7 +218,7 @@ def build_out(builder, lineno, token, nodes):
     for lineno, token, value in nodes:
         if token == 'include':
             builder.add(lineno, 'w(' + '_r(' + value +
-                ', ctx, local_defs, super_defs)' + ')')
+                        ', ctx, local_defs, super_defs)' + ')')
         elif token == 'var':
             var, var_filters = value
             if var_filters:
@@ -258,42 +258,42 @@ class CoreExtension(object):
     """
 
     lexer_rules = {
-            100: (re.compile(r'@((%s).*?(?<!\\))(\n|$)'
-                    % '|'.join(all_tokens), re.S),
-                stmt_token),
-            200: (re.compile(r'@(\w+(\.\w+)*)'),
-                var_token),
-            999: (re.compile(r'.+?(?=(?<!@)@(?!@))|.+', re.S),
-                markup_token),
+        100: (re.compile(r'@((%s).*?(?<!\\))(\n|$)'
+                         % '|'.join(all_tokens), re.S),
+              stmt_token),
+        200: (re.compile(r'@(\w+(\.\w+)*)'),
+              var_token),
+        999: (re.compile(r'.+?(?=(?<!@)@(?!@))|.+', re.S),
+              markup_token),
     }
 
     preprocessors = [clean_source]
 
     parser_rules = {
-            'require': parse_require,
-            'extends': parse_extends,
-            'include': parse_include,
-            'import ': parse_import,
-            'from ': parse_from,
-            'var': parse_var,
-            'markup': parse_markup,
+        'require': parse_require,
+        'extends': parse_extends,
+        'include': parse_include,
+        'import ': parse_import,
+        'from ': parse_from,
+        'var': parse_var,
+        'markup': parse_markup,
     }
 
     parser_configs = [configure_parser]
 
     builder_rules = [
-            ('render', build_extends),
-            ('render', build_render),
-            ('module', build_module),
-            ('import ', build_import),
-            ('from ', build_from),
-            ('require', build_require),
-            ('out', build_out),
-            ('def ', build_def_empty),
-            ('def ', build_def),
-            ('if ', build_compound),
-            ('elif ', build_compound),
-            ('else:', build_compound),
-            ('for ', build_compound),
-            ('#', build_comment),
+        ('render', build_extends),
+        ('render', build_render),
+        ('module', build_module),
+        ('import ', build_import),
+        ('from ', build_from),
+        ('require', build_require),
+        ('out', build_out),
+        ('def ', build_def_empty),
+        ('def ', build_def),
+        ('if ', build_compound),
+        ('elif ', build_compound),
+        ('else:', build_compound),
+        ('for ', build_compound),
+        ('#', build_comment),
     ]

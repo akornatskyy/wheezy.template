@@ -39,8 +39,8 @@ class LexerTestCase(unittest.TestCase):
         from wheezy.template.ext.core import CoreExtension
         from wheezy.template.loader import DictLoader
         self.engine = Engine(
-                loader=DictLoader({}),
-                extensions=[CoreExtension()])
+            loader=DictLoader({}),
+            extensions=[CoreExtension()])
 
     def tokenize(self, source):
         return self.engine.lexer.tokenize(source)
@@ -98,8 +98,8 @@ class ParserTestCase(unittest.TestCase):
         from wheezy.template.ext.core import CoreExtension
         from wheezy.template.loader import DictLoader
         self.engine = Engine(
-                loader=DictLoader({}),
-                extensions=[CoreExtension()])
+            loader=DictLoader({}),
+            extensions=[CoreExtension()])
 
     def parse(self, source):
         return list(self.engine.parser.parse(
@@ -122,8 +122,8 @@ class ParserTestCase(unittest.TestCase):
         """
         nodes = self.parse('@include("shared/scripts.html")\n')
         assert [(1, 'out', [
-                    (1, 'include', '"shared/scripts.html"')
-                ])] == nodes
+            (1, 'include', '"shared/scripts.html"')
+        ])] == nodes
 
     def test_markup(self):
         """ Test parse_markup.
@@ -132,24 +132,24 @@ class ParserTestCase(unittest.TestCase):
  Welcome, @name!
 """)
         assert [(1, 'out', [
-                    (1, 'markup', "'\\n Welcome, '"),
-                    (2, 'var', ('name', None)),
-                    (2, 'markup', "'!\\n'")
-                ])] == nodes
+            (1, 'markup', "'\\n Welcome, '"),
+            (2, 'var', ('name', None)),
+            (2, 'markup', "'!\\n'")
+        ])] == nodes
 
     def test_var(self):
         """ Test parse_markup.
         """
         nodes = self.parse("""@name!h!""")
         assert [(1, 'out', [
-                    (1, 'var', ('name', ['h'])),
-                    (1, 'markup', "'!'")
-                ])] == nodes
+            (1, 'var', ('name', ['h'])),
+            (1, 'markup', "'!'")
+        ])] == nodes
         nodes = self.parse("""@name!s!h!""")
         assert [(1, 'out', [
-                    (1, 'var', ('name', ['s', 'h'])),
-                    (1, 'markup', "'!'")
-                ])] == nodes
+            (1, 'var', ('name', ['s', 'h'])),
+            (1, 'markup', "'!'")
+        ])] == nodes
 
 
 class BuilderTestCase(unittest.TestCase):
@@ -161,22 +161,22 @@ class BuilderTestCase(unittest.TestCase):
         from wheezy.template.ext.core import CoreExtension
         from wheezy.template.loader import DictLoader
         self.engine = Engine(
-                loader=DictLoader({}),
-                extensions=[CoreExtension()])
+            loader=DictLoader({}),
+            extensions=[CoreExtension()])
 
     def build_source(self, source):
         nodes = list(self.engine.parser.parse(
-                    self.engine.lexer.tokenize(source)))
+            self.engine.lexer.tokenize(source)))
         return self.engine.builder.build_source(nodes)
 
     def build_render(self, source):
         nodes = list(self.engine.parser.parse(
-                    self.engine.lexer.tokenize(source)))
+            self.engine.lexer.tokenize(source)))
         return self.engine.builder.build_render(nodes)
 
     def build_extends(self, name, source):
         nodes = list(self.engine.parser.parse(
-                    self.engine.lexer.tokenize(source)))
+            self.engine.lexer.tokenize(source)))
         return self.engine.builder.build_extends(name, nodes)
 
     def test_markup(self):
@@ -202,7 +202,7 @@ w(username)""" == self.build_source("""\
         """ Test build_out.
         """
         assert "w('Welcome, '); w(username); w('!')" == self.build_source(
-                'Welcome, @username!')
+            'Welcome, @username!')
         assert """\
 w('\\n<i>\\n')
 
@@ -285,8 +285,8 @@ class TemplateTestCase(unittest.TestCase):
         from wheezy.template.loader import DictLoader
         self.templates = {}
         self.engine = Engine(
-                loader=DictLoader(templates=self.templates),
-                extensions=[CoreExtension()])
+            loader=DictLoader(templates=self.templates),
+            extensions=[CoreExtension()])
 
     def render(self, ctx, source):
         self.templates['test.html'] = source
@@ -305,7 +305,7 @@ Hello\\
 
     def test_var(self):
         ctx = {
-                'username': 'John'
+            'username': 'John'
         }
         assert 'Welcome, John!' == self.render(ctx, """\
 @require(username)
@@ -328,7 +328,7 @@ Welcome, @username!""")
 
     def test_for(self):
         ctx = {
-                'colors': ['red', 'yellow']
+            'colors': ['red', 'yellow']
         }
         assert 'red\nyellow\n' == self.render(ctx, """\
 @require(colors)
@@ -355,8 +355,8 @@ class MultiTemplateTestCase(unittest.TestCase):
         from wheezy.template.loader import DictLoader
         self.templates = {}
         self.engine = Engine(
-                loader=DictLoader(templates=self.templates),
-                extensions=[CoreExtension()])
+            loader=DictLoader(templates=self.templates),
+            extensions=[CoreExtension()])
 
     def render(self, name, ctx):
         template = self.engine.get_template(name)
@@ -364,12 +364,13 @@ class MultiTemplateTestCase(unittest.TestCase):
 
     def test_extends(self):
         self.templates.update({
-                'master.html': """\
+            'master.html': """\
 @def say_hi(name):
     Hello, @name!
 @end
 @say_hi('John')""",
-                'tmpl.html': """\
+
+            'tmpl.html': """\
 @extends('master.html')
 @def say_hi(name):
     Hi, @name!
@@ -381,12 +382,13 @@ class MultiTemplateTestCase(unittest.TestCase):
 
     def test_super(self):
         self.templates.update({
-                'master.html': """\
+            'master.html': """\
 @def say_hi(name):
     Hello, @name!\
 @end
 @say_hi('John')""",
-                'tmpl.html': """\
+
+            'tmpl.html': """\
 @extends('master.html')
 @def say_hi(name):
     @super_defs['say_hi'](name)!!\
@@ -397,10 +399,11 @@ class MultiTemplateTestCase(unittest.TestCase):
 
     def test_include(self):
         self.templates.update({
-                'footer.html': """\
+            'footer.html': """\
 @require(name)
 Thanks, @name""",
-                'tmpl.html': """\
+
+            'tmpl.html': """\
 Welcome to my site.
 @include('footer.html')
 """
@@ -413,11 +416,12 @@ Thanks, John""" == self.render('tmpl.html', ctx)
 
     def test_import(self):
         self.templates.update({
-                'helpers.html': """\
+            'helpers.html': """\
 @def say_hi(name):
 Hi, @name\
 @end""",
-                'tmpl.html': """\
+
+            'tmpl.html': """\
 @import 'helpers.html' as helpers
 @helpers.say_hi('John')"""
         })
@@ -426,11 +430,12 @@ Hi, John""" == self.render('tmpl.html', {})
 
     def test_import_dynamic(self):
         self.templates.update({
-                'helpers.html': """\
+            'helpers.html': """\
 @def say_hi(name):
 Hi, @name\
 @end""",
-                'tmpl.html': """\
+
+            'tmpl.html': """\
 @require(helpers_impl)
 @import helpers_impl as helpers
 @helpers.say_hi('John')"""
@@ -440,11 +445,12 @@ Hi, John""" == self.render('tmpl.html', {'helpers_impl': 'helpers.html'})
 
     def test_from_import(self):
         self.templates.update({
-                'helpers.html': """\
+            'helpers.html': """\
 @def say_hi(name):
 Hi, @name\
 @end""",
-                'tmpl.html': """\
+
+            'tmpl.html': """\
 @from 'helpers.html' import say_hi
 @say_hi('John')"""
         })
@@ -453,11 +459,12 @@ Hi, John""" == self.render('tmpl.html', {})
 
     def test_from_import_dynamic(self):
         self.templates.update({
-                'helpers.html': """\
+            'helpers.html': """\
 @def say_hi(name):
 Hi, @name\
 @end""",
-                'tmpl.html': """\
+
+            'tmpl.html': """\
 @require(helpers_impl)
 @from helpers_impl import say_hi
 @say_hi('John')"""
@@ -467,11 +474,12 @@ Hi, John""" == self.render('tmpl.html', {'helpers_impl': 'helpers.html'})
 
     def test_from_import_as(self):
         self.templates.update({
-                'share/helpers.html': """\
+            'share/helpers.html': """\
 @def say_hi(name):
 Hi, @name\
 @end""",
-                'tmpl.html': """\
+
+            'tmpl.html': """\
 @from 'share/helpers.html' import say_hi as hi
 @hi('John')"""
         })

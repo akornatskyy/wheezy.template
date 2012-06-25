@@ -19,9 +19,10 @@ class FileLoaderTestCase(unittest.TestCase):
     def test_list_names(self):
         """ Tests list_names.
         """
-        assert ['tmpl1.html',
-                'shared/master.html',
-                'shared/snippet/script.html'
+        assert [
+            'tmpl1.html',
+            'shared/master.html',
+            'shared/snippet/script.html'
         ] == self.loader.list_names()
 
     def test_load_existing(self):
@@ -47,15 +48,16 @@ class DictLoaderTestCase(unittest.TestCase):
     def setUp(self):
         from wheezy.template.loader import DictLoader
         self.loader = DictLoader(templates={
-                'tmpl1.html': 'x',
-                'shared/master.html': 'x'
+            'tmpl1.html': 'x',
+            'shared/master.html': 'x'
         })
 
     def test_list_names(self):
         """ Tests list_names.
         """
-        assert ['tmpl1.html',
-                'shared/master.html'
+        assert [
+            'tmpl1.html',
+            'shared/master.html'
         ] == self.loader.list_names()
 
     def test_load_existing(self):
