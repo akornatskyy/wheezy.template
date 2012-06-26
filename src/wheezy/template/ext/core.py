@@ -281,6 +281,8 @@ class CoreExtension(object):
         'markup': parse_markup,
     }
 
+    parser_syntax = []
+
     builder_rules = [
         ('render', build_extends),
         ('render', build_render),

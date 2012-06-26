@@ -5,13 +5,20 @@
 
 def parser_scan(extensions):
     parser_rules = {}
-    configs = []
+    parser_configs = []
+    parser_syntax = {}
     for extension in extensions:
         if hasattr(extension, 'parser_rules'):
             parser_rules.update(extension.parser_rules)
         if hasattr(extension, 'parser_configs'):
-            configs.extend(extension.parser_configs)
-    return parser_rules, configs
+            parser_configs.extend(extension.parser_configs)
+        if hasattr(extension, 'parser_syntax'):
+            parser_syntax.update(extension.parser_syntax)
+    return {
+        'parser_rules': parser_rules,
+        'parser_configs': parser_configs,
+        'parser_syntax': parser_syntax
+    }
 
 
 class Parser(object):
@@ -23,14 +30,14 @@ class Parser(object):
         ``out_tokens`` are combined together into a single node.
     """
 
-    def __init__(self, rules, configs=None):
+    def __init__(self, parser_rules, parser_configs=None, **ignore):
         self.end_tokens = []
         self.continue_tokens = []
         self.compound_tokens = []
         self.out_tokens = []
-        self.rules = rules
-        if configs:
-            for config in configs:
+        self.rules = parser_rules
+        if parser_configs:
+            for config in parser_configs:
                 config(self)
 
     def end_continue(self, tokens):
@@ -64,4 +71,5 @@ class Parser(object):
             yield operands[0][0], 'out', operands
 
     def parse(self, tokens):
-        return list(self.parse_iter(self.end_continue(tokens)))
+        nodes = list(self.parse_iter(self.end_continue(tokens)))
+        return nodes
