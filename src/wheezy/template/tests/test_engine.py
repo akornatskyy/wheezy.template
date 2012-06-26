@@ -1,12 +1,12 @@
 
-""" Unit tests for ``wheezy.templates.ext.core``.
+""" Unit tests for ``wheezy.templates.engine.Engine``.
 """
 
 import unittest
 
 
-class CleanSourceTestCase(unittest.TestCase):
-    """ Test the ``clean_source``.
+class EngineTestCase(unittest.TestCase):
+    """ Test the ``Engine``.
     """
 
     def setUp(self):
