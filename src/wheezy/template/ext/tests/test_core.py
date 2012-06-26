@@ -80,6 +80,8 @@ class LexerTestCase(unittest.TestCase):
         tokens = self.tokenize(' test ')
         assert 1 == len(tokens)
         assert (1, 'markup', ' test ') == tokens[0]
+        tokens = self.tokenize('x@n')
+        assert (1, 'markup', 'x') == tokens[0]
 
     def test_markup_token_escape(self):
         """ Test markup token with escape.
