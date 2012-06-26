@@ -29,11 +29,13 @@ class BlockBuilder(object):
         self.indent += '    '
 
     def end_block(self):
+        if len(self.indent) < 4:
+            raise SyntaxError('Unexpected end of block.')
         self.indent = self.indent[:-4]
 
     def add(self, lineno, code):
         if lineno < self.lineno:
-            raise ValueError('Inconsistence at %s : %s' %
+            raise SyntaxError('Inconsistence at %s : %s' %
                              (self.lineno, lineno))
         if lineno == self.lineno:
             line = self.buf[-1]
@@ -65,7 +67,7 @@ class BlockBuilder(object):
                 if rule(self, lineno, token, value):
                     break
         else:
-            raise ValueError('No rule to build "%s" token at line %d.' %
+            raise SyntaxError('No rule to build "%s" token at line %d.' %
                              (token, lineno))
 
     def to_string(self):
