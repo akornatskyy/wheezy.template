@@ -346,6 +346,15 @@ Welcome, @name!\\
 @end
 @welcome('John')""")
 
+    def test_def_syntax_error(self):
+        self.assertRaises(SyntaxError, lambda: self.render({}, """\
+@def welcome(name):
+@if name:
+    Welcome, @name!\\
+@end
+@end
+@welcome('John')"""))
+
 
 class MultiTemplateTestCase(unittest.TestCase):
     """ Test the ``CoreExtension`` compiled templates.

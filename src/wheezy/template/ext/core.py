@@ -195,6 +195,35 @@ def build_def_empty(builder, lineno, token, value):
     return True
 
 
+def build_syntax_error(builder, lineno, error):
+    builder.add(lineno,
+                ('raise SyntaxError(%s)') % repr(error))
+
+
+def build_def_syntax_check(builder, lineno, token, value):
+    assert token == 'def '
+    stmt, nodes = value
+    if nodes:
+        lineno, token, value = nodes[0]
+        if token in compound_tokens:
+            builder.add(lineno, stmt)
+            builder.start_block()
+            token = token.rstrip()
+            build_syntax_error(
+                builder, lineno,
+                """\
+The compound statement '%s' is not allowed here. \
+Add a line before it with @#ignore.
+
+%s
+    @#ignore
+    @%s ...""" %
+                (token, stmt, token))
+            builder.end_block()
+            return True
+    return False
+
+
 def build_def(builder, lineno, token, value):
     assert token == 'def '
     stmt, nodes = value
@@ -281,8 +310,6 @@ class CoreExtension(object):
         'markup': parse_markup,
     }
 
-    parser_syntax = []
-
     builder_rules = [
         ('render', build_extends),
         ('render', build_render),
@@ -291,6 +318,7 @@ class CoreExtension(object):
         ('from ', build_from),
         ('require', build_require),
         ('out', build_out),
+        ('def ', build_def_syntax_check),
         ('def ', build_def_empty),
         ('def ', build_def),
         ('if ', build_compound),
