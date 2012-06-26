@@ -29,7 +29,7 @@ Simple template::
         @for i in items:
             @i.name: $i.price!s.
         @end
-    @else
+    @else:
         No items found.
     @end
 
