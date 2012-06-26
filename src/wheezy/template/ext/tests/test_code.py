@@ -91,8 +91,10 @@ class BuilderTestCase(unittest.TestCase):
 
     def test_code_multiline(self):
         assert """\
+
 i = 1
-j = 0""" == self.build_source("""\
+j = 0
+""" == self.build_source("""\
 @(
     i = 1
     j = 0
@@ -101,13 +103,14 @@ j = 0""" == self.build_source("""\
 
     def test_code_with_indent(self):
         assert """\
+
 def x():
-    return 'x'""" == self.build_source("""\
+    return 'x'
+""" == self.build_source("""\
 @(
     def x():
         return 'x'
-)
-""")
+)""")
 
 
 class TemplateTestCase(unittest.TestCase):
