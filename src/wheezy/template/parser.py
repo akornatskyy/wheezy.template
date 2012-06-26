@@ -6,18 +6,14 @@
 def parser_scan(extensions):
     parser_rules = {}
     parser_configs = []
-    parser_syntax = {}
     for extension in extensions:
         if hasattr(extension, 'parser_rules'):
             parser_rules.update(extension.parser_rules)
         if hasattr(extension, 'parser_configs'):
             parser_configs.extend(extension.parser_configs)
-        if hasattr(extension, 'parser_syntax'):
-            parser_syntax.update(extension.parser_syntax)
     return {
         'parser_rules': parser_rules,
         'parser_configs': parser_configs,
-        'parser_syntax': parser_syntax
     }
 
 
@@ -71,5 +67,4 @@ class Parser(object):
             yield operands[0][0], 'out', operands
 
     def parse(self, tokens):
-        nodes = list(self.parse_iter(self.end_continue(tokens)))
-        return nodes
+        return list(self.parse_iter(self.end_continue(tokens)))
