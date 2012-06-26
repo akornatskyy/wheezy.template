@@ -38,7 +38,7 @@ def clean_source(source):
 def stmt_token(m):
     """ Produces statement token.
     """
-    return m.end(), str(m.group(2)), str(m.group(1))
+    return m.end(), str(m.group(2)), str(m.group(1)).replace('\\\n', '')
 
 
 RE_VAR = re.compile('(\.\w+)+')
@@ -178,10 +178,36 @@ def build_render(builder, lineno, token, nodes):
     return True
 
 
+def build_def_syntax_check(builder, lineno, token, value):
+    assert token == 'def '
+    stmt, nodes = value
+    lineno, token, value = nodes[0]
+    if token in compound_tokens:
+        builder.add(lineno, stmt)
+        builder.start_block()
+        token = token.rstrip()
+        error = """\
+The compound statement '%s' is not allowed here. \
+Add a line before it with @#ignore.
+
+%s
+    @#ignore
+    @%s ...""" % (token, stmt, token)
+        builder.add(lineno, 'raise SyntaxError(%s)' % repr(error))
+        builder.end_block()
+        return True
+    elif len(nodes) > 1:
+        # token before @end
+        lineno, token, value = nodes[-2]
+        if token == '#':
+            del nodes[-2]
+    return False
+
+
 def build_def_empty(builder, lineno, token, value):
     assert token == 'def '
     stmt, nodes = value
-    if nodes:
+    if len(nodes) > 1:
         return False
     def_name = stmt[4:stmt.index('(', 5)]
     builder.add(lineno, stmt)
@@ -193,35 +219,6 @@ def build_def_empty(builder, lineno, token, value):
         " = local_defs.setdefault('", "', ", ")"
     ]))
     return True
-
-
-def build_syntax_error(builder, lineno, error):
-    builder.add(lineno,
-                ('raise SyntaxError(%s)') % repr(error))
-
-
-def build_def_syntax_check(builder, lineno, token, value):
-    assert token == 'def '
-    stmt, nodes = value
-    if nodes:
-        lineno, token, value = nodes[0]
-        if token in compound_tokens:
-            builder.add(lineno, stmt)
-            builder.start_block()
-            token = token.rstrip()
-            build_syntax_error(
-                builder, lineno,
-                """\
-The compound statement '%s' is not allowed here. \
-Add a line before it with @#ignore.
-
-%s
-    @#ignore
-    @%s ...""" %
-                (token, stmt, token))
-            builder.end_block()
-            return True
-    return False
 
 
 def build_def(builder, lineno, token, value):
@@ -280,6 +277,12 @@ def build_comment(builder, lineno, token, comment):
     return True
 
 
+def build_end(builder, lineno, token, value):
+    if builder.lineno != lineno:
+        builder.add(lineno - 1, '')
+    return True
+
+
 # region: core extension
 
 class CoreExtension(object):
@@ -326,4 +329,5 @@ class CoreExtension(object):
         ('else:', build_compound),
         ('for ', build_compound),
         ('#', build_comment),
+        ('end', build_end),
     ]

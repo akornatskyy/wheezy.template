@@ -51,6 +51,12 @@ class LexerTestCase(unittest.TestCase):
         tokens = self.tokenize('@require(title, users)\n')
         assert (1, 'require', 'require(title, users)') == tokens[0]
 
+    def test_comment_token(self):
+        """ Test statement token.
+        """
+        tokens = self.tokenize('@#ignore\\\n@end\n')
+        assert (1, '#', '#ignore@end') == tokens[0]
+
     def test_var_token(self):
         """ Test variable token.
         """
@@ -247,12 +253,14 @@ for color in colors:
         assert """\
 def link(url, text):
     _b = []; w = _b.append; w('        <a href="'); w(url); \
-w('">'); w(text); w('</a>\\n'); return ''.join(_b)
+w('">'); w(text); w('</a>\\n')
+    return ''.join(_b)
 super_defs['link'] = link; link = local_defs.setdefault('link', link)
 w('    Please '); w(link('/en/signin', 'sign in')); w('.\\n')\
 """ == self.build_source("""\
     @def link(url, text):
         <a href="@url">@text</a>
+        @#ignore
     @end
     Please @link('/en/signin', 'sign in').
 """)
@@ -346,7 +354,7 @@ Welcome, @name!\\
 @end
 @welcome('John')""")
 
-    def test_def_syntax_error(self):
+    def test_def_syntax_error_compound(self):
         self.assertRaises(SyntaxError, lambda: self.render({}, """\
 @def welcome(name):
 @if name:
