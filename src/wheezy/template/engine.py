@@ -27,7 +27,7 @@ class Engine(object):
         self.compiler = compiler_class(self.global_vars, -2)
         self.lexer = Lexer(**lexer_scan(extensions))
         self.parser = Parser(**parser_scan(extensions))
-        self.builder = SourceBuilder(builder_scan(extensions))
+        self.builder = SourceBuilder(**builder_scan(extensions))
 
     def get_template(self, name):
         try:

@@ -10,7 +10,9 @@ def builder_scan(extensions):
             rules = extension.builder_rules
             for token, builder in rules:
                 builder_rules.setdefault(token, []).append(builder)
-    return builder_rules
+    return {
+        'builder_rules': builder_rules
+    }
 
 
 class BlockBuilder(object):
@@ -67,9 +69,9 @@ class BlockBuilder(object):
 
 class SourceBuilder(object):
 
-    def __init__(self, rules, offset=2):
-        self.rules = rules
-        self.lineno = 0 - offset
+    def __init__(self, builder_rules, builder_offset=2, **ignore):
+        self.rules = builder_rules
+        self.lineno = 0 - builder_offset
 
     def build_source(self, nodes):
         builder = BlockBuilder(self.rules)
