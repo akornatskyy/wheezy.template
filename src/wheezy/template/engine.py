@@ -25,7 +25,7 @@ class Engine(object):
         if not compiler_class:
             from wheezy.template.compiler import Compiler as compiler_class
         self.compiler = compiler_class(self.global_vars, -2)
-        self.lexer = Lexer(*lexer_scan(extensions))
+        self.lexer = Lexer(**lexer_scan(extensions))
         self.parser = Parser(**parser_scan(extensions))
         self.builder = SourceBuilder(builder_scan(extensions))
 

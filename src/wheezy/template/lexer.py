@@ -14,15 +14,17 @@ def lexer_scan(extensions):
             lexer_rules.update(extension.lexer_rules)
         if hasattr(extension, 'preprocessors'):
             preprocessors.extend(extension.preprocessors)
-    return ([lexer_rules[k] for k in sorted(lexer_rules.keys())],
-            preprocessors)
+    return {
+        'lexer_rules': [lexer_rules[k] for k in sorted(lexer_rules.keys())],
+        'preprocessors': preprocessors
+    }
 
 
 class Lexer(object):
     """ Tokenizes input source per rules supplied.
     """
 
-    def __init__(self, rules, preprocessors=None):
+    def __init__(self, lexer_rules, preprocessors=None, **ignore):
         """ Initializes with ``rules``. Rules must be a list of
             two elements tuple: ``(regex, tokenizer)`` where
             tokenizer if a callable of the following contract::
@@ -30,7 +32,7 @@ class Lexer(object):
             def tokenizer(match):
                 return end_index, token, value
         """
-        self.rules = rules
+        self.rules = lexer_rules
         self.preprocessors = preprocessors or []
 
     def tokenize(self, source):
