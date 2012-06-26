@@ -269,6 +269,8 @@ class CoreExtension(object):
 
     preprocessors = [clean_source]
 
+    parser_configs = [configure_parser]
+
     parser_rules = {
         'require': parse_require,
         'extends': parse_extends,
@@ -278,8 +280,6 @@ class CoreExtension(object):
         'var': parse_var,
         'markup': parse_markup,
     }
-
-    parser_configs = [configure_parser]
 
     builder_rules = [
         ('render', build_extends),

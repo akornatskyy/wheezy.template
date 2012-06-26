@@ -64,4 +64,4 @@ class Parser(object):
             yield operands[0][0], 'out', operands
 
     def parse(self, tokens):
-        return self.parse_iter(self.end_continue(tokens))
+        return list(self.parse_iter(self.end_continue(tokens)))

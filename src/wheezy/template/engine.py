@@ -60,7 +60,7 @@ class Engine(object):
                 if template_source is None:
                     raise IOError('Template "%s" not found.' % name)
                 tokens = self.lexer.tokenize(template_source)
-                nodes = list(self.parser.parse(tokens))
+                nodes = self.parser.parse(tokens)
                 source = self.builder.build_render(nodes)
 
                 #self.print_debug(name, tokens, nodes, source)
@@ -81,7 +81,7 @@ class Engine(object):
                 if template_source is None:
                     raise IOError('Import "%s" not found.' % name)
                 tokens = self.lexer.tokenize(template_source)
-                nodes = list(self.parser.parse(tokens))
+                nodes = self.parser.parse(tokens)
                 source = self.builder.build_module(nodes)
 
                 #self.print_debug(name, tokens, nodes, source)
