@@ -350,10 +350,20 @@ Welcome, @name!\\
         self.assertRaises(SyntaxError, lambda: self.render({}, """\
 @def welcome(name):
 @if name:
-    Welcome, @name!\\
+Welcome, @name!\\
 @end
 @end
 @welcome('John')"""))
+
+    def test_def_no_syntax_error(self):
+        assert 'Welcome, John!' == self.render({}, """\
+@def welcome(name):
+@#ignore
+@if name:
+Welcome, @name!\\
+@end
+@end
+@welcome('John')""")
 
 
 class MultiTemplateTestCase(unittest.TestCase):
