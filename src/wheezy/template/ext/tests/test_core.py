@@ -271,10 +271,10 @@ w('    Please '); w(link('/en/signin', 'sign in')); w('.\\n')\
         assert """\
 def title():return ''
 super_defs['title'] = title; title = local_defs.setdefault('title', title)
-w(title); w('.')""" == self.build_source("""\
+w(title()); w('.')""" == self.build_source("""\
 @def title():
 @end
-@title.""")
+@title().""")
 
     def test_render(self):
         """ Test build_render.
@@ -364,6 +364,12 @@ Welcome, @username!""")
 Welcome, @name!\\
 @end
 @welcome('John')""")
+
+    def test_def_empty(self):
+        assert '.' == self.render({}, """\
+@def title():
+@end
+@title().""")
 
     def test_def_syntax_error_compound(self):
         self.assertRaises(SyntaxError, lambda: self.render({}, """\
