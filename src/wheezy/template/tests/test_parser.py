@@ -71,5 +71,5 @@ class ParserTestCase(unittest.TestCase):
         self.parser.end_tokens = ['c']
         nodes = list(self.parser.parse(self.tokens))
         assert 3 == len(nodes)
-        assert (2, 'b', (12, [])) == nodes[1]
-        assert (4, 'b', (14, [])) == nodes[2]
+        assert (2, 'b', (12, [(3, 'c', 13)])) == nodes[1]
+        assert (4, 'b', (14, [(5, 'c', 15)])) == nodes[2]
