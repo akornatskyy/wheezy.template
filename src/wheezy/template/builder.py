@@ -37,19 +37,22 @@ class BlockBuilder(object):
                              (self.lineno, lineno))
         if lineno == self.lineno:
             line = self.buf[-1]
-            if line:
-                if line[-1:] == ':':
-                    self.buf[-1] = line + code
+            if code:
+                if line:
+                    if line[-1:] == ':':
+                        self.buf[-1] = line + code
+                    else:
+                        self.buf[-1] = line + '; ' + code
                 else:
-                    self.buf[-1] = line + '; ' + code
-            else:
-                self.buf[-1] = code
+                    self.buf[-1] = self.indent + code
         else:
             pad = lineno - self.lineno - 1
             if pad > 0:
                 self.buf.extend([''] * pad)
             if code:
                 self.buf.append(self.indent + code)
+            else:
+                self.buf.append('')
         self.lineno = lineno + code.count('\n')
 
     def build_block(self, nodes):
