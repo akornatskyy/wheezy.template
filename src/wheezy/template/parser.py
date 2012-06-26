@@ -60,9 +60,9 @@ class Parser(object):
                     yield lineno, token, (
                         value, list(self.parse_iter(tokens)))
                 else:
+                    yield lineno, token, value
                     if token in self.end_tokens:
                         break
-                    yield lineno, token, value
         if operands:
             yield operands[0][0], 'out', operands
 
