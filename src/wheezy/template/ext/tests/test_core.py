@@ -265,6 +265,17 @@ w('    Please '); w(link('/en/signin', 'sign in')); w('.\\n')\
     Please @link('/en/signin', 'sign in').
 """)
 
+    def test_def_empty(self):
+        """ Test def statement.
+        """
+        assert """\
+def title():return ''
+super_defs['title'] = title; title = local_defs.setdefault('title', title)
+w(title); w('.')""" == self.build_source("""\
+@def title():
+@end
+@title.""")
+
     def test_render(self):
         """ Test build_render.
         """
