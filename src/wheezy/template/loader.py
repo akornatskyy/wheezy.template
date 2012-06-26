@@ -65,7 +65,7 @@ class DictLoader(object):
         return self.templates[name]
 
 
-def uwsgi_autoreload(loader, signum=0, enabled=True):
+def uwsgi_autoreload(loader, signum=0, enabled=True):  # pragma: nocover
     if enabled:
         try:
             import uwsgi
