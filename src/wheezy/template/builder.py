@@ -44,7 +44,8 @@ class BlockBuilder(object):
             pad = lineno - self.lineno - 1
             if pad > 0:
                 self.buf.extend([''] * pad)
-            self.buf.append(self.indent + code)
+            if code:
+                self.buf.append(self.indent + code)
         self.lineno = lineno + code.count('\n')
 
     def build_block(self, nodes):
