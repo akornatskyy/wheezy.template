@@ -91,7 +91,7 @@ class Engine(object):
         finally:
             self.lock.release()
 
-    def print_debug(self, name, tokens, nodes, source):
+    def print_debug(self, name, tokens, nodes, source):  # pragma: nocover
         print(name.center(80, '-'))
         from pprint import pprint
         pprint(tokens)
