@@ -9,14 +9,18 @@ def lexer_scan(extensions):
     """
     lexer_rules = {}
     preprocessors = []
+    postprocessors = []
     for extension in extensions:
         if hasattr(extension, 'lexer_rules'):
             lexer_rules.update(extension.lexer_rules)
         if hasattr(extension, 'preprocessors'):
             preprocessors.extend(extension.preprocessors)
+        if hasattr(extension, 'postprocessors'):
+            postprocessors.extend(extension.postprocessors)
     return {
         'lexer_rules': [lexer_rules[k] for k in sorted(lexer_rules.keys())],
-        'preprocessors': preprocessors
+        'preprocessors': preprocessors,
+        'postprocessors': postprocessors
     }
 
 
@@ -24,7 +28,8 @@ class Lexer(object):
     """ Tokenizes input source per rules supplied.
     """
 
-    def __init__(self, lexer_rules, preprocessors=None, **ignore):
+    def __init__(self, lexer_rules, preprocessors=None, postprocessors=None,
+                 **ignore):
         """ Initializes with ``rules``. Rules must be a list of
             two elements tuple: ``(regex, tokenizer)`` where
             tokenizer if a callable of the following contract::
@@ -34,6 +39,7 @@ class Lexer(object):
         """
         self.rules = lexer_rules
         self.preprocessors = preprocessors or []
+        self.postprocessors = postprocessors or []
 
     def tokenize(self, source):
         """ Translates ``source`` accoring to lexer rules into
@@ -58,4 +64,6 @@ class Lexer(object):
                     break
             else:
                 assert False, 'Lexer pattern mismatch.'
+        for postprocessor in self.postprocessors:
+            postprocessor(tokens)
         return tokens
