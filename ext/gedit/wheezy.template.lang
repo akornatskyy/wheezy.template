@@ -19,7 +19,7 @@
         <style id="attrib-value" _name="Attribute Value" map-to="xml:attribute-value"/>
         <style id="dtd" _name="DTD" map-to="xml:doctype"/>
         <style id="error" _name="Error" map-to="xml:error"/>
-        
+
         <style id="string" _name="String" map-to="def:string"/>
         <style id="keyword" _name="Keyword" map-to="def:keyword"/>
         <style id="module-handler" _name="Module Handler" map-to="def:preprocessor"/>
@@ -150,22 +150,23 @@
                 <context ref="generic-tag"/>
             </include>
         </context>
-        <context id="double-quoted-string" style-ref="string" end-at-line-end="true" 
+        <context id="double-quoted-string" style-ref="string" end-at-line-end="true"
             class="string" class-disabled="no-spell-check">
             <start>(?&lt;=[=\(])["']</start>
             <end>"|'</end>
         </context>
-        
+
         <!-- -->
-        
+
         <context id="module-handler" style-ref="module-handler">
             <keyword>as</keyword>
             <keyword>import</keyword>
         </context>
-        
+
         <context id="keywords" style-ref="keyword">
             <prefix>@</prefix>
             <keyword>import</keyword>
+            <keyword>inline</keyword>
             <keyword>from</keyword>
             <keyword>require</keyword>
             <keyword>extends</keyword>
@@ -178,7 +179,7 @@
             <keyword>for</keyword>
             <keyword>while</keyword>
         </context>
-        
+
         <context id="var" style-ref="var">
             <match>(?&lt;!@)@[\w\.]+</match>
         </context>
@@ -197,7 +198,7 @@
                 <context ref="style"/>
                 <context ref="script"/>
                 <context ref="tag"/>
-                
+
                 <context ref="double-quoted-string"/>
                 <context ref="module-handler"/>
                 <context ref="keywords"/>

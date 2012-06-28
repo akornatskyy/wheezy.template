@@ -11,7 +11,7 @@ syn match wBlock '^\s*)$'
 syn match wBlock '@(.*)'
 syn match wVar '\(@\)\@<!@[a-z\.]\+'
 syn match wStmt ':$'
-syn match wStmt '\(@\)\@<!@\(def\|for\|if\|elif\|else\|end\|require\|extends\|include\|from\|import\)'
+syn match wStmt '\(@\)\@<!@\(def\|for\|if\|elif\|else\|end\|require\|extends\|include\|from\|import\|inline\)'
 
 
 
