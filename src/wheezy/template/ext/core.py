@@ -20,6 +20,14 @@ known_var_filters = {
     's': PY3 and 'str' or 'unicode'
 }
 
+
+if 1:
+    WRITER_DECLARE = '_b = []; w = _b.append'
+    WRITER_RETURN = "return ''.join(_b)"
+else:
+    WRITER_DECLARE = '_b = StringIO(); w = _b.write'
+    WRITER_RETURN = 'return _b.getvalue()'
+
 # region: preprocessors
 
 RE_CLEAN1 = re.compile('^([ ]+)@(?!@)', re.S)
@@ -171,10 +179,10 @@ def build_from(builder, lineno, token, value):
 def build_render(builder, lineno, token, nodes):
     assert lineno <= 0
     assert token == 'render'
-    builder.add(lineno, '_b = []; w = _b.append')
+    builder.add(lineno, WRITER_DECLARE)
     builder.build_block(nodes)
     lineno = builder.lineno
-    builder.add(lineno + 1, "return ''.join(_b)")
+    builder.add(lineno + 1, WRITER_RETURN)
     return True
 
 
@@ -227,10 +235,10 @@ def build_def(builder, lineno, token, value):
     def_name = stmt[4:stmt.index('(', 5)]
     builder.add(lineno, stmt)
     builder.start_block()
-    builder.add(lineno + 1, '_b = []; w = _b.append')
+    builder.add(lineno + 1, WRITER_DECLARE)
     builder.build_block(nodes)
     lineno = builder.lineno
-    builder.add(lineno, "return ''.join(_b)")
+    builder.add(lineno, WRITER_RETURN)
     builder.end_block()
     builder.add(lineno + 1, def_name.join([
         "super_defs['", "'] = ", "; ",
