@@ -19,7 +19,10 @@ class Engine(object):
         self.templates = {}
         self.renders = {}
         self.modules = {}
-        self.global_vars = {'_r': self.render, '_i': self.import_name}
+        self.global_vars = {
+            '_r': self.render,
+            '_i': self.import_name
+        }
         self.loader = loader
         self.template_class = template_class or Template
         if not compiler_class:
@@ -94,7 +97,7 @@ class Engine(object):
     def print_debug(self, name, tokens, nodes, source):  # pragma: nocover
         print(name.center(80, '-'))
         from pprint import pprint
-        pprint(tokens)
+        #pprint(tokens)
         pprint(nodes)
         from wheezy.template.utils import print_source
         print_source(source, -1)
