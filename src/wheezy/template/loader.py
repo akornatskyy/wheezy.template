@@ -63,24 +63,3 @@ class DictLoader(object):
         if name not in self.templates:
             return None
         return self.templates[name]
-
-
-def uwsgi_autoreload(loader, signum=0, enabled=True):  # pragma: nocover
-    if enabled:
-        try:
-            import uwsgi
-        except ImportError:
-            pass
-        else:
-            if uwsgi.masterpid() == 0:
-                from warnings import warn
-                warn('uwsgi_autoreload: '
-                     'You have to enable the uwsgi master process',
-                     stacklevel=2)
-            else:
-                if not uwsgi.signal_registered(signum):
-                    uwsgi.register_signal(signum, '', uwsgi.reload)
-                    for name in loader.list_names():
-                        fullname = loader.get_fullname(name)
-                        uwsgi.add_file_monitor(signum, fullname)
-    return loader
