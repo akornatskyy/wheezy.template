@@ -14,6 +14,7 @@ class Compiler(object):
         self.source_lineno = source_lineno
 
     def compile_module(self, source, name):
+        source = adjust_source_lineno(source, name, self.source_lineno)
         compiled = compile(source, name, 'exec')
         module = imp.new_module(name)
         module.__name__ = name
