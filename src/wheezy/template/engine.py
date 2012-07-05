@@ -71,8 +71,7 @@ class Engine(object):
                 render_template = self.compiler.compile_source(
                     source, name)['render']
                 self.renders[name] = render_template
-                self.templates[name] = self.template_class(
-                    name, render_template)
+                self.templates[name] = self.template_class(name, self)
         finally:
             self.lock.release()
 
@@ -105,9 +104,9 @@ class Engine(object):
 
 class Template(object):
 
-    def __init__(self, name, render_template):
+    def __init__(self, name, engine):
         self.name = name
-        self.render_template = render_template
+        self.render_template = engine.render
 
     def render(self, ctx):
-        return self.render_template(ctx, {}, {})
+        return self.render_template(self.name, ctx, {}, {})
