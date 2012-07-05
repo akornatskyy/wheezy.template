@@ -129,7 +129,8 @@ class TemplateTestCase(unittest.TestCase):
 
     def render(self, source):
         self.templates['test.html'] = source
-        return self.engine.render('test.html', {}, {}, {})
+        template = self.engine.get_template('test.html')
+        return template.render({})
 
     def test_code_single_line(self):
         assert '1' == self.render('@(i = 1)@i!s')

@@ -142,7 +142,7 @@ def build_module(builder, lineno, token, nodes):
 def build_import(builder, lineno, token, value):
     assert token == 'import '
     name, var = value
-    builder.add(lineno, var + ' = ' + '_i(' + name + ', ctx)')
+    builder.add(lineno, var + ' = ' + '_i(' + name + ')')
     return True
 
 
@@ -150,7 +150,7 @@ def build_from(builder, lineno, token, value):
     assert token == 'from '
     name, var, alias = value
     builder.add(lineno, alias + ' = ' + '_i(' + name
-                + ', ctx).local_defs[\'' + var + '\']')
+                + ').local_defs[\'' + var + '\']')
     return True
 
 
