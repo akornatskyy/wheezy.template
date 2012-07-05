@@ -13,10 +13,8 @@ from wheezy.template.parser import parser_scan
 
 class Engine(object):
 
-    def __init__(self, loader, extensions, template_class=None,
-                 compiler_class=None):
+    def __init__(self, loader, extensions, compiler_class=None):
         self.lock = allocate_lock()
-        self.templates = {}
         self.renders = {}
         self.modules = {}
         self.global_vars = {
@@ -24,7 +22,6 @@ class Engine(object):
             '_i': self.import_name
         }
         self.loader = loader
-        self.template_class = template_class or Template
         if not compiler_class:
             from wheezy.template.compiler import Compiler as compiler_class
         self.compiler = compiler_class(self.global_vars, -2)
@@ -32,18 +29,11 @@ class Engine(object):
         self.parser = Parser(**parser_scan(extensions))
         self.builder = SourceBuilder(**builder_scan(extensions))
 
-    def get_template(self, name):
-        try:
-            return self.templates[name]
-        except KeyError:
-            self.compile_template(name)
-            return self.templates[name]
-
     def render(self, name, ctx, local_defs, super_defs):
         try:
             return self.renders[name](ctx, local_defs, super_defs)
         except KeyError:
-            self.compile_template(name)
+            self.compile_template(name, ctx)
             return self.renders[name](ctx, local_defs, super_defs)
 
     # region: internal details
@@ -52,10 +42,10 @@ class Engine(object):
         try:
             return self.modules[name]
         except KeyError:
-            self.compile_import(name)
+            self.compile_import(name, ctx)
             return self.modules[name]
 
-    def compile_template(self, name):
+    def compile_template(self, name, ctx):
         self.lock.acquire(1)
         try:
             if name not in self.renders:
@@ -71,11 +61,10 @@ class Engine(object):
                 render_template = self.compiler.compile_source(
                     source, name)['render']
                 self.renders[name] = render_template
-                self.templates[name] = self.template_class(name, self)
         finally:
             self.lock.release()
 
-    def compile_import(self, name):
+    def compile_import(self, name, ctx):
         self.lock.acquire(1)
         try:
             if name not in self.modules:

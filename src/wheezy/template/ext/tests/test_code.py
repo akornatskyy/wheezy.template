@@ -119,18 +119,19 @@ class TemplateTestCase(unittest.TestCase):
 
     def setUp(self):
         from wheezy.template.engine import Engine
+        from wheezy.template.engine import Template
         from wheezy.template.ext.code import CodeExtension
         from wheezy.template.ext.core import CoreExtension
         from wheezy.template.loader import DictLoader
         self.templates = {}
-        self.engine = Engine(
+        engine = Engine(
             loader=DictLoader(templates=self.templates),
             extensions=[CoreExtension(), CodeExtension()])
+        self.template = Template('test.html', engine)
 
     def render(self, source):
         self.templates['test.html'] = source
-        template = self.engine.get_template('test.html')
-        return template.render({})
+        return self.template.render({})
 
     def test_code_single_line(self):
         assert '1' == self.render('@(i = 1)@i!s')

@@ -312,8 +312,7 @@ class TemplateTestCase(unittest.TestCase):
 
     def render(self, ctx, source):
         self.templates['test.html'] = source
-        template = self.engine.get_template('test.html')
-        return template.render(ctx)
+        return self.engine.render('test.html', ctx, {}, {})
 
     def test_markup(self):
         ctx = {}
@@ -406,8 +405,7 @@ class MultiTemplateTestCase(unittest.TestCase):
             extensions=[CoreExtension()])
 
     def render(self, name, ctx):
-        template = self.engine.get_template(name)
-        return template.render(ctx)
+        return self.engine.render(name, ctx, {}, {})
 
     def test_extends(self):
         self.templates.update({

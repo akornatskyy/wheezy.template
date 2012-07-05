@@ -19,9 +19,11 @@ class EngineTestCase(unittest.TestCase):
     def test_template_not_found(self):
         """ Raises IOError.
         """
-        self.assertRaises(IOError, lambda: self.engine.get_template('x'))
+        self.assertRaises(IOError, lambda: self.engine.render(
+            'x', {}, {}, {}))
 
     def test_import_not_found(self):
         """ Raises IOError.
         """
-        self.assertRaises(IOError, lambda: self.engine.import_name('x', {}))
+        self.assertRaises(IOError, lambda: self.engine.import_name(
+            'x', {}))
