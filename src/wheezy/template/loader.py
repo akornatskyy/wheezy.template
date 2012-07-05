@@ -23,7 +23,12 @@ class FileLoader(object):
         for path in self.searchpath:
             pathlen = len(path) + 1
             for dirpath, dirnames, filenames in os.walk(path):
+                for i in [i for i, name in enumerate(dirnames)
+                          if name.startswith('.')]:
+                    del dirnames[i]
                 for filename in filenames:
+                    if filename.startswith('.'):
+                        continue
                     name = os.path.join(dirpath, filename)[pathlen:]
                     name = name.replace('\\', '/')
                     names.append(name)
