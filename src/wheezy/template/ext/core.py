@@ -24,18 +24,6 @@ known_var_filters = {
 WRITER_DECLARE = '_b = []; w = _b.append'
 WRITER_RETURN = "return ''.join(_b)"
 
-# region: preprocessors
-
-RE_CLEAN1 = re.compile('^([ ]+)@(?!@)', re.S)
-RE_CLEAN2 = re.compile('\n([ ]+)@(?!@)', re.S)
-
-
-def clean_source(source):
-    """ Cleans leading whitespace before @. Ignores escaped (@@).
-    """
-    return RE_CLEAN2.sub('\n@', RE_CLEAN1.sub(
-        '@', source.replace('\r\n', '\n')))
-
 
 # region: lexer extensions
 
@@ -69,12 +57,6 @@ def var_token(m):
         end = m.end()
         value += '!' + m.group()
     return end, 'var', value
-
-
-def markup_token(m):
-    """ Produces markup token.
-    """
-    return m.end(), 'markup', m.group().replace('@@', '@')
 
 
 # region: parser config
@@ -293,17 +275,41 @@ class CoreExtension(object):
     """ Includes basic statements, variables processing and markup.
     """
 
-    lexer_rules = {
-        100: (re.compile(r'@((%s).*?(?<!\\))(\n|$)'
-                         % '|'.join(all_tokens), re.S),
-              stmt_token),
-        200: (re.compile(r'@(\w+(\.\w+)*)'),
-              var_token),
-        999: (re.compile(r'.+?(?=(?<!@)@(?!@))|.+', re.S),
-              markup_token),
-    }
+    def __init__(self, token_start='@'):
 
-    preprocessors = [clean_source]
+        def markup_token(m):
+            """ Produces markup token.
+            """
+            return m.end(), 'markup', m.group().replace(
+                token_start + token_start, token_start)
+
+        self.lexer_rules = {
+            100: (re.compile(r'%s((%s).*?(?<!\\))(\n|$)'
+                             % (token_start, '|'.join(all_tokens)), re.S),
+                  stmt_token),
+            200: (re.compile(r'%s(\w+(\.\w+)*)' % token_start),
+                  var_token),
+            999: (re.compile(r'.+?(?=(?<!%s)%s(?!%s))|.+'
+                             % (token_start, token_start, token_start),
+                             re.S),
+                  markup_token),
+        }
+
+        # region: preprocessors
+
+        RE_CLEAN1 = re.compile('^([ ]+)%s(?!%s)'
+                               % (token_start, token_start), re.S)
+        RE_CLEAN2 = re.compile('\n([ ]+)%s(?!%s)'
+                               % (token_start, token_start), re.S)
+
+        def clean_source(source):
+            """ Cleans leading whitespace before token start. Ignores
+                escaped token start.
+            """
+            return RE_CLEAN2.sub('\n' + token_start, RE_CLEAN1.sub(
+                token_start, source.replace('\r\n', '\n')))
+
+        self.preprocessors = [clean_source]
 
     parser_configs = [configure_parser]
 

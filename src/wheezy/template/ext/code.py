@@ -45,9 +45,11 @@ class CodeExtension(object):
     """ Includes support for embedded python code.
     """
 
-    lexer_rules = {
-        300: (re.compile(r'@(?=\()'), code_token),
-    }
+    def __init__(self, token_start='@'):
+
+        self.lexer_rules = {
+            300: (re.compile(r'%s(?=\()' % token_start), code_token),
+        }
 
     parser_rules = {
         'code': parse_code

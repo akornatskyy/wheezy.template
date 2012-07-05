@@ -9,25 +9,26 @@ class CleanSourceTestCase(unittest.TestCase):
     """ Test the ``clean_source``.
     """
 
+    def setUp(self):
+        from wheezy.template.ext.core import CoreExtension
+        self.clean_source = CoreExtension().preprocessors[0]
+
     def test_new_line(self):
         """ Replace windows new line with linux new line.
         """
-        from wheezy.template.ext.core import clean_source
-        assert 'a\nb' == clean_source('a\r\nb')
+        assert 'a\nb' == self.clean_source('a\r\nb')
 
     def test_leading_whitespace(self):
         """ Remove leading whitespace before @ symbol.
         """
-        from wheezy.template.ext.core import clean_source
-        assert 'a\n@b' == clean_source('a\n  @b')
-        assert '@b' == clean_source('  @b')
+        assert 'a\n@b' == self.clean_source('a\n  @b')
+        assert '@b' == self.clean_source('  @b')
 
     def test_ignore(self):
         """ Ignore double @.
         """
-        from wheezy.template.ext.core import clean_source
-        assert 'a\n  @@b' == clean_source('a\n  @@b')
-        assert '  @@b' == clean_source('  @@b')
+        assert 'a\n  @@b' == self.clean_source('a\n  @@b')
+        assert '  @@b' == self.clean_source('  @@b')
 
 
 class LexerTestCase(unittest.TestCase):
