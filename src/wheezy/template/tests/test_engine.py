@@ -24,4 +24,4 @@ class EngineTestCase(unittest.TestCase):
     def test_import_not_found(self):
         """ Raises IOError.
         """
-        self.assertRaises(IOError, lambda: self.engine.import_name('x'))
+        self.assertRaises(IOError, lambda: self.engine.import_name('x', {}))

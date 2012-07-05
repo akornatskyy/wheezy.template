@@ -48,7 +48,7 @@ class Engine(object):
 
     # region: internal details
 
-    def import_name(self, name):
+    def import_name(self, name, ctx):
         try:
             return self.modules[name]
         except KeyError:
