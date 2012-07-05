@@ -21,12 +21,8 @@ known_var_filters = {
 }
 
 
-if 1:
-    WRITER_DECLARE = '_b = []; w = _b.append'
-    WRITER_RETURN = "return ''.join(_b)"
-else:
-    WRITER_DECLARE = '_b = StringIO(); w = _b.write'
-    WRITER_RETURN = 'return _b.getvalue()'
+WRITER_DECLARE = '_b = []; w = _b.append'
+WRITER_RETURN = "return ''.join(_b)"
 
 # region: preprocessors
 
