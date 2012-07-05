@@ -71,59 +71,60 @@ class DictLoader(object):
 
 
 def autoreload(engine, enabled=True):
-    if enabled:
-        import stat
-        from time import time
+    if not enabled:
+        return engine
 
-        class AutoReloadProxy(object):
+    import stat
+    from time import time
 
-            def __init__(self, engine):
-                self.engine = engine
-                self.names = {}
+    class AutoReloadProxy(object):
 
-            def __getattr__(self, name):
-                return getattr(self.engine, name)
+        def __init__(self, engine):
+            self.engine = engine
+            self.names = {}
 
-            def get_template(self, name):
-                if self.file_changed(name):
-                    self.remove_name(name)
-                return self.engine.get_template(name)
+    def __getattr__(self, name):
+        return getattr(self.engine, name)
 
-            def render(self, name, ctx, local_defs, super_defs):
-                if self.file_changed(name):
-                    self.remove_name(name)
-                return self.engine.render(name, ctx, local_defs, super_defs)
+    def get_template(self, name):
+        if self.file_changed(name):
+            self.remove_name(name)
+        return self.engine.get_template(name)
 
-            def import_name(self, name):
-                if self.file_changed(name):
-                    self.remove_name(name)
-                return self.engine.import_name(name)
+    def render(self, name, ctx, local_defs, super_defs):
+        if self.file_changed(name):
+            self.remove_name(name)
+        return self.engine.render(name, ctx, local_defs, super_defs)
 
-            def remove_name(self, name):
-                if name in self.engine.renders:
-                    del self.engine.templates[name]
-                    del self.engine.renders[name]
-                if name in self.engine.modules:
-                    del self.engine.modules[name]
+    def import_name(self, name):
+        if self.file_changed(name):
+            self.remove_name(name)
+        return self.engine.import_name(name)
 
-            def file_changed(self, name):
-                try:
-                    last_known_stamp = self.names[name]
-                    current_time = int(time())
-                    if current_time - last_known_stamp <= 2:
-                        return False
-                except KeyError:
-                    last_known_stamp = 0
+    def remove_name(self, name):
+        if name in self.engine.renders:
+            del self.engine.templates[name]
+            del self.engine.renders[name]
+        if name in self.engine.modules:
+            del self.engine.modules[name]
 
-                abspath = self.engine.loader.get_fullname(name)
-                if not abspath:
-                    return False
+    def file_changed(self, name):
+        try:
+            last_known_stamp = self.names[name]
+            current_time = int(time())
+            if current_time - last_known_stamp <= 2:
+                return False
+        except KeyError:
+            last_known_stamp = 0
 
-                last_modified_stamp = os.stat(abspath)[stat.ST_MTIME]
-                if last_modified_stamp <= last_known_stamp:
-                    return False
-                self.names[name] = last_modified_stamp
-                return True
+        abspath = self.engine.loader.get_fullname(name)
+        if not abspath:
+            return False
 
-        return AutoReloadProxy(engine)
-    return engine
+        last_modified_stamp = os.stat(abspath)[stat.ST_MTIME]
+        if last_modified_stamp <= last_known_stamp:
+            return False
+        self.names[name] = last_modified_stamp
+        return True
+
+    return AutoReloadProxy(engine)
