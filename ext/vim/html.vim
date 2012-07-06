@@ -4,14 +4,18 @@
 " Latest Revision: 2 June 2012
 
 " Matches
-syn match wComment '^\s*#.*$'
 syn match wComment '@#.*$'
 syn match wBlock '\s*@($'
+syn match wBlock '\s*#($'
 syn match wBlock '^\s*)$'
 syn match wBlock '@(.*)'
+syn match wBlock '#(.*)'
 syn match wVar '\(@\)\@<!@[a-z\.]\+'
+syn match wVar '\(#\)\@<!#[a-z\.]\+'
 syn match wStmt ':$'
 syn match wStmt '\(@\)\@<!@\(def\|for\|if\|elif\|else\|end\|require\|extends\|include\|from\|import\|inline\)'
+syn match wStmt '\(#\)\@<!#\(def\|for\|if\|elif\|else\|end\|require\|extends\|include\|from\|import\|inline\)'
+"syn match wComment '^\s*#.*$'
 
 
 
