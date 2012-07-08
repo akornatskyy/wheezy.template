@@ -237,7 +237,6 @@ def build_def_single_markup(builder, lineno, token, value):
     return True
 
 
-
 def build_def(builder, lineno, token, value):
     assert token == 'def '
     stmt, nodes = value

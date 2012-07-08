@@ -282,9 +282,8 @@ w(title()); w('.')""" == self.build_source("""\
         """
         assert """\
 def render(ctx, local_defs, super_defs):
-    _b = []; w = _b.append
-    w('Hello')
-    return ''.join(_b)""" == self.build_render("Hello")
+
+    return 'Hello'""" == self.build_render("Hello")
 
     def test_extends(self):
         """ Test build_extends.
