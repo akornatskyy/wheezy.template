@@ -104,14 +104,6 @@ def parse_var(value):
     return var, var_filter.split('!')
 
 
-def parse_markup(value):
-    value = value.replace('\\\n', '')
-    if value:
-        return repr(value)
-    else:
-        return None
-
-
 # region: block_builders
 
 def build_extends(builder, lineno, token, nodes):
@@ -275,7 +267,7 @@ class CoreExtension(object):
     """ Includes basic statements, variables processing and markup.
     """
 
-    def __init__(self, token_start='@'):
+    def __init__(self, token_start='@', line_join='\\'):
 
         def markup_token(m):
             """ Produces markup token.
@@ -311,17 +303,35 @@ class CoreExtension(object):
 
         self.preprocessors = [clean_source]
 
-    parser_configs = [configure_parser]
+        # region: parser
 
-    parser_rules = {
-        'require': parse_require,
-        'extends': parse_extends,
-        'include': parse_include,
-        'import ': parse_import,
-        'from ': parse_from,
-        'var': parse_var,
-        'markup': parse_markup,
-    }
+        if line_join:
+            line_join += '\n'
+
+            def parse_markup(value):
+                value = value.replace(line_join, '')
+                if value:
+                    return repr(value)
+                else:
+                    return None
+        else:
+            def parse_markup(value):
+                if value:
+                    return repr(value)
+                else:
+                    return None
+
+        self.parser_rules = {
+            'require': parse_require,
+            'extends': parse_extends,
+            'include': parse_include,
+            'import ': parse_import,
+            'from ': parse_from,
+            'var': parse_var,
+            'markup': parse_markup,
+        }
+
+    parser_configs = [configure_parser]
 
     builder_rules = [
         ('render', build_extends),
