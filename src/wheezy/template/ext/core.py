@@ -146,6 +146,21 @@ def build_from(builder, lineno, token, value):
     return True
 
 
+def build_render_single_markup(builder, lineno, token, nodes):
+    assert lineno <= 0
+    assert token == 'render'
+    if len(nodes) > 1:
+        return False
+    ln, token, nodes = nodes[0]
+    if token != 'out' or len(nodes) > 1:
+        return False
+    ln, token, value = nodes[0]
+    if token != 'markup':
+        return False
+    builder.add(ln, "return " + value)
+    return True
+
+
 def build_render(builder, lineno, token, nodes):
     assert lineno <= 0
     assert token == 'render'
@@ -197,6 +212,30 @@ def build_def_empty(builder, lineno, token, value):
         " = local_defs.setdefault('", "', ", ")"
     ]))
     return True
+
+
+def build_def_single_markup(builder, lineno, token, value):
+    assert token == 'def '
+    stmt, nodes = value
+    if len(nodes) > 2:
+        return False
+    ln, token, nodes = nodes[0]
+    if token != 'out' or len(nodes) > 1:
+        return False
+    ln, token, value = nodes[0]
+    if token != 'markup':
+        return False
+    def_name = stmt[4:stmt.index('(', 5)]
+    builder.add(lineno, stmt)
+    builder.start_block()
+    builder.add(ln, "return " + value)
+    builder.end_block()
+    builder.add(ln + 1, def_name.join([
+        "super_defs['", "'] = ", "; ",
+        " = local_defs.setdefault('", "', ", ")"
+    ]))
+    return True
+
 
 
 def build_def(builder, lineno, token, value):
@@ -335,6 +374,7 @@ class CoreExtension(object):
 
     builder_rules = [
         ('render', build_extends),
+        ('render', build_render_single_markup),
         ('render', build_render),
         ('module', build_module),
         ('import ', build_import),
@@ -343,6 +383,7 @@ class CoreExtension(object):
         ('out', build_out),
         ('def ', build_def_syntax_check),
         ('def ', build_def_empty),
+        ('def ', build_def_single_markup),
         ('def ', build_def),
         ('if ', build_compound),
         ('elif ', build_compound),
