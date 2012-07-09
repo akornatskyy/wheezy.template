@@ -32,7 +32,7 @@ class FileLoader(object):
                     name = os.path.join(dirpath, filename)[pathlen:]
                     name = name.replace('\\', '/')
                     names.append(name)
-        return names
+        return tuple(names)
 
     def get_fullname(self, name):
         for path in self.searchpath:
@@ -62,7 +62,7 @@ class DictLoader(object):
         self.templates = templates
 
     def list_names(self):
-        return list(self.templates.keys())
+        return tuple(self.templates.keys())
 
     def load(self, name):
         if name not in self.templates:
@@ -74,6 +74,12 @@ class ChainLoader(object):
 
     def __init__(self, loaders):
         self.loaders = loaders
+
+    def list_names(self):
+        names = set()
+        for loader in self.loaders:
+            names |= set(loader.list_names())
+        return tuple(names)
 
     def load(self, name):
         for loader in self.loaders:
@@ -96,30 +102,23 @@ def autoreload(engine, enabled=True):
             self.engine = engine
             self.names = {}
 
-        def __getattr__(self, name):
-            return getattr(self.engine, name)
-
         def get_template(self, name):
             if self.file_changed(name):
-                self.remove_name(name)
+                self.remove(name)
             return self.engine.get_template(name)
 
         def render(self, name, ctx, local_defs, super_defs):
             if self.file_changed(name):
-                self.remove_name(name)
+                self.remove(name)
             return self.engine.render(name, ctx, local_defs, super_defs)
 
-        def import_name(self, name):
-            if self.file_changed(name):
-                self.remove_name(name)
-            return self.engine.import_name(name)
+        def remove(self, name):
+            self.engine.remove(name)
 
-        def remove_name(self, name):
-            if name in self.engine.renders:
-                del self.engine.templates[name]
-                del self.engine.renders[name]
-            if name in self.engine.modules:
-                del self.engine.modules[name]
+        # region: internal details
+
+        def __getattr__(self, name):
+            return getattr(self.engine, name)
 
         def file_changed(self, name):
             try:

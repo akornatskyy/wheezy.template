@@ -46,6 +46,17 @@ class Engine(object):
             self.compile_template(name)
             return self.renders[name](ctx, local_defs, super_defs)
 
+    def remove(self, name):
+        self.lock.acquire(1)
+        try:
+            if name in self.renders:
+                del self.templates[name]
+                del self.renders[name]
+            if name in self.modules:
+                del self.modules[name]
+        finally:
+            self.lock.release()
+
     # region: internal details
 
     def import_name(self, name):

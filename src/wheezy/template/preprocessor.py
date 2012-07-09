@@ -14,6 +14,7 @@ class Preprocessor(object):
         self.runtime_engines = {}
         self.runtime_engine_factory = runtime_engine_factory
         self.engine = engine
+        self.loader = engine.loader
         self.key_factory = key_factory
         template_class = self.engine.template_class
         self.engine.template_class = lambda name, render_template: \
@@ -34,6 +35,15 @@ class Preprocessor(object):
         except KeyError:
             self.preprocess_template(runtime_engine, name, ctx)
             return runtime_engine.renders[name](ctx, local_defs, super_defs)
+
+    def remove(self, name):
+        self.lock.acquire(1)
+        try:
+            self.engine.remove(name)
+            for runtime_engine in self.runtime_engines.values():
+                runtime_engine.remove(name)
+        finally:
+            self.lock.release()
 
     # region: internal details
 
