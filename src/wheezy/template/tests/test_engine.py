@@ -25,3 +25,16 @@ class EngineTestCase(unittest.TestCase):
         """ Raises IOError.
         """
         self.assertRaises(IOError, lambda: self.engine.import_name('x'))
+
+    def test_remove_unknown_name(self):
+        """ Invalidate name that is not known to engine.
+        """
+        self.engine.remove('x')
+
+    def test_remove_name(self):
+        """ Invalidate name that is known to engine.
+        """
+        self.engine.templates['x'] = 'x'
+        self.engine.renders['x'] = 'x'
+        self.engine.modules['x'] = 'x'
+        self.engine.remove('x')
