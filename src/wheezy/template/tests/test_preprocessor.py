@@ -68,3 +68,8 @@ class PreprocessorTestCase(unittest.TestCase):
         assert 'Hi, John!\n' == self.render('tmpl.html', ctx={
             '_': lambda x: x,
         })
+
+    def test_remove(self):
+        self.templates['test.html'] = 'Hello'
+        assert 'Hello' == self.render('test.html', {})
+        self.engine.remove('x')

@@ -52,7 +52,7 @@ class Preprocessor(object):
         self.lock.acquire(1)
         try:
             engines = self.runtime_engines
-            if key in engines:
+            if key in engines:  # pragma: nocover
                 return engines[key]
             engine = engines[key] = self.runtime_engine_factory(
                 loader=ChainLoader([DictLoader({}), self.engine.loader]))
