@@ -18,7 +18,8 @@ class Preprocessor(object):
         self.key_factory = key_factory
         template_class = self.engine.template_class
         self.engine.template_class = lambda name, render_template: \
-            template_class(name, self.render)
+            template_class(name, lambda ctx, local_defs, super_defs:
+                           self.render(name, ctx, local_defs, super_defs))
 
     def get_template(self, name):
         return self.engine.get_template(name)
