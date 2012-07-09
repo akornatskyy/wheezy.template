@@ -70,6 +70,19 @@ class DictLoader(object):
         return self.templates[name]
 
 
+class ChainLoader(object):
+
+    def __init__(self, loaders):
+        self.loaders = loaders
+
+    def load(self, name):
+        for loader in self.loaders:
+            source = loader.load(name)
+            if source:
+                return source
+        return None
+
+
 def autoreload(engine, enabled=True):
     if not enabled:
         return engine
