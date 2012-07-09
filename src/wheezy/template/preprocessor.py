@@ -3,6 +3,7 @@
 """
 
 from wheezy.template.comp import allocate_lock
+from wheezy.template.loader import ChainLoader
 from wheezy.template.loader import DictLoader
 
 
@@ -43,7 +44,7 @@ class Preprocessor(object):
             if key in engines:
                 return engines[key]
             engine = engines[key] = self.runtime_engine_factory(
-                loader=DictLoader({}))
+                loader=ChainLoader([DictLoader({}), self.engine.loader]))
 
             def render(name, ctx, local_defs, super_defs):
                 try:
@@ -61,8 +62,9 @@ class Preprocessor(object):
         try:
             if name not in runtime_engine.renders:
                 source = self.engine.render(name, ctx, {}, {})
-                runtime_engine.loader.templates[name] = source
+                loader = runtime_engine.loader.loaders[0]
+                loader.templates[name] = source
                 runtime_engine.compile_template(name)
-                del runtime_engine.loader.templates[name]
+                del loader.templates[name]
         finally:
             self.lock.release()
