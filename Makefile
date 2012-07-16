@@ -81,6 +81,9 @@ test-cover:
 		--cov-report term-missing \
 		src/wheezy/template
 
+benchmark:
+	$(PYTHON) demos/bigtable/bigtable.py
+
 doc:
 	$(SPHINX) -a -b html doc/ doc/_build/
 
