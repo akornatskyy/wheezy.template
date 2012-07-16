@@ -264,7 +264,7 @@ def build_out(builder, lineno, token, nodes):
         elif token == 'var':
             var, var_filters = value
             if var_filters:
-                for f in reversed(var_filters):
+                for f in var_filters:
                     var = known_var_filters.get(f, f) + '(' + var + ')'
             builder.add(lineno, 'w(' + var + ')')
         elif value:
