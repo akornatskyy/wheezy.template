@@ -20,6 +20,8 @@ It is a lightweight template library. The design goals achived:
   of Python with minimal markup required to denote python statements.
 * **Do Not Repeat Yourself:** Master layout templates for inheritance;
   include and import directives for maximum reuse.
+* **Blazingly Fast:** The most effective python code offers the maximum
+  rendering performance; ultimate speed and context preprocessor features.
 
 Simple template::
 

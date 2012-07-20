@@ -8,6 +8,9 @@ from wheezy.template.loader import DictLoader
 
 
 class Preprocessor(object):
+    """ Preprocess templates with ``engine`` and vary runtime templates
+        by ``key_factory`` function using ``runtime_engine_factory``.
+    """
 
     def __init__(self, runtime_engine_factory, engine, key_factory):
         self.lock = allocate_lock()

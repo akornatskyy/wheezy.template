@@ -5,6 +5,7 @@
 from wheezy.template.builder import SourceBuilder
 from wheezy.template.builder import builder_scan
 from wheezy.template.comp import allocate_lock
+from wheezy.template.compiler import Compiler
 from wheezy.template.lexer import Lexer
 from wheezy.template.lexer import lexer_scan
 from wheezy.template.parser import Parser
@@ -12,9 +13,10 @@ from wheezy.template.parser import parser_scan
 
 
 class Engine(object):
+    """ The core component of template engine.
+    """
 
-    def __init__(self, loader, extensions, template_class=None,
-                 compiler_class=None):
+    def __init__(self, loader, extensions, template_class=None):
         self.lock = allocate_lock()
         self.templates = {}
         self.renders = {}
@@ -25,14 +27,14 @@ class Engine(object):
         }
         self.loader = loader
         self.template_class = template_class or Template
-        if not compiler_class:
-            from wheezy.template.compiler import Compiler as compiler_class
-        self.compiler = compiler_class(self.global_vars, -2)
+        self.compiler = Compiler(self.global_vars, -2)
         self.lexer = Lexer(**lexer_scan(extensions))
         self.parser = Parser(**parser_scan(extensions))
         self.builder = SourceBuilder(**builder_scan(extensions))
 
     def get_template(self, name):
+        """ Returns compiled template.
+        """
         try:
             return self.templates[name]
         except KeyError:
@@ -40,6 +42,8 @@ class Engine(object):
             return self.templates[name]
 
     def render(self, name, ctx, local_defs, super_defs):
+        """ Renders template by name in given context.
+        """
         try:
             return self.renders[name](ctx, local_defs, super_defs)
         except KeyError:
@@ -47,6 +51,8 @@ class Engine(object):
             return self.renders[name](ctx, local_defs, super_defs)
 
     def remove(self, name):
+        """ Removes given ``name`` from internal cache.
+        """
         self.lock.acquire(1)
         try:
             if name in self.renders:
@@ -115,6 +121,8 @@ class Engine(object):
 
 
 class Template(object):
+    """ Simple template class.
+    """
 
     def __init__(self, name, render_template):
         self.name = name

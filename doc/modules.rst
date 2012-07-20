@@ -25,10 +25,22 @@ wheezy.template.lexer
 .. automodule:: wheezy.template.lexer
    :members:
 
+wheezy.template.loader
+----------------------
+
+.. automodule:: wheezy.template.loader
+   :members:
+
 wheezy.template.parser
 ----------------------
 
 .. automodule:: wheezy.template.parser
+   :members:
+
+wheezy.template.preprocessor
+----------------------------
+
+.. automodule:: wheezy.template.preprocessor
    :members:
 
 wheezy.template.utils

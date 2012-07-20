@@ -20,7 +20,7 @@ RE_INT_VALUE = re.compile(
 # region: core extension
 
 class DeterminedExtension(object):
-    """ Tranlates funcation calls between template engines.
+    """ Tranlates function calls between template engines.
 
         Strictly determined known calls are converted to preprocessor
         calls, e.g.::
