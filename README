@@ -12,7 +12,7 @@ code. It is a lightweight template library. The design goals achived:
   of Python with minimal markup required to denote python statements.
 * **Do Not Repeat Yourself:** Master layout templates for inheritance;
   include and import directives for maximum reuse.
-* **Blazingly Fast:** Maximum rendering performance: ultimate speed and 
+* **Blazingly Fast:** Maximum rendering performance: ultimate speed and
   context preprocessor features.
 
 Simple template::
@@ -61,7 +61,7 @@ If you run into any issue or have comments, go ahead and add on
 .. _`issues`: http://bitbucket.org/akorn/wheezy.template/issues
 .. _`pypi`: http://pypi.python.org/pypi/wheezy.template
 .. _`python`: http://www.python.org
-.. _`readthedocs`: http://readthedocs.org/builds/wheezyhtml
+.. _`readthedocs`: http://readthedocs.org/builds/wheezytemplate
 .. _`setuptools`: http://pypi.python.org/pypi/setuptools
 .. _`source code`: http://bitbucket.org/akorn/wheezy.template/src
 .. _`virtualenv`: http://pypi.python.org/pypi/virtualenv
