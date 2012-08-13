@@ -55,7 +55,7 @@ else:
         return ''.join(b)
 
 
-# region: python list append
+# region: python list extend
 
 if PY3:
     def test_list_extend():
