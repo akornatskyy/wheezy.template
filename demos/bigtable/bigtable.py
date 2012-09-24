@@ -203,10 +203,6 @@ else:
             'to_str': tenjin.helpers.to_str,
             'escape': tenjin.helpers.escape
         }
-    helpers = {
-        'to_str': tenjin.helpers.to_str,
-        'escape': tenjin.helpers.escape
-    }
     tenjin_template = tenjin.Template()
     tenjin_template.convert(s("""\
 <table>
