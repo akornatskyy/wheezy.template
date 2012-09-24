@@ -192,6 +192,17 @@ try:
 except ImportError:
     test_tenjin = None
 else:
+    try:
+        import webext
+        helpers = {
+            'to_str': s,
+            'escape': webext.escape_html
+        }
+    except ImportError:
+        helpers = {
+            'to_str': tenjin.helpers.to_str,
+            'escape': tenjin.helpers.escape
+        }
     helpers = {
         'to_str': tenjin.helpers.to_str,
         'escape': tenjin.helpers.escape
