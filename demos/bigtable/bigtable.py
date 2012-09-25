@@ -160,7 +160,7 @@ else:
 </table>
 """))
     def test_tornado():
-        return tornado_template.generate(**ctx)
+        return tornado_template.generate(**ctx).decode('utf8')
 
 
 # region: mako
@@ -226,7 +226,7 @@ def run(number=100):
              for name in names if name.startswith('test_')])
     for name, test in names:
         if test:
-            assert test()
+            assert isinstance(test(), s)
             t = Timer(setup='from __main__ import %s as t' % name,
                       stmt='t()')
             t = t.timeit(number=number)
