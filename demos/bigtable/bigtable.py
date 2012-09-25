@@ -195,7 +195,7 @@ else:
     try:
         import webext
         helpers = {
-            'to_str': s,
+            'to_str': webext.to_str,
             'escape': webext.escape_html
         }
     except ImportError:
@@ -203,7 +203,7 @@ else:
             'to_str': tenjin.helpers.to_str,
             'escape': tenjin.helpers.escape
         }
-    tenjin_template = tenjin.Template()
+    tenjin_template = tenjin.Template(encoding='utf8')
     tenjin_template.convert(s("""\
 <table>
     <?py for row in table: ?>
