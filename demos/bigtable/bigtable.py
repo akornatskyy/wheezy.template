@@ -280,6 +280,25 @@ else:
     def test_django():
         return django_template.render(Context(ctx))
 
+# region: chameleon
+
+try:
+    from chameleon.zpt.template import PageTemplate
+except ImportError:
+    test_chameleon = None
+else:
+    chameleon_template = PageTemplate(s("""\
+<table>
+    <tr tal:repeat="row table">
+        <i tal:omit-tag="" tal:repeat="key row">
+        <td>${key}</td><td>${row[key]}</td>
+        </i>
+    </tr>
+</table>
+"""))
+    def test_chameleon():
+        return chameleon_template.render(**ctx)
+
 
 def run(number=100):
     from timeit import Timer
