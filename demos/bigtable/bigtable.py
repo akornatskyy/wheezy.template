@@ -256,6 +256,31 @@ else:
         return response.body.getvalue().decode('utf8')
 
 
+# region: django
+
+try:
+    from django.conf import settings
+    settings.configure()
+    from django.template import Template
+    from django.template import Context
+except ImportError:
+    test_django = None
+else:
+    django_template = Template(s("""\
+<table>
+    {% for row in table %}
+    <tr>
+        {% for key, value in row.items %}
+        <td>{{ key }}</td><td>{{ value }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+"""))
+    def test_django():
+        return django_template.render(Context(ctx))
+
+
 def run(number=100):
     from timeit import Timer
     names = globals().keys()
