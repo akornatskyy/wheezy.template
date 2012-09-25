@@ -219,6 +219,43 @@ else:
         return tenjin_template.render(ctx, helpers)
 
 
+# region: web2py
+
+try:
+    import cStringIO
+    from gluon.html import xmlescape
+    from gluon.template import get_parsed
+except ImportError:
+    test_web2py = None
+else:
+    # see gluon.globals.Response
+    class DummyResponse(object):
+        def __init__(self):
+            self.body = cStringIO.StringIO()
+
+        def write(self, data, escape=True):
+            if not escape:
+                self.body.write(str(data))
+            else:
+                self.body.write(xmlescape(data))
+
+    web2py_template = compile(get_parsed(s("""\
+<table>
+    {{ for row in table: }}
+    <tr>
+        {{ for key, value in row.items(): }}
+        <td>{{ =key }}</td><td>{{ =value }}</td>
+        {{ pass }}
+    </tr>
+    {{ pass }}
+</table>
+""")), '', 'exec')
+    def test_web2py():
+        response = DummyResponse()
+        exec(web2py_template, {}, dict(response=response, **ctx))
+        return response.body.getvalue().decode('utf8')
+
+
 def run(number=100):
     from timeit import Timer
     names = globals().keys()
