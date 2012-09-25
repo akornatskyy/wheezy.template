@@ -9,3 +9,4 @@ src/*.egg-info/
 *.pyo
 doc/_build
 *.mo
+pypy*
