@@ -40,7 +40,7 @@ class FileLoader(object):
                     name = os.path.join(dirpath, filename)[pathlen:]
                     name = name.replace('\\', '/')
                     names.append(name)
-        return tuple(names)
+        return tuple(sorted(names))
 
     def get_fullname(self, name):
         """ Returns a full path by a template name.
@@ -81,7 +81,7 @@ class DictLoader(object):
     def list_names(self):
         """ List all keys from internal dict.
         """
-        return tuple(self.templates.keys())
+        return tuple(sorted(self.templates.keys()))
 
     def load(self, name):
         """ Returns template by name.
@@ -104,7 +104,7 @@ class ChainLoader(object):
         names = set()
         for loader in self.loaders:
             names |= set(loader.list_names())
-        return tuple(names)
+        return tuple(sorted(names))
 
     def load(self, name):
         """ Returns template by name from the first loader that succeed.
