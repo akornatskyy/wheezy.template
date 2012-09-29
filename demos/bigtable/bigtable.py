@@ -301,21 +301,28 @@ else:
 
 
 def run(number=100):
+    import profile
     from timeit import Timer
+    from pstats import Stats
     names = globals().keys()
     names = sorted([(name, globals()[name])
              for name in names if name.startswith('test_')])
+    print("                    msec    rps  tcalls  funcs")
     for name, test in names:
         if test:
             assert isinstance(test(), s)
             t = Timer(setup='from __main__ import %s as t' % name,
                       stmt='t()')
             t = t.timeit(number=number)
-            print('%-30s %.2fms  %.2frps' % (name[5:],
-                                            1000 * t / number,
-                                            number / t))
+            st = Stats(profile.Profile().runctx(
+                'test()', globals(), locals()))
+            print('%-17s %6.2f %6.2f %7d %6d' % (name[5:],
+                                                 1000 * t / number,
+                                                 number / t,
+                                                 st.total_calls,
+                                                 len(st.stats)))
         else:
-            print('%-30s not installed' % name[5:])
+            print('%-25s not installed' % name[5:])
 
 
 if __name__ == '__main__':
