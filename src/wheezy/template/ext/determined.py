@@ -87,8 +87,8 @@ def parse_kwargs(text):
 
         >>> parse_kwargs('id=item.id')
         {'id': 'item.id'}
-        >>> parse_kwargs('lang="en", id=12')
-        {'lang': '"en"', 'id': '12'}
+        >>> sorted(parse_kwargs('lang="en", id=12').items())
+        [('id', '12'), ('lang', '"en"')]
     """
     kwargs = {}
     for m in RE_KWARGS.finditer(text + ','):

@@ -20,9 +20,9 @@ class FileLoaderTestCase(unittest.TestCase):
         """ Tests list_names.
         """
         assert (
-            'tmpl1.html',
             'shared/master.html',
-            'shared/snippet/script.html'
+            'shared/snippet/script.html',
+            'tmpl1.html'
         ) == self.loader.list_names()
 
     def test_load_existing(self):
@@ -56,8 +56,8 @@ class DictLoaderTestCase(unittest.TestCase):
         """ Tests list_names.
         """
         assert (
-            'tmpl1.html',
-            'shared/master.html'
+            'shared/master.html',
+            'tmpl1.html'
         ) == self.loader.list_names()
 
     def test_load_existing(self):
@@ -90,8 +90,8 @@ class ChainLoaderTestCase(unittest.TestCase):
         """ Tests list_names.
         """
         assert (
-            'tmpl1.html',
-            'shared/master.html'
+            'shared/master.html',
+            'tmpl1.html'
         ) == self.loader.list_names()
 
     def test_load_existing(self):
