@@ -299,8 +299,36 @@ else:
     def test_chameleon():
         return chameleon_template.render(**ctx)
 
+#region: cheetah
 
-def run(number=100):
+try:
+    from Cheetah.Template import Template
+except ImportError:
+    test_cheetah = None
+else:
+    cheetah_ctx = {}
+    cheetah_template = Template(s("""\
+#import cgi
+<table>
+    #for $row in $table
+    <tr>
+        #for $key, $value in $row.items
+        <td>$cgi.escape($key)</td><td>$value</td>
+        #end for
+    </tr>
+    #end for
+</table>
+"""), searchList=[cheetah_ctx])
+
+    def test_cheetah():
+        cheetah_ctx.update(ctx)
+        output = s(cheetah_template)
+        cheetah_ctx.clear()
+        return output
+
+
+
+def run(number=10):
     import profile
     from timeit import Timer
     from pstats import Stats
