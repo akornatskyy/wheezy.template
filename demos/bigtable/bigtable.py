@@ -322,13 +322,12 @@ else:
 
     def test_cheetah():
         cheetah_ctx.update(ctx)
-        output = s(cheetah_template)
+        output = cheetah_template.respond()
         cheetah_ctx.clear()
         return output
 
 
-
-def run(number=10):
+def run(number=100):
     import profile
     from timeit import Timer
     from pstats import Stats
