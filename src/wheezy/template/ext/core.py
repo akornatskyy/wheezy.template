@@ -353,7 +353,7 @@ class CoreExtension(object):
                 else:
                     return None
         else:
-            def parse_markup(value):
+            def parse_markup(value):  # noqa
                 if value:
                     return repr(value)
                 else:

@@ -14,8 +14,8 @@ PY3 = sys.version_info[0] >= 3
 s = PY3 and str or unicode
 
 ctx = {
-    'table': [dict(a=1,b=2,c=3,d=4,e=5,f=6,g=7,h=8,i=9,j=10)
-          for x in range(1000)]
+    'table': [dict(a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10)
+              for x in range(1000)]
 }
 
 
@@ -23,7 +23,8 @@ ctx = {
 
 if PY3:
     def test_list_append():
-        b = []; w = b.append
+        b = []
+        w = b.append
         table = ctx['table']
         w('<table>\n')
         for row in table:
@@ -38,8 +39,9 @@ if PY3:
         w('</table>')
         return ''.join(b)
 else:
-    def test_list_append():
-        b = []; w = b.append
+    def test_list_append():  # noqa
+        b = []
+        w = b.append
         table = ctx['table']
         w(u'<table>\n')
         for row in table:
@@ -59,7 +61,8 @@ else:
 
 if PY3:
     def test_list_extend():
-        b = []; e = b.extend
+        b = []
+        e = b.extend
         table = ctx['table']
         e(('<table>\n',))
         for row in table:
@@ -74,8 +77,9 @@ if PY3:
         e(('</table>',))
         return ''.join(b)
 else:
-    def test_list_extend():
-        b = []; e = b.extend
+    def test_list_extend():  # noqa
+        b = []
+        e = b.extend
         table = ctx['table']
         e((u'<table>\n',))
         for row in table:
@@ -137,6 +141,7 @@ else:
     {% endfor %}
 </table>
 """))
+
     def test_jinja2():
         return jinja2_template.render(ctx)
 
@@ -159,6 +164,7 @@ else:
     {% end %}
 </table>
 """))
+
     def test_tornado():
         return tornado_template.generate(**ctx).decode('utf8')
 
@@ -181,6 +187,7 @@ else:
     % endfor
 </table>
 """))
+
     def test_mako():
         return mako_template.render(**ctx)
 
@@ -215,6 +222,7 @@ else:
     <?py #end ?>
 </table>
 """))
+
     def test_tenjin():
         return tenjin_template.render(ctx, helpers)
 
@@ -250,6 +258,7 @@ else:
     {{ pass }}
 </table>
 """)), '', 'exec')
+
     def test_web2py():
         response = DummyResponse()
         exec(web2py_template, {}, dict(response=response, **ctx))
@@ -277,6 +286,7 @@ else:
     {% endfor %}
 </table>
 """))
+
     def test_django():
         return django_template.render(Context(ctx))
 
@@ -296,6 +306,7 @@ else:
     </tr>
 </table>
 """))
+
     def test_chameleon():
         return chameleon_template.render(**ctx)
 
@@ -333,7 +344,7 @@ def run(number=100):
     from pstats import Stats
     names = globals().keys()
     names = sorted([(name, globals()[name])
-             for name in names if name.startswith('test_')])
+                    for name in names if name.startswith('test_')])
     print("                    msec    rps  tcalls  funcs")
     for name, test in names:
         if test:

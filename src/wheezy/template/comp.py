@@ -11,7 +11,7 @@ PY3 = sys.version_info[0] >= 3
 if PY3:  # pragma: nocover
     from _thread import allocate_lock
 else:  # pragma: nocover
-    from thread import allocate_lock
+    from thread import allocate_lock  # noqa
 
 
 try:  # pragma: nocover
@@ -24,5 +24,5 @@ try:  # pragma: nocover
 
 except ImportError:  # pragma: nocover
 
-    def adjust_source_lineno(source, name, lineno):
+    def adjust_source_lineno(source, name, lineno):  # noqa
         return source

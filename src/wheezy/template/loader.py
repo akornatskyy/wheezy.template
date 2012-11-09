@@ -4,6 +4,9 @@
 
 import os
 import os.path
+import stat
+
+from time import time
 
 
 class FileLoader(object):
@@ -137,51 +140,50 @@ def autoreload(engine, enabled=True):
     """
     if not enabled:
         return engine
-
-    import stat
-    from time import time
-
-    class AutoReloadProxy(object):
-
-        def __init__(self, engine):
-            self.engine = engine
-            self.names = {}
-
-        def get_template(self, name):
-            if self.file_changed(name):
-                self.remove(name)
-            return self.engine.get_template(name)
-
-        def render(self, name, ctx, local_defs, super_defs):
-            if self.file_changed(name):
-                self.remove(name)
-            return self.engine.render(name, ctx, local_defs, super_defs)
-
-        def remove(self, name):
-            self.engine.remove(name)
-
-        # region: internal details
-
-        def __getattr__(self, name):
-            return getattr(self.engine, name)
-
-        def file_changed(self, name):
-            try:
-                last_known_stamp = self.names[name]
-                current_time = int(time())
-                if current_time - last_known_stamp <= 2:
-                    return False
-            except KeyError:
-                last_known_stamp = 0
-
-            abspath = self.engine.loader.get_fullname(name)
-            if not abspath:
-                return False
-
-            last_modified_stamp = os.stat(abspath)[stat.ST_MTIME]
-            if last_modified_stamp <= last_known_stamp:
-                return False
-            self.names[name] = last_modified_stamp
-            return True
-
     return AutoReloadProxy(engine)
+
+
+# region: internal details
+
+class AutoReloadProxy(object):
+
+    def __init__(self, engine):
+        self.engine = engine
+        self.names = {}
+
+    def get_template(self, name):
+        if self.file_changed(name):
+            self.remove(name)
+        return self.engine.get_template(name)
+
+    def render(self, name, ctx, local_defs, super_defs):
+        if self.file_changed(name):
+            self.remove(name)
+        return self.engine.render(name, ctx, local_defs, super_defs)
+
+    def remove(self, name):
+        self.engine.remove(name)
+
+    # region: internal details
+
+    def __getattr__(self, name):
+        return getattr(self.engine, name)
+
+    def file_changed(self, name):
+        try:
+            last_known_stamp = self.names[name]
+            current_time = int(time())
+            if current_time - last_known_stamp <= 2:
+                return False
+        except KeyError:
+            last_known_stamp = 0
+
+        abspath = self.engine.loader.get_fullname(name)
+        if not abspath:
+            return False
+
+        last_modified_stamp = os.stat(abspath)[stat.ST_MTIME]
+        if last_modified_stamp <= last_known_stamp:
+            return False
+        self.names[name] = last_modified_stamp
+        return True
