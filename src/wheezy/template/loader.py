@@ -116,6 +116,21 @@ class ChainLoader(object):
         return None
 
 
+class PreprocessLoader(object):
+    """ Performs preprocessing of loaded template.
+    """
+
+    def __init__(self, engine, ctx=None):
+        self.engine = engine
+        self.ctx = ctx or {}
+
+    def list_names(self):
+        return self.engine.loader.list_names()
+
+    def load(self, name):
+        return self.engine.render(name, self.ctx, {}, {})
+
+
 def autoreload(engine, enabled=True):
     """ Auto reload template if changes are detected in file. Limitation:
         inherited and imported templates.
