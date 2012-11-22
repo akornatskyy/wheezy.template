@@ -21,7 +21,7 @@ Simple template::
     Welcome, @user.name!
     @if items:
         @for i in items:
-            @i.name: $i.price!s.
+            @i.name: @i.price!s.
         @end
     @else:
         No items found.
