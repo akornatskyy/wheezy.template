@@ -23,7 +23,8 @@ class LexerTestCase(unittest.TestCase):
     def test_code_token(self):
         """ Test code token.
         """
-        tokens = self.tokenize('@(i = 1)')
+        tokens = self.tokenize('\n @(i = 1)')
+        assert 1 == len(tokens)
         assert (1, 'code', '(i = 1)') == tokens[0]
         tokens = self.tokenize('@(i = 1)\n')
         assert (1, 'code', '(i = 1)\n') == tokens[0]

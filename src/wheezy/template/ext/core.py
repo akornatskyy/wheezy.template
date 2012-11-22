@@ -327,17 +327,17 @@ class CoreExtension(object):
 
         # region: preprocessors
 
-        RE_CLEAN1 = re.compile('^([ ]+)%s(?!%s)'
-                               % (token_start, token_start), re.S)
-        RE_CLEAN2 = re.compile('\n([ ]+)%s(?!%s)'
-                               % (token_start, token_start), re.S)
+        RE_CLEAN1 = re.compile(r'^([ ]+)%s(%s)'
+                               % (token_start, '|'.join(all_tokens)), re.S)
+        RE_CLEAN2 = re.compile(r'\n([ ]+)%s(%s)'
+                               % (token_start, '|'.join(all_tokens)), re.S)
 
         def clean_source(source):
-            """ Cleans leading whitespace before token start. Ignores
-                escaped token start.
+            """ Cleans leading whitespace before token start for all control
+                tokens. Ignores escaped token start.
             """
-            return RE_CLEAN2.sub('\n' + token_start, RE_CLEAN1.sub(
-                token_start, source.replace('\r\n', '\n')))
+            return RE_CLEAN2.sub(r'\n%s\2' % token_start, RE_CLEAN1.sub(
+                r'%s\2' % token_start, source.replace('\r\n', '\n')))
 
         self.preprocessors = [clean_source]
 

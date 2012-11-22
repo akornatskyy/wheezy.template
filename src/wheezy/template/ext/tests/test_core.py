@@ -18,11 +18,23 @@ class CleanSourceTestCase(unittest.TestCase):
         """
         assert 'a\nb' == self.clean_source('a\r\nb')
 
-    def test_leading_whitespace(self):
-        """ Remove leading whitespace before @ symbol.
+    def test_clean_leading_whitespace(self):
+        """ Remove leading whitespace before @<stmt>, e.g. @if, @for, etc.
         """
-        assert 'a\n@b' == self.clean_source('a\n  @b')
-        assert '@b' == self.clean_source('  @b')
+        from wheezy.template.ext.core import all_tokens
+        for token in all_tokens:
+            assert '@' + token == self.clean_source('  @' + token)
+            assert '\n@' + token == self.clean_source('\n  @' + token)
+            assert 'a\n@' + token == self.clean_source('a\n  @' + token)
+
+    def test_leave_leading_whitespace(self):
+        """ Leave leading whitespace before @<var> tokens.
+        """
+        assert 'a\n\n   @b' == self.clean_source('a\n\n   @b')
+        assert 'a\n @b' == self.clean_source('a\n @b')
+        assert 'a\n@b' == self.clean_source('a\n@b')
+        assert 'a@b' == self.clean_source('a@b')
+        assert '  @b' == self.clean_source('  @b')
 
     def test_ignore(self):
         """ Ignore double @.
@@ -213,7 +225,7 @@ w(username)""" == self.build_source("""\
         assert "w('Welcome, '); w(username); w('!')" == self.build_source(
             'Welcome, @username!')
         assert """\
-w('\\n<i>\\n')
+w('\\n<i>\\n    ')
 
 w(username); w('\\n</i>')""" == self.build_source("""
 <i>
@@ -242,7 +254,7 @@ else:
     def test_for(self):
         assert """\
 for color in colors:
-    w(color); w('\\n')""" == self.build_source("""\
+    w('    '); w(color); w('\\n')""" == self.build_source("""\
 @for color in colors:
     @color
 @end
@@ -351,7 +363,7 @@ Welcome, @username!""")
         ctx = {
             'colors': ['red', 'yellow']
         }
-        assert 'red\nyellow\n' == self.render(ctx, """\
+        assert '    red\n    yellow\n' == self.render(ctx, """\
 @require(colors)
 @for color in colors:
     @color
@@ -441,7 +453,7 @@ class MultiTemplateTestCase(unittest.TestCase):
 @end
 """
         })
-        assert '    Hello, John!!!' == self.render('tmpl.html', {})
+        assert '        Hello, John!!!' == self.render('tmpl.html', {})
 
     def test_include(self):
         self.templates.update({

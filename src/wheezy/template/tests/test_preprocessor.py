@@ -65,7 +65,7 @@ class PreprocessorTestCase(unittest.TestCase):
 """
         })
 
-        assert 'Hi, John!\n' == self.render('tmpl.html', ctx={
+        assert '    Hi, John!\n' == self.render('tmpl.html', ctx={
             '_': lambda x: x,
         })
 
