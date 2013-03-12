@@ -114,7 +114,7 @@ class ChainLoader(object):
         """
         for loader in self.loaders:
             source = loader.load(name)
-            if source:
+            if source is not None:
                 return source
         return None
 
