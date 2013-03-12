@@ -151,6 +151,9 @@ def build_render_single_markup(builder, lineno, token, nodes):
     assert token == 'render'
     if len(nodes) > 1:
         return False
+    if len(nodes) == 0:
+        builder.add(lineno, "return ''")
+        return True
     ln, token, nodes = nodes[0]
     if token != 'out' or len(nodes) > 1:
         return False
