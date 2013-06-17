@@ -337,6 +337,30 @@ else:
         cheetah_ctx.clear()
         return output
 
+#region: spitfire
+
+try:
+    import spitfire
+except ImportError:
+    test_spitfire = None
+else:
+    spitfire_template = spitfire.compiler.util.load_template(s("""\
+#from cgi import escape
+<table>
+    #for $row in $table
+    <tr>
+        #for $key, $value in $row.items()
+        <td>${key|filter=escape}</td><td>$value</td>
+        #end for
+    </tr>
+    #end for
+</table>
+"""), 'spitfire_template', spitfire.compiler.analyzer.o3_options, {
+        'enable_filters': True})
+
+    def test_spitfire():
+        return spitfire_template(search_list=[ctx]).main()
+
 
 def run(number=100):
     import profile
