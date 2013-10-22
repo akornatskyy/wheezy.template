@@ -6,7 +6,7 @@ Install
 -------
 
 :ref:`wheezy.template` requires `python`_ version 2.4 to 2.7 or 3.2+.
-It is independent of operating system. You can install it from `pypi`_
+It is operating system independent. You can install it from the `pypi`_
 site using `setuptools`_::
 
     $ easy_install wheezy.template
@@ -24,7 +24,7 @@ You can get the `source code`_ using `mercurial`_::
     $ hg clone http://bitbucket.org/akorn/wheezy.template
     $ cd wheezy.template
 
-Prepare `virtualenv`_ environment in *env* directory ::
+Prepare `virtualenv`_ environment in the *env* directory ::
 
     $ make env
 
@@ -32,10 +32,10 @@ Prepare `virtualenv`_ environment in *env* directory ::
 
     $ make test
 
-You can read how to compile from source code different versions of
-`python`_ in the `article`_ published on `mind reference`_ blog.
+You can read how to compile different versions of
+`python`_ from source code, in the `article`_ published on `mind reference`_ blog.
 
-You can run certain make targets with specific python version. Here
+You can run certain make targets with a specific python version. Here
 we are going to run `doctest`_ with python3.2::
 
     $ make env doctest-cover VERSION=3.2

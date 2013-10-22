@@ -2,7 +2,7 @@
 Examples
 ========
 
-Before we proceed let setup `virtualenv`_ environment::
+Before we proceed let's setup a `virtualenv`_ environment::
 
     $ virtualenv env
     $ env/bin/easy_install wheezy.template
@@ -47,10 +47,10 @@ Download `bigtable.py`_ source code and run it (Intel Core 2 Quad CPU Q6600 @
 Real World
 ----------
 
-There is real world example available in `wheezy.web`_ package. It can be found
-in `demo.template`_ application. The application has few screens: home, sign
+There is real world example available in the `wheezy.web`_ package. It can be found
+in the `demo.template`_ application. The application has a few screens: home, sign
 up, sign in, etc. The content implementation is available for jinja2, mako,
-tenjin, wheezy.template and wheezy.template (with preprocessor).
+tenjin, wheezy.template and for wheezy.template with preprocessor.
 
 The throughtput was captured using apache benchmark (concurrecy level 500,
 number of request 100K)::

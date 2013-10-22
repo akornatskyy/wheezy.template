@@ -7,7 +7,8 @@ Introduction
 ------------
 
 :ref:`wheezy.template` is a `python`_ package written in pure Python code.
-It is a lightweight template library. The design goals achived:
+It is a lightweight template library. The design goals achieved with
+its development:
 
 * **Compact, Expressive, Clean:** Minimizes the number of keystrokes required
   to build a template. Enables fast and well read coding. You do not need to
@@ -16,7 +17,7 @@ It is a lightweight template library. The design goals achived:
   a compact and expressive syntax which is really clean and just pleasure
   to type.
 * **Intuitive, No time to Learn:** Basic Python programming skills
-  plus HTML markup. You are productive just from start. Use full power
+  plus HTML markup. You are productive right from the start. Use the full power
   of Python with minimal markup required to denote python statements.
 * **Do Not Repeat Yourself:** Master layout templates for inheritance;
   include and import directives for maximum reuse.
