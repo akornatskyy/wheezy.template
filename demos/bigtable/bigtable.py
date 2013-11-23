@@ -341,6 +341,7 @@ else:
 
 try:
     import spitfire
+    import spitfire.compiler.util
 except ImportError:
     test_spitfire = None
 else:
@@ -361,6 +362,50 @@ else:
     def test_spitfire():
         return spitfire_template(search_list=[ctx]).main()
 
+# region: qpy
+
+try:
+    from qpy import join_xml
+    from qpy import xml
+    from qpy import xml_quote
+except ImportError:
+    test_qpy_list_append = None
+else:
+    if PY3:
+        def test_qpy_list_append():
+            b = []
+            w = b.append
+            table = ctx['table']
+            w(xml('<table>\n'))
+            for row in table:
+                w(xml('<tr>\n'))
+                for key, value in row.items():
+                    w(xml('<td>'))
+                    w(xml_quote(key))
+                    w(xml('</td><td>'))
+                    w(value)
+                    w(xml('</td>\n'))
+                w(xml('</tr>\n'))
+            w(xml('</table>'))
+            return join_xml(b)
+    else:
+        def test_qpy_list_append():
+            b = []
+            w = b.append
+            table = ctx['table']
+            w(xml(u'<table>\n'))
+            for row in table:
+                w(xml(u'<tr>\n'))
+                for key, value in row.items():
+                    w(xml(u'<td>'))
+                    w(xml_quote(key))
+                    w(xml(u'</td><td>'))
+                    w(value)
+                    w(xml(u'</td>\n'))
+                w(xml(u'</tr>\n'))
+            w(xml(u'</table>'))
+            return join_xml(b)
+
 
 def run(number=100):
     import profile
@@ -369,7 +414,7 @@ def run(number=100):
     names = globals().keys()
     names = sorted([(name, globals()[name])
                     for name in names if name.startswith('test_')])
-    print("                    msec    rps  tcalls  funcs")
+    print("                     msec    rps  tcalls  funcs")
     for name, test in names:
         if test:
             assert isinstance(test(), s)
@@ -378,13 +423,13 @@ def run(number=100):
             t = t.timeit(number=number)
             st = Stats(profile.Profile().runctx(
                 'test()', globals(), locals()))
-            print('%-17s %6.2f %6.2f %7d %6d' % (name[5:],
+            print('%-17s %7.2f %6.2f %7d %6d' % (name[5:],
                                                  1000 * t / number,
                                                  number / t,
                                                  st.total_calls,
                                                  len(st.stats)))
         else:
-            print('%-25s not installed' % name[5:])
+            print('%-26s not installed' % name[5:])
 
 
 if __name__ == '__main__':
