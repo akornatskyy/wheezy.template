@@ -218,6 +218,9 @@ Child templates are used to extend master templates via the defined place holder
 In this example, the @title and @content place holders are overriden by the child
 template.
 
+Note, *@import* and *@require* tokens are allowed at *@extends* token
+level.
+
 Include
 ~~~~~~~
 
@@ -293,7 +296,7 @@ example::
                           key_factory=lambda ctx: ctx['locale'])
 
 In this example, the :py:class:`~wheezy.template.preprocessor.Preprocessor` is
-defined to use engine with the start token 
+defined to use engine with the start token
 defined as '#'. Any directives starting with ``#`` are processed once only
 by the preprocessor engine. The ``key_factory`` is dependent on runtime context
 and particularly on 'locale'. This way runtime engine factory is varied by

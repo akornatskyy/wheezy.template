@@ -115,7 +115,7 @@ def build_extends(builder, lineno, token, nodes):
         return False
     extends, nodes = value
     for lineno, token, value in nodes:
-        if token in ('def ', 'require'):
+        if token in ('def ', 'require', 'import ', 'from '):
             builder.build_token(lineno, token, value)
     lineno = builder.lineno
     builder.add(lineno + 1, 'return _r(' + extends +

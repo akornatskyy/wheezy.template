@@ -279,13 +279,26 @@ w('    Please '); w(link('/en/signin', 'sign in')); w('.\\n')\
 """)
 
     def test_def_empty(self):
-        """ Test def statement.
+        """ Test def statement with empty function body.
         """
         assert """\
 def title():return ''
 super_defs['title'] = title; title = local_defs.setdefault('title', title)
 w(title()); w('.')""" == self.build_source("""\
 @def title():
+@end
+@title().""")
+
+    def test_def_single_markup(self):
+        """ Test def statement with a single return markup.
+        """
+        assert """\
+def title():
+    return '    Hello\\n'
+super_defs['title'] = title; title = local_defs.setdefault('title', title)
+w(title()); w('.')""" == self.build_source("""\
+@def title():
+    Hello
 @end
 @title().""")
 
@@ -297,6 +310,13 @@ def render(ctx, local_defs, super_defs):
 
     return 'Hello'""" == self.build_render("Hello")
 
+    def test_render_empty(self):
+        """ Test build_render with return of empty string.
+        """
+        assert """\
+def render(ctx, local_defs, super_defs):
+    return ''""" == self.build_render("")
+
     def test_extends(self):
         """ Test build_extends.
         """
@@ -305,6 +325,48 @@ def render(ctx, local_defs, super_defs):
     return _r("base.html", ctx, local_defs, super_defs)\
 """ == self.build_render("""\
 @extends("base.html")
+""")
+
+    def test_extends_with_require(self):
+        """ Test build_extends with require token.
+        """
+        assert """\
+def render(ctx, local_defs, super_defs):
+
+
+    path_for = ctx['path_for']
+    return _r("base.html", ctx, local_defs, super_defs)\
+""" == self.build_render("""\
+@extends("base.html")
+@require(path_for)
+""")
+
+    def test_extends_with_import(self):
+        """ Test build_extends with import token.
+        """
+        assert """\
+def render(ctx, local_defs, super_defs):
+
+
+    widget = _i('shared/snippet/widget.html')
+    return _r("base.html", ctx, local_defs, super_defs)\
+""" == self.build_render("""\
+@extends("base.html")
+@import 'shared/snippet/widget.html' as widget
+""")
+
+    def test_extends_with_from(self):
+        """ Test build_extends with from token.
+        """
+        assert """\
+def render(ctx, local_defs, super_defs):
+
+
+    menu_item = _i('shared/snippet/widget.html').local_defs['menu_item']
+    return _r("base.html", ctx, local_defs, super_defs)\
+""" == self.build_render("""\
+@extends("base.html")
+@from 'shared/snippet/widget.html' import menu_item
 """)
 
 
