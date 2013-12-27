@@ -238,6 +238,7 @@ class ParserLineJoinTestCase(unittest.TestCase):
         """
         nodes = self.parse('')
         assert [] == nodes
+        assert not self.engine.parser.rules['markup']('')
 
     def test_line_join(self):
         nodes = self.parse('a \\\nb')
