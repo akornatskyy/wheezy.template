@@ -88,7 +88,8 @@ class BuilderTestCase(unittest.TestCase):
         return self.engine.builder.build_source(nodes)
 
     def test_code(self):
-        assert "i = 1" == self.build_source("""@(i = 1)""")
+        assert 'i = 1' == self.build_source('@(i = 1)')
+        assert 'i = 1 ' == self.build_source('@( i = 1 )')
 
     def test_code_multiline(self):
         assert """\
