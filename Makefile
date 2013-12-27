@@ -37,7 +37,7 @@ env:
 		/bin/echo 'done.' ; \
 	fi ; \
 	$(EASY_INSTALL) -i $(PYPI) -O2 coverage nose pytest \
-		pytest-pep8 pytest-cov ; \
+		pytest-pep8 pytest-cov mock ; \
 	$(PYTHON) setup.py develop -i $(PYPI)
 
 clean:
