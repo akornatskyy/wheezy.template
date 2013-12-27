@@ -135,8 +135,12 @@ class PreprocessLoader(object):
 
 
 def autoreload(engine, enabled=True):
-    """ Auto reload template if changes are detected in file. Limitation:
-        inherited and imported templates.
+    """ Auto reload template if changes are detected in file.
+
+        Limitation: master (inherited), imported and preprocessed templates.
+
+        It is recommended to use application server that supports
+        file reload instead.
     """
     if not enabled:
         return engine
@@ -148,8 +152,13 @@ def autoreload(engine, enabled=True):
 class AutoReloadProxy(object):
 
     def __init__(self, engine):
+        from warnings import warn
         self.engine = engine
         self.names = {}
+        warn('autoreload limitation: master (inherited), imported '
+             'and preprocessed templates. It is recommended to use '
+             'application server that supports file reload instead.',
+             stacklevel=3)
 
     def get_template(self, name):
         if self.file_changed(name):
