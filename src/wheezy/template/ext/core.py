@@ -134,14 +134,14 @@ def build_module(builder, lineno, token, nodes):
 def build_import(builder, lineno, token, value):
     assert token == 'import '
     name, var = value
-    builder.add(lineno, var + ' = ' + '_i(' + name + ')')
+    builder.add(lineno, var + ' = _i(' + name + ')')
     return True
 
 
 def build_from(builder, lineno, token, value):
     assert token == 'from '
     name, var, alias = value
-    builder.add(lineno, alias + ' = ' + '_i(' + name
+    builder.add(lineno, alias + ' = _i(' + name
                 + ').local_defs[\'' + var + '\']')
     return True
 
@@ -160,7 +160,10 @@ def build_render_single_markup(builder, lineno, token, nodes):
     ln, token, value = nodes[0]
     if token != 'markup':
         return False
-    builder.add(ln, "return " + value)
+    if value:
+        builder.add(ln, 'return ' + value)
+    else:
+        builder.add(ln, "return ''")
     return True
 
 
@@ -184,7 +187,7 @@ def build_def_syntax_check(builder, lineno, token, value):
         token = token.rstrip()
         error = """\
 The compound statement '%s' is not allowed here. \
-Add a line before it with @#ignore.
+Add a line before it with @#ignore or leave it empty.
 
 %s
     @#ignore
@@ -262,8 +265,8 @@ def build_out(builder, lineno, token, nodes):
     assert token == 'out'
     for lineno, token, value in nodes:
         if token == 'include':
-            builder.add(lineno, 'w(' + '_r(' + value +
-                        ', ctx, local_defs, super_defs)' + ')')
+            builder.add(lineno, 'w(_r(' + value +
+                        ', ctx, local_defs, super_defs))')
         elif token == 'var':
             var, var_filters = value
             if var_filters:
