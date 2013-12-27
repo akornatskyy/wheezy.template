@@ -124,6 +124,8 @@ class Template(object):
     """ Simple template class.
     """
 
+    __slots__ = ('name', 'render_template')
+
     def __init__(self, name, render_template):
         self.name = name
         self.render_template = render_template
