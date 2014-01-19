@@ -46,23 +46,17 @@ clean:
 	rm -rf dist/ build/ doc/_build MANIFEST src/*.egg-info .cache .coverage
 
 release:
-	$(PYTHON) setup.py -q bdist_egg
+	$(PYTHON) setup.py -q sdist
 
 upload:
 	REV=$$(hg head --template '{rev}') ; \
 	sed -i "s/'0.1'/'0.1.$$REV'/" src/wheezy/template/__init__.py ; \
-	if [ "$$(echo $(VERSION) | sed 's/\.//')" -eq 27 ]; then \
-		$(PYTHON) setup.py -q egg_info --tag-build .$$REV \
-			sdist register upload ; \
-		$(EASY_INSTALL) -i $(PYPI) sphinx ; \
-		$(PYTHON) env/bin/sphinx-build -D release=0.1.$$REV \
-			-a -b html doc/ doc/_build/ ; \
-		python setup.py upload_docs ; \
-	fi ; \
 	$(PYTHON) setup.py -q egg_info --tag-build .$$REV \
-		bdist_egg --dist-dir=$(DIST_DIR) \
-		rotate --match=$(VERSION).egg --keep=1 --dist-dir=$(DIST_DIR) \
-		upload
+		sdist register upload ; \
+	$(EASY_INSTALL) -i $(PYPI) sphinx ; \
+	$(PYTHON) env/bin/sphinx-build -D release=0.1.$$REV \
+		-a -b html doc/ doc/_build/ ; \
+	python setup.py upload_docs
 
 qa:
 	env/bin/flake8 --max-complexity 10 demos doc src setup.py && \
