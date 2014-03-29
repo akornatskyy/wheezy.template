@@ -36,7 +36,7 @@ class BlockBuilder(object):
     def add(self, lineno, code):
         if lineno < self.lineno:
             raise SyntaxError('Inconsistence at %s : %s' %
-                             (self.lineno, lineno))
+                              (self.lineno, lineno))
         if lineno == self.lineno:
             line = self.buf[-1]
             if code:
@@ -68,7 +68,7 @@ class BlockBuilder(object):
                     break
         else:
             raise SyntaxError('No rule to build "%s" token at line %d.' %
-                             (token, lineno))
+                              (token, lineno))
 
     def to_string(self):
         return '\n'.join(self.buf)

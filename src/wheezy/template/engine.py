@@ -83,7 +83,7 @@ class Engine(object):
                 nodes = self.parser.parse(tokens)
                 source = self.builder.build_render(nodes)
 
-                #self.print_debug(name, tokens, nodes, source)
+                # self.print_debug(name, tokens, nodes, source)
 
                 render_template = self.compiler.compile_source(
                     source, name)['render']
@@ -104,7 +104,7 @@ class Engine(object):
                 nodes = self.parser.parse(tokens)
                 source = self.builder.build_module(nodes)
 
-                #self.print_debug(name, tokens, nodes, source)
+                # self.print_debug(name, tokens, nodes, source)
 
                 self.modules[name] = self.compiler.compile_module(
                     source, name)
@@ -114,7 +114,7 @@ class Engine(object):
     def print_debug(self, name, tokens, nodes, source):  # pragma: nocover
         print(name.center(80, '-'))
         from pprint import pprint
-        #pprint(tokens)
+        # pprint(tokens)
         pprint(nodes)
         from wheezy.template.utils import print_source
         print_source(source, -1)

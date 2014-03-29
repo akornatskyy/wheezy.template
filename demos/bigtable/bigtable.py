@@ -310,7 +310,7 @@ else:
     def test_chameleon():
         return chameleon_template.render(**ctx)
 
-#region: cheetah
+# region: cheetah
 
 try:
     from Cheetah.Template import Template
@@ -337,7 +337,7 @@ else:
         cheetah_ctx.clear()
         return output
 
-#region: spitfire
+# region: spitfire
 
 try:
     import spitfire
