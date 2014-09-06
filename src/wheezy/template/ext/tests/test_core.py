@@ -108,6 +108,24 @@ class LexerTestCase(unittest.TestCase):
         assert (1, 'var', 'user') == tokens[0]
         assert (1, 'markup', '! ') == tokens[1]
 
+    def test_rvalue_token(self):
+        """ Test rvalue token.
+        """
+        tokens = self.tokenize('@{user.name}')
+        assert (1, 'var', 'user.name') == tokens[0]
+        tokens = self.tokenize('@{ user.name }')
+        assert (1, 'var', 'user.name') == tokens[0]
+        tokens = self.tokenize('@{ s(user.age) }')
+        assert (1, 'var', 's(user.age)') == tokens[0]
+
+    def test_rvalue_token_filter(self):
+        """ Test rvalue token filter.
+        """
+        tokens = self.tokenize('@{ user.age!!s }')
+        assert (1, 'var', 'user.age!!s') == tokens[0]
+        tokens = self.tokenize('@{ user.age!!s!h }')
+        assert (1, 'var', 'user.age!!s!h') == tokens[0]
+
     def test_markup_token(self):
         """ Test markup token.
         """
@@ -197,24 +215,29 @@ class ParserTestCase(unittest.TestCase):
             (1, 'var', ('name', ['h'])),
             (1, 'markup', "'!'")
         ])] == nodes
+        assert nodes == self.parse('@{ name!!h }!')
         nodes = self.parse('@name!s!h!')
         assert [(1, 'out', [
             (1, 'var', ('name', ['s', 'h'])),
             (1, 'markup', "'!'")
         ])] == nodes
+        assert nodes == self.parse('@{ name!!s!h }!')
         nodes = self.parse('@user.pref[i].fmt() ')
         assert [(1, 'out', [
             (1, 'var', ('user.pref[i].fmt()', None)),
             (1, 'markup', "' '")
         ])] == nodes
+        assert nodes == self.parse('@{ user.pref[i].fmt() } ')
         nodes = self.parse('@f("()")')
         assert [(1, 'out', [
             (1, 'var', ('f("()")', None))
         ])] == nodes
+        assert nodes == self.parse('@{ f("()") }')
         nodes = self.parse('@f("a@a!x")!h')
         assert [(1, 'out', [
             (1, 'var', ('f("a@a!x")', ['h']))
         ])] == nodes
+        assert nodes == self.parse('@{ f("a@a!x")!!h }')
 
 
 class ParserLineJoinTestCase(unittest.TestCase):
@@ -306,14 +329,20 @@ w(username)""" == self.build_source("""\
     def test_out(self):
         """ Test build_out.
         """
-        assert "w('Welcome, '); w(username); w('!')" == self.build_source(
-            'Welcome, @username!')
-        assert """\
+        expected = "w('Welcome, '); w(username); w('!')"
+        assert expected == self.build_source('Welcome, @username!')
+        assert expected == self.build_source('Welcome, @{ username }!')
+        expected = """\
 w('\\n<i>\\n    ')
 
-w(username); w('\\n</i>')""" == self.build_source("""
+w(username); w('\\n</i>')"""
+        assert expected == self.build_source("""
 <i>
     @username
+</i>""")
+        assert expected == self.build_source("""
+<i>
+    @{ username }
 </i>""")
 
     def test_if(self):
@@ -390,13 +419,19 @@ w(title()); w('.')""" == self.build_source("""\
     def test_def_single_var(self):
         """ Test def statement with a single return var.
         """
-        assert """\
+        expected = """\
 def title(x):
     _b = []; w = _b.append; w(x); return ''.join(_b)
 super_defs['title'] = title; title = local_defs.setdefault('title', title); \
-w(title()); w('.')""" == self.build_source("""\
+w(title()); w('.')"""
+        assert expected == self.build_source("""\
 @def title(x):
 @x\
+@end
+@title().""")
+        assert expected == self.build_source("""\
+@def title(x):
+@{ x }\
 @end
 @title().""")
 
@@ -519,9 +554,47 @@ Hello\\
         ctx = {
             'username': 'John'
         }
-        assert 'Welcome, John!' == self.render("""\
+        expected = 'Welcome, John!'
+        assert expected == self.render("""\
 @require(username)
 Welcome, @username!""", ctx)
+        assert expected == self.render("""\
+@require(username)
+Welcome, @{ username }!""", ctx)
+
+    def test_var_filter(self):
+        ctx = {
+            'age': 36
+        }
+        expected = 'age: 36'
+        assert expected == self.render("""\
+@require(age)
+age: @age!s""", ctx)
+        assert expected == self.render("""\
+@require(age)
+age: @{ age !! s }""", ctx)
+
+    def test_rvalue(self):
+        ctx = {
+            'accepted': True
+        }
+        assert 'YES' == self.render("""\
+@require(accepted)
+@{ accepted and 'YES' or 'NO' }""", ctx)
+        ctx = {
+            'age': 36
+        }
+        assert 'OK' == self.render("""\
+@require(age)
+@{ (age > 20 and age < 120) and 'OK' or '' }""", ctx)
+
+    def test_rvalue_filter(self):
+        ctx = {
+            'n': 36
+        }
+        assert '1' == self.render("""\
+@require(n)
+@{ n > 0 and 1 or -1 !! s }""", ctx)
 
     def test_if(self):
         src = """\
