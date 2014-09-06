@@ -59,6 +59,12 @@ def var_token(m):
     return end, 'var', value
 
 
+def rvalue_token(m):
+    """ Produces variable token as r-value expression.
+    """
+    return m.end(), 'var', str(m.group(1).strip())
+
+
 # region: parser config
 
 def configure_parser(parser):
@@ -101,7 +107,7 @@ def parse_var(value):
     if '!!' not in value:
         return value, None
     var, var_filter = value.rsplit('!!', 1)
-    return var, var_filter.split('!')
+    return var, var_filter.strip().split('!')
 
 
 # region: block_builders
@@ -325,6 +331,8 @@ class CoreExtension(object):
                   stmt_token),
             200: (re.compile(r'%s(\w+(\.\w+)*)' % token_start),
                   var_token),
+            201: (re.compile(r'%s{(.*?)}' % token_start),
+                  rvalue_token),
             999: (re.compile(r'.+?(?=(?<!%s)%s(?!%s))|.+'
                              % (token_start, token_start, token_start),
                              re.S),
