@@ -56,10 +56,12 @@ Context access syntax::
 Variables
 ~~~~~~~~~
 
-The application passes variables to the template renderer via context. Variable access
-syntax::
+The application passes variables to the template renderer via context.
+Variable access syntax::
 
     @variable_name
+    @{variable_name}
+    @{ variable_name }
 
 Example::
 
@@ -89,6 +91,8 @@ Variables can be formatted by filters. Filters are separated from the variable
 by the ``!`` symbol. Filter syntax::
 
     @variable_name!filter1!filter2
+    @{variable_name!!filter1!filter2}
+    @{ variable_name !! filter1!filter2 }
 
 The filters are applied from left to right, so the above syntax is equvivalent to
 the following call::
@@ -98,6 +102,8 @@ the following call::
 Example::
 
     @user.age!s
+    @{user.age!!s}
+    @{ user.age !!s }
 
 Assuming the age property of user is integer we apply a string filter.
 
@@ -119,9 +125,22 @@ update the engine's global variables with the escape function, which is accessib
 filter name in template::
 
     @user.name!e
+    @{ user.name !! e }
 
 You are able use engine ``global_vars`` dictionary in order to simplify your
 template access to some commonly used variables.
+
+
+R-value expressions
+~~~~~~~~~~~~~~~~~~~
+
+You can use single line r-value expresions that evaluates to a rendered
+value::
+
+    @{ accepted and 'YES' or 'NO' }
+    @{ (age > 20 and age < 120) and 'OK' or '?' }
+    @{ n > 0 and 1 or -1 !! s }
+
 
 Line Statements
 ~~~~~~~~~~~~~~~
