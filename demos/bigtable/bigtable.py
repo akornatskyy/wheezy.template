@@ -406,6 +406,28 @@ else:
             w(xml(u'</table>'))
             return join_xml(b)
 
+# region: bottle
+
+try:
+    from bottle import SimpleTemplate
+except ImportError:
+    test_bottle = None
+else:
+    bottle_template = SimpleTemplate(s("""\
+<table>
+    % for row in table:
+    <tr>
+        % for key, value in row.items():
+        <td>{{key}}</td><td>{{!value}}</td>
+        % end
+    </tr>
+    % end
+</table>
+"""))
+
+    def test_bottle():
+        return bottle_template.render(**ctx)
+
 
 def run(number=100):
     import profile
