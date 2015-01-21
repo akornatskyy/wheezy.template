@@ -49,8 +49,20 @@ wheezy.template.utils
 .. automodule:: wheezy.template.utils
    :members:
 
+wheezy.template.ext.code
+------------------------
+
+.. automodule:: wheezy.template.ext.code
+   :members:
+
 wheezy.template.ext.core
 ------------------------
 
 .. automodule:: wheezy.template.ext.core
+   :members:
+
+wheezy.template.ext.determined
+------------------------------
+
+.. automodule:: wheezy.template.ext.determined
    :members:
