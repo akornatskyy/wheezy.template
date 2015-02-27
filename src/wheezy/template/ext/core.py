@@ -147,8 +147,8 @@ def build_import(builder, lineno, token, value):
 def build_from(builder, lineno, token, value):
     assert token == 'from '
     name, var, alias = value
-    builder.add(lineno, alias + ' = _i(' + name
-                + ').local_defs[\'' + var + '\']')
+    builder.add(lineno, alias + ' = _i(' + name +
+                ').local_defs[\'' + var + '\']')
     return True
 
 

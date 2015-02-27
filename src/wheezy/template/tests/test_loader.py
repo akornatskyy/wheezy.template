@@ -80,7 +80,7 @@ class DictLoaderTestCase(unittest.TestCase):
     def test_load_not_found(self):
         """ Tests load if the name is not found.
         """
-        assert None == self.loader.load('tmpl-x.html')
+        assert self.loader.load('tmpl-x.html') is None
 
 
 class ChainLoaderTestCase(unittest.TestCase):
@@ -172,7 +172,7 @@ class AutoReloadProxyTestCase(unittest.TestCase):
         """ Tests autoreload disabled.
         """
         from wheezy.template.loader import autoreload
-        assert None == autoreload(None, enabled=False)
+        assert autoreload(None, enabled=False) is None
 
     @patch('os.stat')
     def test_get_template(self, mock_stat):
