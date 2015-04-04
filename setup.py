@@ -72,7 +72,12 @@ setup(
             'pytest',
             'pytest-pep8',
             'pytest-cov',
-        ],
+        ]
+    },
+    entry_points={
+        'console_scripts': [
+            'wheezy.template=wheezy.template.console:main'
+        ]
     },
 
     platforms='any',

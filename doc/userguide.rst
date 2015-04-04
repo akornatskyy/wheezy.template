@@ -17,6 +17,14 @@ loads templates from the file system::
     )
     template = engine.get_template('template.html')
 
+You can render content from console::
+
+    wheezy.template demos/helloworld/hello.txt demos/helloworld/hello.json
+
+another example::
+
+    wheezy.template -s demos/master index.html
+
 Loaders
 -------
 

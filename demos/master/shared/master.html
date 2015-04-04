@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    @def title():
+    No Title
+    @end
+    <title>@title() - My Site</title>
+</head>
+<body>
+    <div id="container">
+        <div id="placeholder">
+            @def content():
+            @end
+            @content()\
+        </div>
+    </div>
+    @include('shared/snippet/script.html')
+</body>
+</html>
