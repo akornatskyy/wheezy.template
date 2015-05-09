@@ -41,6 +41,8 @@ env:
 	$(PYTHON) setup.py develop -i $(PYPI)
 
 clean:
+	find demos/ -type d -name __pycache__ | xargs rm -rf
+	find demos/ -name '*.py[co]' -delete
 	find src/ -type d -name __pycache__ | xargs rm -rf
 	find src/ -name '*.py[co]' -delete
 	rm -rf dist/ build/ doc/_build MANIFEST src/*.egg-info .cache .coverage
