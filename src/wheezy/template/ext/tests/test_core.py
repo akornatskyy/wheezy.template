@@ -4,6 +4,13 @@
 
 import unittest
 
+from wheezy.template.comp import PY3
+
+
+hello = '\u043f\u0440\u0438\u0432\u0456\u0442'
+if not PY3:  # pragma: nocover
+    hello = unicode(hello, 'unicode_escape')
+
 
 class CleanSourceTestCase(unittest.TestCase):
     """ Test the ``clean_source``.
@@ -90,6 +97,13 @@ class LexerTestCase(unittest.TestCase):
         tokens = self.tokenize('@f("a@a!x")!h')
         assert (1, 'var', 'f("a@a!x")!!h') == tokens[0]
 
+    def test_var_token_unicode(self):
+        """ Test variable token with unicode string as argument.
+        """
+        t = '_("' + hello + '")'
+        tokens = self.tokenize('@' + t)
+        assert (1, 'var', t) == tokens[0]
+
     def test_var_token_filter(self):
         """ Test variable token filter.
         """
@@ -117,6 +131,13 @@ class LexerTestCase(unittest.TestCase):
         assert (1, 'var', 'user.name') == tokens[0]
         tokens = self.tokenize('@{ s(user.age) }')
         assert (1, 'var', 's(user.age)') == tokens[0]
+
+    def test_rvalue_token_unicode(self):
+        """ Test rvalue token with unicode string as argument.
+        """
+        t = '_("' + hello + '")'
+        tokens = self.tokenize('@{ ' + t + ' }')
+        assert (1, 'var', t) == tokens[0]
 
     def test_rvalue_token_filter(self):
         """ Test rvalue token filter.
@@ -561,6 +582,24 @@ Welcome, @username!""", ctx)
         assert expected == self.render("""\
 @require(username)
 Welcome, @{ username }!""", ctx)
+
+    def test_var_unicode(self):
+        ctx = {'_': lambda x: x}
+        if PY3:  # pragma: nocover
+            assert hello == self.render(
+                '@require(_)\n@_("' + hello + '")', ctx)
+        else:
+            assert hello == self.render(
+                '@require(_)\n@_(u"' + hello + '")', ctx)
+
+    def test_rvalue_unicode(self):
+        ctx = {'_': lambda x: x}
+        if PY3:  # pragma: nocover
+            assert hello == self.render(
+                '@require(_)\n@{_("' + hello + '")}', ctx)
+        else:
+            assert hello == self.render(
+                '@require(_)\n@{_(u"' + hello + '")}', ctx)
 
     def test_var_filter(self):
         ctx = {

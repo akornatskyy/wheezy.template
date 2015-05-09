@@ -51,7 +51,7 @@ def var_token(m):
         if not m:
             break
         pos = m.end()
-    value = str(source[start:end])
+    value = source[start:end]
     m = RE_VAR_FILTER.match(source, end)
     if m:
         end = m.end()
@@ -62,7 +62,7 @@ def var_token(m):
 def rvalue_token(m):
     """ Produces variable token as r-value expression.
     """
-    return m.end(), 'var', str(m.group(1).strip())
+    return m.end(), 'var', m.group(1).strip()
 
 
 # region: parser config
