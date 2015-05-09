@@ -80,4 +80,4 @@ doc:
 	$(PYTHON) env/bin/sphinx-build -a -b html doc/ doc/_build/
 
 test-demos:
-	$(PYTEST) -q -x --pep8 demos/
+	@$(PYTEST) -q -x --pep8 demos/**/*.py
