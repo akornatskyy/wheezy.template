@@ -18,14 +18,16 @@ master = """
 @content()
 """
 
-page_a = """@extends('master')
+page_a = """
+@extends('master')
 
 @def content():
   a
 @end
 """
 
-page_b = """@extends('master')
+page_b = """
+@extends('master')
 
 @def content():
   b

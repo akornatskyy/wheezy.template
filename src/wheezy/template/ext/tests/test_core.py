@@ -737,6 +737,26 @@ class MultiTemplateTestCase(unittest.TestCase):
         assert '    Hi, John!\n' == self.render('tmpl.html', {})
         assert '    Hello, John!\n' == self.render('master.html', {})
 
+    def test_extends_dynamic(self):
+        self.templates.update({
+            'master.html': """\
+@def say_hi(name):
+    Hello, @name!
+@end
+@say_hi('John')""",
+
+            'tmpl.html': """
+@require(master)
+@extends(master)
+@def say_hi(name):
+    Hi, @name!
+@end
+"""
+        })
+        assert '    Hi, John!\n' == self.render(
+            'tmpl.html', {'master': 'master.html'})
+        assert '    Hello, John!\n' == self.render('master.html', {})
+
     def test_super(self):
         self.templates.update({
             'master.html': """\

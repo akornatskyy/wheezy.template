@@ -16,6 +16,7 @@ compound_tokens = ['for ', 'if ', 'def ', 'extends'] + continue_tokens
 reserved_tokens = ['require', '#', 'include', 'import ', 'from ']
 all_tokens = end_tokens + compound_tokens + reserved_tokens
 out_tokens = ['markup', 'var', 'include']
+extends_tokens = ['def ', 'require', 'import ', 'from ']
 known_var_filters = {
     's': PY3 and 'str' or 'unicode'
 }
@@ -114,17 +115,19 @@ def parse_var(value):
 
 def build_extends(builder, lineno, token, nodes):
     assert token == 'render'
-    if len(nodes) != 1:
+    l = len(nodes)
+    if not l:
         return False
-    lineno, token, value = nodes[0]
+    lineno, token, value = nodes[-1]
     if token != 'extends':
         return False
-    extends, nodes = value
-    for lineno, token, value in nodes:
-        if token in ('def ', 'require', 'import ', 'from '):
+    extends, nested = value
+    if l > 1:
+        nested = nodes[:-1] + nested
+    for lineno, token, value in nested:
+        if token in extends_tokens:
             builder.build_token(lineno, token, value)
-    lineno = builder.lineno
-    builder.add(lineno + 1, 'return _r(' + extends +
+    builder.add(builder.lineno + 1, 'return _r(' + extends +
                 ', ctx, local_defs, super_defs)')
     return True
 

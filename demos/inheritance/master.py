@@ -20,7 +20,8 @@ master = """
 @content()
 """
 
-page_a = """@extends('master')
+page_a = """
+@extends('master')
 
 @def content_b():
 @end
@@ -31,7 +32,8 @@ page_a = """@extends('master')
 @end
 """
 
-page_b = """@extends('page_a')
+page_b = """
+@extends('page_a')
 
 @def content_b():
   b

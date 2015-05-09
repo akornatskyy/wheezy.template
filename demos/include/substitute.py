@@ -16,7 +16,8 @@ master_a = """
 @content_a()
 """
 
-page_a = """@extends('master_a')
+page_a = """
+@extends('master_a')
 
 @def content_b():
 @end

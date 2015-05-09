@@ -1,5 +1,6 @@
 """ Demo: `page_a` and `page_b` are included into `page_all`.
-    Notice: inheritance chains do not intersect.
+
+    Note: inheritance chains do not intersect.
 """
 
 import unittest
@@ -16,7 +17,8 @@ master_a = """
 @content_a()
 """
 
-page_a = """@extends('master_a')
+page_a = """
+@extends('master_a')
 
 @def content_a():
   a
@@ -30,7 +32,8 @@ master_b = """
 @content_b()
 """
 
-page_b = """@extends('master_b')
+page_b = """
+@extends('master_b')
 
 @def content_b():
   b
