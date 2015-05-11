@@ -366,6 +366,12 @@ w(username); w('\\n</i>')"""
     @{ username }
 </i>""")
 
+    def test_include(self):
+        """ Test build_include.
+        """
+        expected = 'w(_r("a", ctx, local_defs, super_defs))'
+        assert expected == self.build_source('@include("a")')
+
     def test_if(self):
         """ Test if elif else statements.
         """

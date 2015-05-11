@@ -272,18 +272,31 @@ def build_def(builder, lineno, token, value):
 
 def build_out(builder, lineno, token, nodes):
     assert token == 'out'
-    for lineno, token, value in nodes:
-        if token == 'include':
-            builder.add(lineno, 'w(_r(' + value +
+    builder.build_block(nodes)
+    return True
+
+
+def build_include(builder, lineno, token, value):
+    assert token == 'include'
+    builder.add(lineno, 'w(_r(' + value +
                         ', ctx, local_defs, super_defs))')
-        elif token == 'var':
-            var, var_filters = value
-            if var_filters:
-                for f in var_filters:
-                    var = known_var_filters.get(f, f) + '(' + var + ')'
-            builder.add(lineno, 'w(' + var + ')')
-        elif value:
-            builder.add(lineno, 'w(' + value + ')')
+    return True
+
+
+def build_var(builder, lineno, token, value):
+    assert token == 'var'
+    var, var_filters = value
+    if var_filters:
+        for f in var_filters:
+            var = known_var_filters.get(f, f) + '(' + var + ')'
+    builder.add(lineno, 'w(' + var + ')')
+    return True
+
+
+def build_markup(builder, lineno, token, value):
+    assert token == 'markup'
+    if value:
+        builder.add(lineno, 'w(' + value + ')')
     return True
 
 
@@ -298,12 +311,14 @@ def build_compound(builder, lineno, token, value):
 
 
 def build_require(builder, lineno, token, variables):
+    assert token == 'require'
     builder.add(lineno, '; '.join([
                 name + " = ctx['" + name + "']" for name in variables]))
     return True
 
 
 def build_comment(builder, lineno, token, comment):
+    assert token == '#'
     builder.add(lineno, comment)
     return True
 
@@ -397,6 +412,9 @@ class CoreExtension(object):
         ('from ', build_from),
         ('require', build_require),
         ('out', build_out),
+        ('markup', build_markup),
+        ('var', build_var),
+        ('include', build_include),
         ('def ', build_def_syntax_check),
         ('def ', build_def_empty),
         ('def ', build_def_single_markup),
