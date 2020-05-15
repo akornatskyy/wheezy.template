@@ -9,7 +9,7 @@ from wheezy.template.comp import PY3
 
 hello = '\u043f\u0440\u0438\u0432\u0456\u0442'
 if not PY3:  # pragma: nocover
-    hello = unicode(hello, 'unicode_escape')
+    hello = unicode(hello, 'unicode_escape')  # noqa
 
 
 class CleanSourceTestCase(unittest.TestCase):

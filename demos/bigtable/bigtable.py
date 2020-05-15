@@ -7,11 +7,13 @@ import sys
 try:
     from wheezy.html.utils import escape_html as escape
 except ImportError:
-    import cgi
-    escape = cgi.escape
+    try:
+        from html import escape
+    except ImportError:
+        from cgi import escape
 
 PY3 = sys.version_info[0] >= 3
-s = PY3 and str or unicode
+s = PY3 and str or unicode  # noqa
 
 ctx = {
     'table': [dict(a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10)
@@ -50,7 +52,7 @@ else:
                 w(u'<td>')
                 w(escape(key))
                 w(u'</td><td>')
-                w(unicode(value))
+                w(s(value))
                 w(u'</td>\n')
             w(u'</tr>\n')
         w(u'</table>')
@@ -71,7 +73,7 @@ if PY3:
                 e(('<td>',
                    escape(key),
                    '</td><td>',
-                   str(value),
+                   s(value),
                    '</td>\n'))
             e(('</tr>\n',))
         e(('</table>',))
@@ -88,7 +90,7 @@ else:
                 e((u'<td>',
                    escape(key),
                    u'</td><td>',
-                   unicode(value),
+                   s(value),
                    u'</td>\n'))
             e((u'</tr>\n',))
         e((u'</table>',))

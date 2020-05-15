@@ -2,10 +2,7 @@
 
 import os
 
-try:
-    from setuptools import setup
-except:
-    from distutils.core import setup  # noqa
+from setuptools import setup
 
 extra = {}
 try:
@@ -20,17 +17,18 @@ try:
 except ImportError:
     pass
 
-README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
+README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 
 setup(
     name='wheezy.template',
     version='0.1',
     description='A lightweight template library',
     long_description=README,
-    url='https://bitbucket.org/akorn/wheezy.template',
+    long_description_content_type='text/markdown',
+    url='https://github.com/akornatskyy/wheezy.template',
 
     author='Andriy Kornatskyy',
-    author_email='andriy.kornatskyy at live.com',
+    author_email='andriy.kornatskyy@live.com',
 
     license='MIT',
     classifiers=[

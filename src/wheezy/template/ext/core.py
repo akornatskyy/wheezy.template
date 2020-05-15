@@ -34,8 +34,8 @@ def stmt_token(m):
     return m.end(), str(m.group(2)), str(m.group(1)).replace('\\\n', '')
 
 
-RE_VAR = re.compile('(\.\w+)+')
-RE_VAR_FILTER = re.compile('(?<!!)!\w+(!\w+)*')
+RE_VAR = re.compile(r'(\.\w+)+')
+RE_VAR_FILTER = re.compile(r'(?<!!)!\w+(!\w+)*')
 
 
 def var_token(m):
@@ -115,14 +115,14 @@ def parse_var(value):
 
 def build_extends(builder, lineno, token, nodes):
     assert token == 'render'
-    l = len(nodes)
-    if not l:
+    n = len(nodes)
+    if not n:
         return False
     lineno, token, value = nodes[-1]
     if token != 'extends':
         return False
     extends, nested = value
-    if l > 1:
+    if n > 1:
         nested = nodes[:-1] + nested
     for lineno, token, value in nested:
         if token in extends_tokens:

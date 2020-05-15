@@ -27,7 +27,7 @@ def parse_code(value):
         return lines
     line = lines[1]
     n = len(line) - len(line.lstrip())
-    return [l[:n].lstrip() + l[n:] for l in lines]
+    return [s[:n].lstrip() + s[n:] for s in lines]
 
 
 # region: block_builders

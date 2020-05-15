@@ -21,7 +21,10 @@ except ImportError:  # pragma: nocover
 try:
     from wheezy.html.utils import escape_html as escape
 except ImportError:  # pragma: nocover
-    from cgi import escape
+    try:
+        from html import escape
+    except ImportError:  # pragma: nocover
+        from cgi import escape
 
 
 class attrdict(dict):
@@ -59,7 +62,7 @@ def load_context(sources):
 
 def parse_args(args):
     try:
-        opts, l = getopt.getopt(args, 's:t:wh')
+        opts, value = getopt.getopt(args, 's:t:wh')
     except getopt.GetoptError:
         e = sys.exc_info()[1]
         usage()
@@ -76,11 +79,11 @@ def parse_args(args):
         elif o == '-w':  # pragma: nocover
             from wheezy.html.ext.template import WhitespaceExtension
             args.extensions.append(WhitespaceExtension())
-    if not l:
+    if not value:
         usage()
         return
-    args.template = l[0]
-    args.context = l[1:]
+    args.template = value[0]
+    args.context = value[1:]
     return args
 
 
