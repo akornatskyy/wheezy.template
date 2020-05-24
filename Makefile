@@ -1,7 +1,7 @@
 .SILENT: clean env po nose-cover test-cover qa test doc release upload
 .PHONY: clean env po nose-cover test-cover qa test doc release upload
 
-all: clean nose-cover test release
+all: clean nose-cover test qa release
 
 debian:
 	apt-get -y update ; \
