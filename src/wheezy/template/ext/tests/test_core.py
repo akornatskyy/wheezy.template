@@ -317,11 +317,6 @@ class BuilderTestCase(unittest.TestCase):
             self.engine.lexer.tokenize(source)))
         return self.engine.builder.build_render(nodes)
 
-    def build_extends(self, name, source):
-        nodes = list(self.engine.parser.parse(
-            self.engine.lexer.tokenize(source)))
-        return self.engine.builder.build_extends(name, nodes)
-
     def test_markup(self):
         assert "w('Hello')" == self.build_source('Hello')
         assert '' == self.build_source('')
@@ -594,7 +589,7 @@ Welcome, @{ username }!""", ctx)
         if PY3:  # pragma: nocover
             assert hello == self.render(
                 '@require(_)\n@_("' + hello + '")', ctx)
-        else:
+        else:    # pragma: nocover
             assert hello == self.render(
                 '@require(_)\n@_(u"' + hello + '")', ctx)
 
@@ -603,7 +598,7 @@ Welcome, @{ username }!""", ctx)
         if PY3:  # pragma: nocover
             assert hello == self.render(
                 '@require(_)\n@{_("' + hello + '")}', ctx)
-        else:
+        else:    # pragma: nocover
             assert hello == self.render(
                 '@require(_)\n@{_(u"' + hello + '")}', ctx)
 
