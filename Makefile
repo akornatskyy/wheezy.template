@@ -7,10 +7,7 @@ debian:
 	apt-get -y update ; \
 	apt-get -y dist-upgrade ; \
 	apt-get -y --no-install-recommends install libbz2-dev build-essential \
-		python python-dev python-setuptools python-virtualenv \
-
-install:
-	pip install -e . -r requirements.txt
+		python python-dev python-setuptools python-virtualenv
 
 clean:
 	find demos/ -type d -name __pycache__ | xargs rm -rf
@@ -33,10 +30,6 @@ qa:
 
 test:
 	pytest -q -x --pep8 --doctest-modules src/wheezy/template
-
-nose-cover:
-	nosetests --stop --with-doctest --detailed-errors \
-		--with-coverage --cover-package=wheezy.template
 
 test-cover:
 	pytest -q --cov-report term-missing \

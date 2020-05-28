@@ -65,11 +65,10 @@ setup(
     ],
     extras_require={
         'dev': [
-            'coverage',
-            'nose',
+            'mock',
             'pytest',
             'pytest-pep8',
-            'pytest-cov',
+            'pytest-cov'
         ]
     },
     entry_points={

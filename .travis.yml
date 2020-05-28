@@ -2,13 +2,19 @@ dist: bionic
 
 language: python
 
-python:
-    - "2.7"
-    - "3.7"
-    - "3.8"
+matrix:
+  include:
+    - python: 2.7
+      env: TOXENV=py27
+    - python: 3.7
+      env: TOXENV=py37
+    - python: 3.8
+      env: TOXENV=py38
+    - python: 3.8
+      env: TOXENV=docs
 
 install:
-    - make install
+    - pip install tox
 
 script:
-    - make
+    - tox
