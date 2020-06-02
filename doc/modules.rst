@@ -13,6 +13,18 @@ wheezy.template.builder
 .. automodule:: wheezy.template.builder
    :members:
 
+wheezy.template.compiler
+------------------------
+
+.. automodule:: wheezy.template.compiler
+   :members:
+
+wheezy.template.console
+-----------------------
+
+.. automodule:: wheezy.template.console
+   :members:
+
 wheezy.template.engine
 ----------------------
 

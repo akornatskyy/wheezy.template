@@ -1,6 +1,6 @@
 .. _`wheezy.template`:
 
-Wheezy Template
+wheezy.template
 ===============
 
 Introduction
@@ -41,9 +41,8 @@ It is optimized for performance, well tested and documented.
 Resources:
 
 * `source code`_, `examples`_ and `issues`_ tracker are available
-  on `bitbucket`_
-* `documentation`_, `readthedocs`_
-* `eggs`_ on `pypi`_
+  on `github`_
+* `documentation`_
 
 Contents
 --------
@@ -56,12 +55,9 @@ Contents
    userguide
    modules
 
-.. _`bitbucket`: http://bitbucket.org/akorn/wheezy.template
-.. _`documentation`: http://packages.python.org/wheezy.template
-.. _`eggs`: http://pypi.python.org/pypi/wheezy.template
-.. _`examples`: http://bitbucket.org/akorn/wheezy.template/src/tip/demos
-.. _`issues`: http://bitbucket.org/akorn/wheezy.template/issues
-.. _`pypi`: http://pypi.python.org
-.. _`python`: http://www.python.org
-.. _`readthedocs`: http://readthedocs.org/builds/wheezytemplate/
-.. _`source code`: http://bitbucket.org/akorn/wheezy.template/src
+.. _`github`: https://github.com/akornatskyy/wheezy.template
+.. _`documentation`: https://wheezytemplate.readthedocs.io/en/latest/
+.. _`examples`: https://github.com/akornatskyy/wheezy.template/tree/master/demos
+.. _`issues`: https://github.com/akornatskyy/wheezy.template/issues
+.. _`python`: https://www.python.org
+.. _`source code`: https://github.com/akornatskyy/wheezy.template

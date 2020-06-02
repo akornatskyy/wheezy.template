@@ -4,7 +4,7 @@
 [![Documentation Status](https://readthedocs.org/projects/wheezytemplate/badge/?version=latest)](https://wheezytemplate.readthedocs.io/en/latest/?badge=latest)
 
 [wheezy.template](https://pypi.org/project/wheezy.template/) is a
-[python](http://www.python.org) package written in pure Python code. It
+[python](https://www.python.org) package written in pure Python code. It
 is a lightweight template library. The design goals achived:
 
 - **Compact, Expressive, Clean:** Minimizes the number of keystrokes
@@ -44,12 +44,12 @@ Resources:
   and [issues](https://github.com/akornatskyy/wheezy.template/issues)
   tracker are available on
   [github](https://github.com/akornatskyy/wheezy.template)
-- [documentation](http://readthedocs.org/builds/wheezytemplate)
+- [documentation](https://wheezytemplate.readthedocs.io/en/latest/)
 
 ## Install
 
 [wheezy.template](https://pypi.org/project/wheezy.template/) requires
-[python](http://www.python.org) version 2.4 to 2.7 or 3.2+. It is
+[python](https://www.python.org) version 2.4 to 2.7 or 3.2+. It is
 independent of operating system. You can install it from
 [pypi](https://pypi.org/project/wheezy.template/) site:
 
