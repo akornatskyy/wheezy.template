@@ -5,8 +5,8 @@ import unittest
 
 from wheezy.template.comp import PY3
 from wheezy.template.engine import Engine
-from wheezy.template.loader import DictLoader
 from wheezy.template.ext.core import CoreExtension
+from wheezy.template.loader import DictLoader
 
 try:
     from wheezy.html.utils import escape_html as escape

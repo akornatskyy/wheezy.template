@@ -5,8 +5,7 @@
 import os
 import os.path
 import stat
-
-from time import time
+import time
 
 
 class FileLoader(object):
@@ -181,7 +180,7 @@ class AutoReloadProxy(object):
     def file_changed(self, name):
         try:
             last_known_stamp = self.names[name]
-            current_time = int(time())
+            current_time = int(time.time())
             if current_time - last_known_stamp <= 2:
                 return False
         except KeyError:

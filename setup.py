@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import re
 import os
+import re
 
 from setuptools import setup
 

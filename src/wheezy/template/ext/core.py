@@ -222,10 +222,10 @@ def build_def_empty(builder, lineno, token, value):
     builder.start_block()
     builder.add(lineno, "return ''")
     builder.end_block()
-    builder.add(lineno + 1, def_name.join([
+    builder.add(lineno + 1, def_name.join((
         "super_defs['", "'] = ", "; ",
         " = local_defs.setdefault('", "', ", ")"
-    ]))
+    )))
     return True
 
 
@@ -245,10 +245,10 @@ def build_def_single_markup(builder, lineno, token, value):
     builder.start_block()
     builder.add(ln, "return " + value)
     builder.end_block()
-    builder.add(ln + 1, def_name.join([
+    builder.add(ln + 1, def_name.join((
         "super_defs['", "'] = ", "; ",
         " = local_defs.setdefault('", "', ", ")"
-    ]))
+    )))
     return True
 
 
@@ -263,10 +263,10 @@ def build_def(builder, lineno, token, value):
     lineno = builder.lineno
     builder.add(lineno, WRITER_RETURN)
     builder.end_block()
-    builder.add(lineno + 1, def_name.join([
+    builder.add(lineno + 1, def_name.join((
         "super_defs['", "'] = ", "; ",
         " = local_defs.setdefault('", "', ", ")"
-    ]))
+    )))
     return True
 
 
@@ -359,16 +359,16 @@ class CoreExtension(object):
 
         # region: preprocessors
 
-        RE_CLEAN1 = re.compile(r'^([ ]+)%s(%s)'
+        re_clean1 = re.compile(r'^([ ]+)%s(%s)'
                                % (token_start, '|'.join(all_tokens)), re.S)
-        RE_CLEAN2 = re.compile(r'\n([ ]+)%s(%s)'
+        re_clean2 = re.compile(r'\n([ ]+)%s(%s)'
                                % (token_start, '|'.join(all_tokens)), re.S)
 
         def clean_source(source):
             """ Cleans leading whitespace before token start for all control
                 tokens. Ignores escaped token start.
             """
-            return RE_CLEAN2.sub(r'\n%s\2' % token_start, RE_CLEAN1.sub(
+            return re_clean2.sub(r'\n%s\2' % token_start, re_clean1.sub(
                 r'%s\2' % token_start, source.replace('\r\n', '\n')))
 
         self.preprocessors = [clean_source]

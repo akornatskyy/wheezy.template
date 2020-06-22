@@ -27,7 +27,7 @@ except ImportError:  # pragma: nocover
         from cgi import escape
 
 
-class attrdict(dict):
+class AttrDict(dict):
     __getattr__ = dict.__getitem__
     __setattr__ = dict.__setitem__
 
@@ -68,7 +68,7 @@ def parse_args(args):
         usage()
         print('error: %s' % e)
         return
-    args = attrdict(token_start='@', searchpath=['.'], extensions=[])
+    args = AttrDict(token_start='@', searchpath=['.'], extensions=[])
     for o, a in opts:
         if o == '-h':
             return

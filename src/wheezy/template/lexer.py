@@ -63,7 +63,7 @@ class Lexer(object):
                     pos = npos
                     break
             else:
-                assert False, 'Lexer pattern mismatch.'
+                raise AssertionError('Lexer pattern mismatch.')
         for postprocessor in self.postprocessors:
             postprocessor(tokens)
         return tokens
