@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import re
 import os
 
 from setuptools import setup
@@ -17,11 +18,14 @@ try:
 except ImportError:
     pass
 
-README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
+README = open('README.md').read()
+version = re.search(
+    r'__version__ = \'(.+)\'', open('src/wheezy/template/__init__.py').read()
+).group(1).strip()
 
 setup(
     name='wheezy.template',
-    version='0.1',
+    version=version,
     description='A lightweight template library',
     long_description=README,
     long_description_content_type='text/markdown',
@@ -32,7 +36,6 @@ setup(
 
     license='MIT',
     classifiers=[
-        'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
@@ -47,6 +50,11 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Internet :: WWW/HTTP',
