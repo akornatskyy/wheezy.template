@@ -16,8 +16,21 @@ PY3 = sys.version_info[0] >= 3
 s = PY3 and str or unicode  # noqa
 
 ctx = {
-    'table': [dict(a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10)
-              for x in range(1000)]
+    'table': [
+        {
+            '<a>': 1,
+            'b': '<2>',
+            '<c>': 3,
+            'd': '<4>',
+            '<e>': 5,
+            'f': '<6>',
+            '<g>': 7,
+            'h':  '<8>',
+            '<i>': 9,
+            'j': '<10>'
+        }
+        for x in range(1000)
+    ]
 }
 
 
@@ -30,14 +43,14 @@ if PY3:
         table = ctx['table']
         w('<table>\n')
         for row in table:
-            w('<tr>\n')
+            w('    <tr>\n')
             for key, value in row.items():
-                w('<td>')
+                w('        <td>')
                 w(escape(key))
                 w('</td><td>')
                 w(str(value))
                 w('</td>\n')
-            w('</tr>\n')
+            w('    </tr>\n')
         w('</table>')
         return ''.join(b)
 else:
@@ -47,16 +60,52 @@ else:
         table = ctx['table']
         w(u'<table>\n')
         for row in table:
-            w(u'<tr>\n')
+            w(u'    <tr>\n')
             for key, value in row.items():
-                w(u'<td>')
+                w(u'        <td>')
                 w(escape(key))
                 w(u'</td><td>')
                 w(s(value))
                 w(u'</td>\n')
-            w(u'</tr>\n')
+            w(u'    </tr>\n')
         w(u'</table>')
         return ''.join(b)
+
+
+# region: python join yield
+
+if PY3:
+    def test_join_yield():
+        def root():
+            table = ctx['table']
+            yield '<table>\n'
+            for row in table:
+                yield '    <tr>\n'
+                for key, value in row.items():
+                    yield '        <td>'
+                    yield escape(key)
+                    yield '</td><td>'
+                    yield s(value)
+                    yield '</td>\n'
+                yield '    </tr>\n'
+            yield '</table>'
+        return ''.join(root())
+else:
+    def test_join_yield():
+        def root():
+            table = ctx['table']
+            yield u'<table>\n'
+            for row in table:
+                yield u'    <tr>\n'
+                for key, value in row.items():
+                    yield u'        <td>'
+                    yield escape(key)
+                    yield u'</td><td>'
+                    yield s(value)
+                    yield u'</td>\n'
+                yield u'    </tr>\n'
+            yield u'</table>'
+        return ''.join(root())
 
 
 # region: python list extend
@@ -68,14 +117,14 @@ if PY3:
         table = ctx['table']
         e(('<table>\n',))
         for row in table:
-            e(('<tr>\n',))
+            e(('    <tr>\n',))
             for key, value in row.items():
-                e(('<td>',
+                e(('        <td>',
                    escape(key),
                    '</td><td>',
                    s(value),
                    '</td>\n'))
-            e(('</tr>\n',))
+            e(('    </tr>\n',))
         e(('</table>',))
         return ''.join(b)
 else:
@@ -85,14 +134,14 @@ else:
         table = ctx['table']
         e((u'<table>\n',))
         for row in table:
-            e((u'<tr>\n',))
+            e((u'    <tr>\n',))
             for key, value in row.items():
-                e((u'<td>',
+                e((u'        <td>',
                    escape(key),
                    u'</td><td>',
                    s(value),
                    u'</td>\n'))
-            e((u'</tr>\n',))
+            e((u'    </tr>\n',))
         e((u'</table>',))
         return ''.join(b)
 
@@ -270,10 +319,15 @@ else:
 # region: django
 
 try:
+    import django
     from django.conf import settings
-    settings.configure()
-    from django.template import Template
-    from django.template import Context
+    settings.configure(
+        TEMPLATES=[{
+            'BACKEND': 'django.template.backends.django.DjangoTemplates'
+        }]
+    )
+    django.setup()
+    from django.template import Template, Context
 except ImportError:
     test_django = None
 else:
@@ -317,23 +371,27 @@ else:
 try:
     from Cheetah.Template import Template
 except ImportError:
-    test_cheetah = None
+    test_cheetah3 = None
 else:
     cheetah_ctx = {}
     cheetah_template = Template(s("""\
-#import cgi
 <table>
     #for $row in $table
     <tr>
         #for $key, $value in $row.items
-        <td>$cgi.escape($key)</td><td>$value</td>
+        #filter WebSafe
+        <td>$key</td>
+        #end filter
+        #filter None
+        <td>$value</td>
+        #end filter
         #end for
     </tr>
     #end for
 </table>
 """), searchList=[cheetah_ctx])
 
-    def test_cheetah():
+    def test_cheetah3():
         cheetah_ctx.update(ctx)
         output = cheetah_template.respond()
         cheetah_ctx.clear()
@@ -444,7 +502,8 @@ def run(number=100):
             assert isinstance(test(), s)
             t = Timer(setup='from __main__ import %s as t' % name,
                       stmt='t()')
-            t = t.timeit(number=number)
+            # t = t.timeit(number=number)
+            t = min(t.repeat(number=number))
             st = Stats(profile.Profile().runctx(
                 'test()', globals(), locals()))
             print('%-17s %7.2f %6.2f %7d %6d' % (name[5:],
