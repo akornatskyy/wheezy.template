@@ -71,14 +71,6 @@ setup(
     zip_safe=False,
     install_requires=[
     ],
-    extras_require={
-        'dev': [
-            'mock',
-            'pytest',
-            'pytest-pep8',
-            'pytest-cov'
-        ]
-    },
     entry_points={
         'console_scripts': [
             'wheezy.template=wheezy.template.console:main'
