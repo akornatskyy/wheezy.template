@@ -6,6 +6,7 @@ src/*.egg-info/
 __pycache__/
 .pytest_cache/
 .cache/
+.vscode
 .coverage
 .tox
 *.pyc
