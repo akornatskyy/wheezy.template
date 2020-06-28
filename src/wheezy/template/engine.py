@@ -83,10 +83,14 @@ class Engine(object):
                 nodes = self.parser.parse(tokens)
                 source = self.builder.build_render(nodes)
 
-                # self.print_debug(name, tokens, nodes, source)
+                # print_debug(name, tokens, nodes, source)
 
-                render_template = self.compiler.compile_source(
-                    source, name)['render']
+                try:
+                    render_template = self.compiler.compile_source(
+                        source, name)['render']
+                except SyntaxError as e:
+                    raise complement_syntax_error(e, template_source, source)
+
                 self.renders[name] = render_template
                 self.templates[name] = self.template_class(
                     name, render_template)
@@ -104,20 +108,15 @@ class Engine(object):
                 nodes = self.parser.parse(tokens)
                 source = self.builder.build_module(nodes)
 
-                # self.print_debug(name, tokens, nodes, source)
+                # print_debug(name, tokens, nodes, source)
 
-                self.modules[name] = self.compiler.compile_module(
-                    source, name)
+                try:
+                    self.modules[name] = self.compiler.compile_module(
+                        source, name)
+                except SyntaxError as e:
+                    raise complement_syntax_error(e, template_source, source)
         finally:
             self.lock.release()
-
-    def print_debug(self, name, tokens, nodes, source):  # pragma: nocover
-        print(name.center(80, '-'))
-        from pprint import pprint
-        # pprint(tokens)
-        pprint(nodes)
-        from wheezy.template.utils import print_source
-        print_source(source, -1)
 
 
 class Template(object):
@@ -132,3 +131,71 @@ class Template(object):
 
     def render(self, ctx):
         return self.render_template(ctx, {}, {})
+
+
+# region: internal details
+
+def print_debug(name, tokens, nodes, source):  # pragma: nocover
+    print(name.center(80, '-'))
+    from pprint import pprint
+    # pprint(tokens)
+    pprint(nodes)
+    from wheezy.template.utils import print_source
+    print_source(source, -1)
+
+
+def complement_syntax_error(err, template_source, source):
+    """ Complements SyntaxError with template and source snippets,
+    like one below:
+
+    .. code-block:: none
+
+        File "shared/snippet/widget.html", line 4
+            if :
+
+        template snippet:
+        02 <h1>
+        03     @msg!h
+        04     @if :
+        05         sd
+        06     @end
+
+        generated snippet:
+        02     _b = []; w = _b.append; w('<h1>\\n    ')
+        03     w(h(msg)); w('\\n')
+        04     if :
+        05         w('        sd\\n')
+        06
+
+            if :
+            ^
+        SyntaxError: invalid syntax
+
+    """
+    text = """\
+%s
+template snippet:
+%s
+
+generated snippet:
+%s
+
+    %s""" % (
+        err.text,
+        source_chunk(template_source, err.lineno-2, 1),
+        source_chunk(source, err.lineno, -1),
+        err.text.strip()
+    )
+    return err.__class__(
+        err.msg, (err.filename, err.lineno-2, err.offset, text))
+
+
+def source_chunk(source, lineno, offset, extra=2):
+    lines = source.split('\n', lineno + extra)
+    s = max(0, lineno - extra - 1)
+    e = min(len(lines), lineno + extra)
+    r = []
+    for i in range(s, e):
+        line = lines[i]
+        r.append('  %02d %s' % (i + offset, line))
+    return '\n'.join(r)
