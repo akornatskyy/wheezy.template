@@ -9,22 +9,23 @@ atomicwrites==1.4.0       # via pytest
 attrs==19.3.0             # via pytest
 click==7.1.2              # via pip-tools
 colorama==0.4.3           # via pytest
-coverage==5.2             # via pytest-cov
+coverage==5.2.1           # via pytest-cov
 execnet==1.7.1            # via pytest-cache
+iniconfig==1.0.1          # via pytest
 mock==4.0.2               # via -r requirements/dev.in
 more-itertools==8.4.0     # via pytest
 packaging==20.4           # via pytest
 pep8==1.7.1               # via pytest-pep8
-pip-tools==5.2.1          # via -r requirements/dev.in
+pip-tools==5.3.1          # via -r requirements/dev.in
 pluggy==0.13.1            # via pytest
 py==1.9.0                 # via pytest
 pyparsing==2.4.7          # via packaging
 pytest-cache==1.0         # via pytest-pep8
 pytest-cov==2.10.0        # via -r requirements/dev.in
 pytest-pep8==1.0.6        # via -r requirements/dev.in
-pytest==5.4.3             # via -r requirements/dev.in, pytest-cache, pytest-cov, pytest-pep8
+pytest==6.0.1             # via -r requirements/dev.in, pytest-cache, pytest-cov, pytest-pep8
 six==1.15.0               # via packaging, pip-tools
-wcwidth==0.2.5            # via pytest
+toml==0.10.1              # via pytest
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
