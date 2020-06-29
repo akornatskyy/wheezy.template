@@ -16,7 +16,7 @@ flake8==3.7.9
 funcsigs==1.0.2
 idna==2.9
 importlib-metadata==1.7.0
-lxml==4.4.2
+lxml==4.5.1
 mccabe==0.6.1
 mock==3.0.5
 more-itertools==5.0.0
