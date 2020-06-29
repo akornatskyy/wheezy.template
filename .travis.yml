@@ -14,9 +14,14 @@ matrix:
       env: TOXENV=pypy3,pypy3-bench
     - python: 3.8
       env: TOXENV=lint,docs
+      install:
+        - pip install tox
+      script:
+        - tox
 
 install:
-    - pip install tox
+    - pip install tox coveralls
 
 script:
     - tox
+    - coveralls
