@@ -16,7 +16,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install wheel twine
+        pip install twine
     - name: Build and publish
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
@@ -25,7 +25,7 @@ jobs:
         version=$(git describe --tags --always)
         sed -i "s/^__version__ = .*$/__version__ = '${version}'/" \
           src/wheezy/template/__init__.py
-        python setup.py sdist bdist_wheel
+        python setup.py sdist
         twine upload dist/*
     - name: Create release
       id: create_release
