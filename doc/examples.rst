@@ -2,10 +2,10 @@
 Examples
 ========
 
-Before we proceed let's setup a `virtualenv`_ environment::
+Before we proceed let's setup a `virtualenv`_ environment, activate it and
+install::
 
-    $ virtualenv env
-    $ env/bin/easy_install wheezy.template
+    $ pip install wheezy.template
 
 Big Table
 ---------
@@ -27,13 +27,13 @@ generated::
 
 Install packages used in benchmark test::
 
-    env/bin/easy_install -O2 jinja2 mako tenjin \
+    pip install install -O2 jinja2 mako tenjin \
       tornado wheezy.html wheezy.template
 
 Download `bigtable.py`_ source code and run it (Intel Core 2 Quad CPU Q6600 @
 2.40GHz × 4; Kernel Linux 3.2.0-2-686-pae; Debian Testing; Python 2.7.3)::
 
-    $ env/bin/python bigtable.py
+    $ python bigtable.py
     jinja2                         40.22ms  24.86rps
     list_append                    19.85ms  50.39rps
     list_extend                    18.71ms  53.46rps
@@ -73,6 +73,6 @@ Environment specification::
 .. image:: static/bench2.png
 
 .. _`virtualenv`: http://pypi.python.org/pypi/virtualenv
-.. _`bigtable.py`: https://bitbucket.org/akorn/wheezy.template/src/tip/demos/bigtable/bigtable.py
+.. _`bigtable.py`: https://github.com/akornatskyy/wheezy.template/blob/master/demos/bigtable/bigtable.py
 .. _`wheezy.web`: http://pypi.python.org/pypi/wheezy.web
-.. _`demo.template`: https://bitbucket.org/akorn/wheezy.web/src/tip/demos/template
+.. _`demo.template`: https://github.com/akornatskyy/wheezy.web/tree/master/demos/template

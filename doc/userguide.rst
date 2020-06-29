@@ -334,4 +334,4 @@ applicaiton.
 
 .. _`wheezy.html`: http://pypi.python.org/pypi/wheezy.html
 .. _`wheezy.web`: http://pypi.python.org/pypi/wheezy.web
-.. _`demo.template`: https://bitbucket.org/akorn/wheezy.web/src/tip/demos/template/
+.. _`demo.template`: https://github.com/akornatskyy/wheezy.web/tree/master/demos/template
