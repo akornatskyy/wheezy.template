@@ -12,7 +12,7 @@ docutils==0.16
 entrypoints==0.3
 enum34==1.1.6
 execnet==1.7.1
-flake8==3.7.9
+flake8==3.8.3
 funcsigs==1.0.2
 idna==2.9
 importlib-metadata==1.7.0
