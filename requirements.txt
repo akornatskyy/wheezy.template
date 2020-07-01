@@ -10,7 +10,7 @@ contextlib2==0.6.0.post1
 coverage==5.1
 docutils==0.16
 entrypoints==0.3
-enum34==1.1.6
+enum34==1.1.10
 execnet==1.7.1
 flake8==3.7.9
 funcsigs==1.0.2
