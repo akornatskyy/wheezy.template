@@ -23,7 +23,7 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         version=$(git describe --tags --always)
-        sed -i "s/^__version__ = .*$/__version__ = '${version}'/" \
+        sed -i 's/^__version__ = .*$/__version__ = "'"${version}"'"/' \
           src/wheezy/template/__init__.py
         python setup.py sdist
         twine upload dist/*
