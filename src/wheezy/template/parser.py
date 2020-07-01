@@ -1,4 +1,3 @@
-
 """
 """
 
@@ -7,13 +6,13 @@ def parser_scan(extensions):
     parser_rules = {}
     parser_configs = []
     for extension in extensions:
-        if hasattr(extension, 'parser_rules'):
+        if hasattr(extension, "parser_rules"):
             parser_rules.update(extension.parser_rules)
-        if hasattr(extension, 'parser_configs'):
+        if hasattr(extension, "parser_configs"):
             parser_configs.extend(extension.parser_configs)
     return {
-        'parser_rules': parser_rules,
-        'parser_configs': parser_configs,
+        "parser_rules": parser_rules,
+        "parser_configs": parser_configs,
     }
 
 
@@ -42,7 +41,7 @@ class Parser(object):
         """
         for t in tokens:
             if t[1] in self.continue_tokens:
-                yield (t[0], 'end', None)
+                yield (t[0], "end", None)
             yield t
 
     def parse_iter(self, tokens):
@@ -54,17 +53,16 @@ class Parser(object):
                 operands.append((lineno, token, value))
             else:
                 if operands:
-                    yield operands[0][0], 'out', operands
+                    yield operands[0][0], "out", operands
                     operands = []
                 if token in self.compound_tokens:
-                    yield lineno, token, (
-                        value, list(self.parse_iter(tokens)))
+                    yield lineno, token, (value, list(self.parse_iter(tokens)))
                 else:
                     yield lineno, token, value
                     if token in self.end_tokens:
                         break
         if operands:
-            yield operands[0][0], 'out', operands
+            yield operands[0][0], "out", operands
 
     def parse(self, tokens):
         return list(self.parse_iter(self.end_continue(tokens)))

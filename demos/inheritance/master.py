@@ -7,7 +7,6 @@ from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
 from wheezy.template.loader import DictLoader
 
-
 master = """
 @def content_a():
 @end
@@ -40,25 +39,17 @@ page_b = """
 @end
 """
 
-pages = {
-    'master': master,
-    'page_a': page_a,
-    'page_b': page_b
-}
+pages = {"master": master, "page_a": page_a, "page_b": page_b}
 
-engine = Engine(
-    loader=DictLoader(pages),
-    extensions=[CoreExtension()]
-)
+engine = Engine(loader=DictLoader(pages), extensions=[CoreExtension()])
 
 
 class TestCase(unittest.TestCase):
-
     def test_render(self):
-        template = engine.get_template('page_b')
+        template = engine.get_template("page_b")
         r = template.render({})
-        assert ['b', 'a', 'super'] == r.split()
+        assert ["b", "a", "super"] == r.split()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

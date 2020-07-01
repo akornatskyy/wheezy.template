@@ -1,4 +1,3 @@
-
 """
 """
 
@@ -16,18 +15,18 @@ PY3 = sys.version_info[0] >= 3
 s = PY3 and str or unicode  # noqa
 
 ctx = {
-    'table': [
+    "table": [
         {
-            '<a>': 1,
-            'b': '<2>',
-            '<c>': 3,
-            'd': '<4>',
-            '<e>': 5,
-            'f': '<6>',
-            '<g>': 7,
-            'h':  '<8>',
-            '<i>': 9,
-            'j': '<10>'
+            "<a>": 1,
+            "b": "<2>",
+            "<c>": 3,
+            "d": "<4>",
+            "<e>": 5,
+            "f": "<6>",
+            "<g>": 7,
+            "h": "<8>",
+            "<i>": 9,
+            "j": "<10>",
         }
         for x in range(1000)
     ]
@@ -37,125 +36,151 @@ ctx = {
 # region: python list append
 
 if PY3:
+
     def test_list_append():
         b = []
         w = b.append
-        table = ctx['table']
-        w('<table>\n')
+        table = ctx["table"]
+        w("<table>\n")
         for row in table:
-            w('    <tr>\n')
+            w("    <tr>\n")
             for key, value in row.items():
-                w('        <td>')
+                w("        <td>")
                 w(escape(key))
-                w('</td><td>')
+                w("</td><td>")
                 w(str(value))
-                w('</td>\n')
-            w('    </tr>\n')
-        w('</table>')
-        return ''.join(b)
+                w("</td>\n")
+            w("    </tr>\n")
+        w("</table>")
+        return "".join(b)
+
+
 else:
+
     def test_list_append():  # noqa
         b = []
         w = b.append
-        table = ctx['table']
-        w(u'<table>\n')
+        table = ctx["table"]
+        w(u"<table>\n")
         for row in table:
-            w(u'    <tr>\n')
+            w(u"    <tr>\n")
             for key, value in row.items():
-                w(u'        <td>')
+                w(u"        <td>")
                 w(escape(key))
-                w(u'</td><td>')
+                w(u"</td><td>")
                 w(s(value))
-                w(u'</td>\n')
-            w(u'    </tr>\n')
-        w(u'</table>')
-        return ''.join(b)
+                w(u"</td>\n")
+            w(u"    </tr>\n")
+        w(u"</table>")
+        return "".join(b)
 
 
 # region: python join yield
 
-if PY3:
+if PY3:  # noqa: C901
+
     def test_join_yield():
         def root():
-            table = ctx['table']
-            yield '<table>\n'
+            table = ctx["table"]
+            yield "<table>\n"
             for row in table:
-                yield '    <tr>\n'
+                yield "    <tr>\n"
                 for key, value in row.items():
-                    yield '        <td>'
+                    yield "        <td>"
                     yield escape(key)
-                    yield '</td><td>'
+                    yield "</td><td>"
                     yield s(value)
-                    yield '</td>\n'
-                yield '    </tr>\n'
-            yield '</table>'
-        return ''.join(root())
+                    yield "</td>\n"
+                yield "    </tr>\n"
+            yield "</table>"
+
+        return "".join(root())
+
+
 else:
+
     def test_join_yield():
         def root():
-            table = ctx['table']
-            yield u'<table>\n'
+            table = ctx["table"]
+            yield u"<table>\n"
             for row in table:
-                yield u'    <tr>\n'
+                yield u"    <tr>\n"
                 for key, value in row.items():
-                    yield u'        <td>'
+                    yield u"        <td>"
                     yield escape(key)
-                    yield u'</td><td>'
+                    yield u"</td><td>"
                     yield s(value)
-                    yield u'</td>\n'
-                yield u'    </tr>\n'
-            yield u'</table>'
-        return ''.join(root())
+                    yield u"</td>\n"
+                yield u"    </tr>\n"
+            yield u"</table>"
+
+        return "".join(root())
 
 
 # region: python list extend
 
 if PY3:
+
     def test_list_extend():
         b = []
         e = b.extend
-        table = ctx['table']
-        e(('<table>\n',))
+        table = ctx["table"]
+        e(("<table>\n",))
         for row in table:
-            e(('    <tr>\n',))
+            e(("    <tr>\n",))
             for key, value in row.items():
-                e(('        <td>',
-                   escape(key),
-                   '</td><td>',
-                   s(value),
-                   '</td>\n'))
-            e(('    </tr>\n',))
-        e(('</table>',))
-        return ''.join(b)
+                e(
+                    (
+                        "        <td>",
+                        escape(key),
+                        "</td><td>",
+                        s(value),
+                        "</td>\n",
+                    )
+                )
+            e(("    </tr>\n",))
+        e(("</table>",))
+        return "".join(b)
+
+
 else:
+
     def test_list_extend():  # noqa
         b = []
         e = b.extend
-        table = ctx['table']
-        e((u'<table>\n',))
+        table = ctx["table"]
+        e((u"<table>\n",))
         for row in table:
-            e((u'    <tr>\n',))
+            e((u"    <tr>\n",))
             for key, value in row.items():
-                e((u'        <td>',
-                   escape(key),
-                   u'</td><td>',
-                   s(value),
-                   u'</td>\n'))
-            e((u'    </tr>\n',))
-        e((u'</table>',))
-        return ''.join(b)
+                e(
+                    (
+                        u"        <td>",
+                        escape(key),
+                        u"</td><td>",
+                        s(value),
+                        u"</td>\n",
+                    )
+                )
+            e((u"    </tr>\n",))
+        e((u"</table>",))
+        return "".join(b)
 
 
 # region: wheezy.template
 
 try:
     from wheezy.template.engine import Engine
-    from wheezy.template.loader import DictLoader
     from wheezy.template.ext.core import CoreExtension
+    from wheezy.template.loader import DictLoader
 except ImportError:
     test_wheezy_template = None
 else:
-    engine = Engine(loader=DictLoader({'x': s("""\
+    engine = Engine(
+        loader=DictLoader(
+            {
+                "x": s(
+                    """\
 @require(table)
 <table>
     @for row in table:
@@ -166,9 +191,14 @@ else:
     </tr>
     @end
 </table>
-""")}), extensions=[CoreExtension()])
-    engine.global_vars.update({'h': escape})
-    wheezy_template = engine.get_template('x')
+"""
+                )
+            }
+        ),
+        extensions=[CoreExtension()],
+    )
+    engine.global_vars.update({"h": escape})
+    wheezy_template = engine.get_template("x")
 
     def test_wheezy_template():
         return wheezy_template.render(ctx)
@@ -181,7 +211,9 @@ try:
 except ImportError:
     test_jinja2 = None
 else:
-    jinja2_template = Environment().from_string(s("""\
+    jinja2_template = Environment().from_string(
+        s(
+            """\
 <table>
     {% for row in table: %}
     <tr>
@@ -191,7 +223,9 @@ else:
     </tr>
     {% endfor %}
 </table>
-"""))
+"""
+        )
+    )
 
     def test_jinja2():
         return jinja2_template.render(ctx)
@@ -204,7 +238,9 @@ try:
 except ImportError:
     test_tornado = None
 else:
-    tornado_template = Template(s("""\
+    tornado_template = Template(
+        s(
+            """\
 <table>
     {% for row in table %}
     <tr>
@@ -214,10 +250,12 @@ else:
     </tr>
     {% end %}
 </table>
-"""))
+"""
+        )
+    )
 
     def test_tornado():
-        return tornado_template.generate(**ctx).decode('utf8')
+        return tornado_template.generate(**ctx).decode("utf8")
 
 
 # region: mako
@@ -227,7 +265,9 @@ try:
 except ImportError:
     test_mako = None
 else:
-    mako_template = Template(s("""\
+    mako_template = Template(
+        s(
+            """\
 <table>
     % for row in table:
     <tr>
@@ -237,7 +277,9 @@ else:
     </tr>
     % endfor
 </table>
-"""))
+"""
+        )
+    )
 
     def test_mako():
         return mako_template.render(**ctx)
@@ -252,17 +294,17 @@ except ImportError:
 else:
     try:
         import webext
-        helpers = {
-            'to_str': webext.to_str,
-            'escape': webext.escape_html
-        }
+
+        helpers = {"to_str": webext.to_str, "escape": webext.escape_html}
     except ImportError:
         helpers = {
-            'to_str': tenjin.helpers.to_str,
-            'escape': tenjin.helpers.escape
+            "to_str": tenjin.helpers.to_str,
+            "escape": tenjin.helpers.escape,
         }
-    tenjin_template = tenjin.Template(encoding='utf8')
-    tenjin_template.convert(s("""\
+    tenjin_template = tenjin.Template(encoding="utf8")
+    tenjin_template.convert(
+        s(
+            """\
 <table>
     <?py for row in table: ?>
     <tr>
@@ -272,7 +314,9 @@ else:
     </tr>
     <?py #end ?>
 </table>
-"""))
+"""
+        )
+    )
 
     def test_tenjin():
         return tenjin_template.render(ctx, helpers)
@@ -298,7 +342,10 @@ else:
             else:
                 self.body.write(xmlescape(data))
 
-    web2py_template = compile(get_parsed(s("""\
+    web2py_template = compile(
+        get_parsed(
+            s(
+                """\
 <table>
     {{ for row in table: }}
     <tr>
@@ -308,12 +355,17 @@ else:
     </tr>
     {{ pass }}
 </table>
-""")), '', 'exec')
+"""
+            )
+        ),
+        "",
+        "exec",
+    )
 
     def test_web2py():
         response = DummyResponse()
         exec(web2py_template, {}, dict(response=response, **ctx))
-        return response.body.getvalue().decode('utf8')
+        return response.body.getvalue().decode("utf8")
 
 
 # region: django
@@ -321,17 +373,20 @@ else:
 try:
     import django
     from django.conf import settings
+
     settings.configure(
-        TEMPLATES=[{
-            'BACKEND': 'django.template.backends.django.DjangoTemplates'
-        }]
+        TEMPLATES=[
+            {"BACKEND": "django.template.backends.django.DjangoTemplates"}
+        ]
     )
     django.setup()
-    from django.template import Template, Context
+    from django.template import Context, Template
 except ImportError:
     test_django = None
 else:
-    django_template = Template(s("""\
+    django_template = Template(
+        s(
+            """\
 <table>
     {% for row in table %}
     <tr>
@@ -341,10 +396,13 @@ else:
     </tr>
     {% endfor %}
 </table>
-"""))
+"""
+        )
+    )
 
     def test_django():
         return django_template.render(Context(ctx))
+
 
 # region: chameleon
 
@@ -353,7 +411,9 @@ try:
 except ImportError:
     test_chameleon = None
 else:
-    chameleon_template = PageTemplate(s("""\
+    chameleon_template = PageTemplate(
+        s(
+            """\
 <table>
     <tr tal:repeat="row table">
         <i tal:omit-tag="" tal:repeat="key row">
@@ -361,10 +421,13 @@ else:
         </i>
     </tr>
 </table>
-"""))
+"""
+        )
+    )
 
     def test_chameleon():
         return chameleon_template.render(**ctx)
+
 
 # region: cheetah
 
@@ -374,7 +437,9 @@ except ImportError:
     test_cheetah3 = None
 else:
     cheetah_ctx = {}
-    cheetah_template = Template(s("""\
+    cheetah_template = Template(
+        s(
+            """\
 <table>
     #for $row in $table
     <tr>
@@ -389,13 +454,17 @@ else:
     </tr>
     #end for
 </table>
-"""), searchList=[cheetah_ctx])
+"""
+        ),
+        searchList=[cheetah_ctx],
+    )
 
     def test_cheetah3():
         cheetah_ctx.update(ctx)
         output = cheetah_template.respond()
         cheetah_ctx.clear()
         return output
+
 
 # region: spitfire
 
@@ -405,7 +474,9 @@ try:
 except ImportError:
     test_spitfire = None
 else:
-    spitfire_template = spitfire.compiler.util.load_template(s("""\
+    spitfire_template = spitfire.compiler.util.load_template(
+        s(
+            """\
 #from cgi import escape
 <table>
     #for $row in $table
@@ -416,55 +487,62 @@ else:
     </tr>
     #end for
 </table>
-"""), 'spitfire_template', spitfire.compiler.analyzer.o3_options, {
-        'enable_filters': True})
+"""
+        ),
+        "spitfire_template",
+        spitfire.compiler.analyzer.o3_options,
+        {"enable_filters": True},
+    )
 
     def test_spitfire():
         return spitfire_template(search_list=[ctx]).main()
 
+
 # region: qpy
 
-try:
-    from qpy import join_xml
-    from qpy import xml
-    from qpy import xml_quote
+try:  # noqa: C901
+    from qpy import join_xml, xml, xml_quote
 except ImportError:
     test_qpy_list_append = None
 else:
     if PY3:
+
         def test_qpy_list_append():
             b = []
             w = b.append
-            table = ctx['table']
-            w(xml('<table>\n'))
+            table = ctx["table"]
+            w(xml("<table>\n"))
             for row in table:
-                w(xml('<tr>\n'))
+                w(xml("<tr>\n"))
                 for key, value in row.items():
-                    w(xml('<td>'))
+                    w(xml("<td>"))
                     w(xml_quote(key))
-                    w(xml('</td><td>'))
+                    w(xml("</td><td>"))
                     w(value)
-                    w(xml('</td>\n'))
-                w(xml('</tr>\n'))
-            w(xml('</table>'))
+                    w(xml("</td>\n"))
+                w(xml("</tr>\n"))
+            w(xml("</table>"))
             return join_xml(b)
+
     else:
+
         def test_qpy_list_append():
             b = []
             w = b.append
-            table = ctx['table']
-            w(xml(u'<table>\n'))
+            table = ctx["table"]
+            w(xml(u"<table>\n"))
             for row in table:
-                w(xml(u'<tr>\n'))
+                w(xml(u"<tr>\n"))
                 for key, value in row.items():
-                    w(xml(u'<td>'))
+                    w(xml(u"<td>"))
                     w(xml_quote(key))
-                    w(xml(u'</td><td>'))
+                    w(xml(u"</td><td>"))
                     w(value)
-                    w(xml(u'</td>\n'))
-                w(xml(u'</tr>\n'))
-            w(xml(u'</table>'))
+                    w(xml(u"</td>\n"))
+                w(xml(u"</tr>\n"))
+            w(xml(u"</table>"))
             return join_xml(b)
+
 
 # region: bottle
 
@@ -473,7 +551,9 @@ try:
 except ImportError:
     test_bottle = None
 else:
-    bottle_template = SimpleTemplate(s("""\
+    bottle_template = SimpleTemplate(
+        s(
+            """\
 <table>
     % for row in table:
     <tr>
@@ -483,7 +563,9 @@ else:
     </tr>
     % end
 </table>
-"""))
+"""
+        )
+    )
 
     def test_bottle():
         return bottle_template.render(**ctx)
@@ -491,29 +573,34 @@ else:
 
 def run(number=100):
     import profile
-    from timeit import Timer
     from pstats import Stats
+    from timeit import Timer
+
     names = globals().keys()
-    names = sorted([(name, globals()[name])
-                    for name in names if name.startswith('test_')])
+    names = sorted(
+        [(name, globals()[name]) for name in names if name.startswith("test_")]
+    )
     print("                     msec    rps  tcalls  funcs")
     for name, test in names:
         if test:
             assert isinstance(test(), s)
-            t = Timer(setup='from __main__ import %s as t' % name,
-                      stmt='t()')
+            t = Timer(setup="from __main__ import %s as t" % name, stmt="t()")
             # t = t.timeit(number=number)
             t = min(t.repeat(number=number))
-            st = Stats(profile.Profile().runctx(
-                'test()', globals(), locals()))
-            print('%-17s %7.2f %6.2f %7d %6d' % (name[5:],
-                                                 1000 * t / number,
-                                                 number / t,
-                                                 st.total_calls,
-                                                 len(st.stats)))
+            st = Stats(profile.Profile().runctx("test()", globals(), locals()))
+            print(
+                "%-17s %7.2f %6.2f %7d %6d"
+                % (
+                    name[5:],
+                    1000 * t / number,
+                    number / t,
+                    st.total_calls,
+                    len(st.stats),
+                )
+            )
         else:
-            print('%-26s not installed' % name[5:])
+            print("%-26s not installed" % name[5:])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

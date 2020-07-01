@@ -1,4 +1,3 @@
-
 """
 """
 
@@ -6,18 +5,16 @@ import re
 
 from wheezy.template.utils import find_balanced
 
-
-RE_ARGS = re.compile(
-    r'\s*(?P<expr>(([\'"]).*?\3|.+?))\s*\,')
+RE_ARGS = re.compile(r'\s*(?P<expr>(([\'"]).*?\3|.+?))\s*\,')
 RE_KWARGS = re.compile(
-    r'\s*(?P<name>\w+)\s*=\s*(?P<expr>([\'"].*?[\'"]|.+?))\s*\,')
-RE_STR_VALUE = re.compile(
-    r'^[\'"](?P<value>.+)[\'"]$')
-RE_INT_VALUE = re.compile(
-    r'^(?P<value>(\d+))$')
+    r'\s*(?P<name>\w+)\s*=\s*(?P<expr>([\'"].*?[\'"]|.+?))\s*\,'
+)
+RE_STR_VALUE = re.compile(r'^[\'"](?P<value>.+)[\'"]$')
+RE_INT_VALUE = re.compile(r"^(?P<value>(\d+))$")
 
 
 # region: core extension
+
 
 class DeterminedExtension(object):
     """ Tranlates function calls between template engines.
@@ -33,11 +30,11 @@ class DeterminedExtension(object):
         by runtime engine.
     """
 
-    def __init__(self, known_calls, runtime_token_start='@',
-                 token_start='#'):
+    def __init__(self, known_calls, runtime_token_start="@", token_start="#"):
         self.token_start = token_start
-        self.pattern = re.compile(r'%s(%s)(?=\()' % (
-            runtime_token_start, '|'.join(known_calls)))
+        self.pattern = re.compile(
+            r"%s(%s)(?=\()" % (runtime_token_start, "|".join(known_calls))
+        )
         self.preprocessors = [self.preprocess]
 
     def preprocess(self, source):
@@ -46,14 +43,14 @@ class DeterminedExtension(object):
         for m in self.pattern.finditer(source):
             pstart = m.end()
             pend = find_balanced(source, pstart)
-            if determined(source[pstart + 1:pend - 1]):
+            if determined(source[pstart + 1 : pend - 1]):
                 name = m.group(1)
-                result.append(source[start:m.start()])
+                result.append(source[start : m.start()])
                 result.append(self.token_start + "ctx['" + name + "']")
                 start = pstart
         if start:
             result.append(source[start:])
-            return ''.join(result)
+            return "".join(result)
         else:
             return source
 
@@ -91,9 +88,9 @@ def parse_kwargs(text):
         [('id', '12'), ('lang', '"en"')]
     """
     kwargs = {}
-    for m in RE_KWARGS.finditer(text + ','):
+    for m in RE_KWARGS.finditer(text + ","):
         groups = m.groupdict()
-        kwargs[groups['name'].rstrip('_')] = groups['expr']
+        kwargs[groups["name"].rstrip("_")] = groups["expr"]
     return kwargs
 
 
@@ -110,8 +107,8 @@ def parse_args(text):
         ['"default"']
     """
     args = []
-    for m in RE_ARGS.finditer(text + ','):
-        args.append(m.group('expr'))
+    for m in RE_ARGS.finditer(text + ","):
+        args.append(m.group("expr"))
     return args
 
 
@@ -127,11 +124,11 @@ def parse_params(text):
         >>> parse_params('"default", lang="en"')
         (['"default"'], {'lang': '"en"'})
     """
-    if '=' in text:
-        args = text.split('=')[0]
-        if ',' in args:
-            args = args.rsplit(',', 1)[0]
-            kwargs = text[len(args):]
+    if "=" in text:
+        args = text.split("=")[0]
+        if "," in args:
+            args = args.rsplit(",", 1)[0]
+            kwargs = text[len(args) :]
             return parse_args(args), parse_kwargs(kwargs)
         else:
             return [], parse_kwargs(text)

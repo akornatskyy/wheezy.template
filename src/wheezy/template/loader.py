@@ -1,4 +1,3 @@
-
 """
 """
 
@@ -15,7 +14,7 @@ class FileLoader(object):
         ``encoding`` - decode template content per encoding.
     """
 
-    def __init__(self, directories, encoding='UTF-8'):
+    def __init__(self, directories, encoding="UTF-8"):
         searchpath = []
         for path in directories:
             abspath = os.path.abspath(path)
@@ -33,14 +32,17 @@ class FileLoader(object):
         for path in self.searchpath:
             pathlen = len(path) + 1
             for dirpath, dirnames, filenames in os.walk(path):
-                for i in [i for i, name in enumerate(dirnames)
-                          if name.startswith('.')]:
+                for i in [
+                    i
+                    for i, name in enumerate(dirnames)
+                    if name.startswith(".")
+                ]:
                     del dirnames[i]
                 for filename in filenames:
-                    if filename.startswith('.'):
+                    if filename.startswith("."):
                         continue
                     name = os.path.join(dirpath, filename)[pathlen:]
-                    name = name.replace('\\', '/')
+                    name = name.replace("\\", "/")
                     names.append(name)
         return tuple(sorted(names))
 
@@ -62,7 +64,7 @@ class FileLoader(object):
         """
         filename = self.get_fullname(name)
         if filename:
-            f = open(filename, 'rb')
+            f = open(filename, "rb")
             try:
                 return f.read().decode(self.encoding)
             finally:
@@ -148,16 +150,19 @@ def autoreload(engine, enabled=True):
 
 # region: internal details
 
-class AutoReloadProxy(object):
 
+class AutoReloadProxy(object):
     def __init__(self, engine):
         from warnings import warn
+
         self.engine = engine
         self.names = {}
-        warn('autoreload limitation: master (inherited), imported '
-             'and preprocessed templates. It is recommended to use '
-             'application server that supports file reload instead.',
-             stacklevel=3)
+        warn(
+            "autoreload limitation: master (inherited), imported "
+            "and preprocessed templates. It is recommended to use "
+            "application server that supports file reload instead.",
+            stacklevel=3,
+        )
 
     def get_template(self, name):
         if self.file_changed(name):

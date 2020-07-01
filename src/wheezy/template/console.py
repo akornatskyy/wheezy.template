@@ -1,4 +1,3 @@
-
 """
 """
 
@@ -34,7 +33,7 @@ class AttrDict(dict):
 
 def main(args=None):
     if not json:  # pragma: nocover
-        print('error: json module is not available')
+        print("error: json module is not available")
         return 1
     args = parse_args(args or sys.argv[1:])
     if not args:
@@ -43,7 +42,7 @@ def main(args=None):
     extensions = [CoreExtension(ts), CodeExtension(ts)]
     extensions.extend(args.extensions)
     engine = Engine(FileLoader(args.searchpath), extensions)
-    engine.global_vars.update({'h': escape})
+    engine.global_vars.update({"h": escape})
     t = engine.get_template(args.template)
     sys.stdout.write(t.render(load_context(args.context)))
     return 0
@@ -52,7 +51,7 @@ def main(args=None):
 def load_context(sources):
     c = {}
     for s in sources:
-        if s.endswith('.json'):
+        if s.endswith(".json"):
             s = json.load(open(s))
         else:
             s = json.loads(s)
@@ -62,22 +61,23 @@ def load_context(sources):
 
 def parse_args(args):
     try:
-        opts, value = getopt.getopt(args, 's:t:wh')
+        opts, value = getopt.getopt(args, "s:t:wh")
     except getopt.GetoptError:
         e = sys.exc_info()[1]
         usage()
-        print('error: %s' % e)
+        print("error: %s" % e)
         return
-    args = AttrDict(token_start='@', searchpath=['.'], extensions=[])
+    args = AttrDict(token_start="@", searchpath=["."], extensions=[])
     for o, a in opts:
-        if o == '-h':
+        if o == "-h":
             return
-        elif o == '-t':
+        elif o == "-t":
             args.token_start = a
-        elif o == '-s':
-            args.searchpath = a.split(';')
-        elif o == '-w':  # pragma: nocover
+        elif o == "-s":
+            args.searchpath = a.split(";")
+        elif o == "-w":  # pragma: nocover
             from wheezy.html.ext.template import WhitespaceExtension
+
             args.extensions.append(WhitespaceExtension())
     if not value:
         usage()
@@ -88,10 +88,15 @@ def parse_args(args):
 
 
 def usage():
+    from datetime import datetime
+    from os.path import basename
+
     from wheezy.template import __version__
-    print("""\
+
+    print(
+        """\
 wheezy.template %s
-Copyright (C) 2012-2015 by Andriy Kornatskyy
+Copyright (C) 2012-%d by Andriy Kornatskyy
 
 renders a template with the given context.
 
@@ -108,8 +113,10 @@ optional arguments:
   -t token    token start ( @ )
   -w          whitespace clean up
   -h          show this help message
-""" % (__version__, sys.argv[0]))
+"""
+        % (__version__, datetime.now().year, basename(sys.argv[0]))
+    )
 
 
-if __name__ == '__main__':  # pragma: nocover
+if __name__ == "__main__":  # pragma: nocover
     sys.exit(main())

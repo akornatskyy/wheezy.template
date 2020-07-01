@@ -10,7 +10,6 @@ from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
 from wheezy.template.loader import DictLoader
 
-
 master = """
 @def content():
 @end
@@ -40,25 +39,21 @@ page_all = """
 """
 
 pages = {
-    'master': master,
-    'page_a': page_a,
-    'page_b': page_b,
-    'page_all': page_all
+    "master": master,
+    "page_a": page_a,
+    "page_b": page_b,
+    "page_all": page_all,
 }
 
-engine = Engine(
-    loader=DictLoader(pages),
-    extensions=[CoreExtension()]
-)
+engine = Engine(loader=DictLoader(pages), extensions=[CoreExtension()])
 
 
 class TestCase(unittest.TestCase):
-
     def test_render(self):
-        template = engine.get_template('page_all')
+        template = engine.get_template("page_all")
         r = template.render({})
-        self.assertEqual(['a', 'b'], r.split())
+        self.assertEqual(["a", "b"], r.split())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

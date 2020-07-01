@@ -1,4 +1,3 @@
-
 """
 """
 
@@ -7,18 +6,18 @@ def find_all_balanced(text, start=0):
     """ Finds balanced ``([`` with ``])`` assuming
         that ``start`` is pointing to ``(`` or ``[`` in ``text``.
     """
-    if start >= len(text) or text[start] not in '([':
+    if start >= len(text) or text[start] not in "([":
         return start
-    while(1):
+    while 1:
         pos = find_balanced(text, start)
-        pos = find_balanced(text, pos, '[', ']')
+        pos = find_balanced(text, pos, "[", "]")
         if pos != start:
             start = pos
         else:
             return pos
 
 
-def find_balanced(text, start=0, start_sep='(', end_sep=')'):
+def find_balanced(text, start=0, start_sep="(", end_sep=")"):
     """ Finds balanced ``start_sep`` with ``end_sep`` assuming
         that ``start`` is pointing to ``start_sep`` in ``text``.
     """
@@ -40,7 +39,7 @@ def find_balanced(text, start=0, start_sep='(', end_sep=')'):
 
 def print_source(source, lineno=1):  # pragma: nocover
     lines = []
-    for line in source.split('\n'):
+    for line in source.split("\n"):
         lines.append("%02d " % lineno + line)
-        lineno += line.count('\n') + 1
-    print('\n'.join(lines))
+        lineno += line.count("\n") + 1
+    print("\n".join(lines))

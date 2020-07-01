@@ -1,4 +1,3 @@
-
 """
 """
 
@@ -6,22 +5,23 @@ import re
 
 from wheezy.template.utils import find_balanced
 
-
 # region: lexer extensions
+
 
 def code_token(m):
     source = m.string
     start = m.end()
     end = find_balanced(source, start)
-    if source[end::1] == '\n':
+    if source[end::1] == "\n":
         end += 1
-    return end, 'code', source[start:end]
+    return end, "code", source[start:end]
 
 
 # region: parser
 
+
 def parse_code(value):
-    lines = value.rstrip('\n')[1:-1].split('\n')
+    lines = value.rstrip("\n")[1:-1].split("\n")
     lines[0] = lines[0].lstrip()
     if len(lines) == 1:
         return lines
@@ -32,6 +32,7 @@ def parse_code(value):
 
 # region: block_builders
 
+
 def build_code(builder, lineno, token, lines):
     for line in lines:
         builder.add(lineno, line)
@@ -41,20 +42,17 @@ def build_code(builder, lineno, token, lines):
 
 # region: core extension
 
+
 class CodeExtension(object):
     """ Includes support for embedded python code.
     """
 
-    def __init__(self, token_start='@'):
+    def __init__(self, token_start="@"):
 
         self.lexer_rules = {
-            300: (re.compile(r'\s*%s(?=\()' % token_start), code_token),
+            300: (re.compile(r"\s*%s(?=\()" % token_start), code_token),
         }
 
-    parser_rules = {
-        'code': parse_code
-    }
+    parser_rules = {"code": parse_code}
 
-    builder_rules = [
-        ('code', build_code)
-    ]
+    builder_rules = [("code", build_code)]

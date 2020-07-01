@@ -1,10 +1,8 @@
-
 """
 """
 
 from wheezy.template.comp import allocate_lock
-from wheezy.template.loader import ChainLoader
-from wheezy.template.loader import DictLoader
+from wheezy.template.loader import ChainLoader, DictLoader
 
 
 class Preprocessor(object):
@@ -20,20 +18,21 @@ class Preprocessor(object):
         self.loader = engine.loader
         self.key_factory = key_factory
         template_class = self.engine.template_class
-        self.engine.template_class = lambda name, render_template: \
-            template_class(name, lambda ctx, local_defs, super_defs:
-                           self.render(name, ctx, local_defs, super_defs))
+        self.engine.template_class = lambda name, _: template_class(
+            name,
+            lambda ctx, local_defs, super_defs: self.render(
+                name, ctx, local_defs, super_defs
+            ),
+        )
 
     def get_template(self, name):
         return self.engine.get_template(name)
 
     def render(self, name, ctx, local_defs, super_defs):
         try:
-            runtime_engine = self.runtime_engines[
-                self.key_factory(ctx)]
+            runtime_engine = self.runtime_engines[self.key_factory(ctx)]
         except KeyError:
-            runtime_engine = self.ensure_runtime_engine(
-                self.key_factory(ctx))
+            runtime_engine = self.ensure_runtime_engine(self.key_factory(ctx))
         try:
             return runtime_engine.renders[name](ctx, local_defs, super_defs)
         except KeyError:
@@ -58,7 +57,8 @@ class Preprocessor(object):
             if key in engines:  # pragma: nocover
                 return engines[key]
             engine = engines[key] = self.runtime_engine_factory(
-                loader=ChainLoader([DictLoader({}), self.engine.loader]))
+                loader=ChainLoader([DictLoader({}), self.engine.loader])
+            )
 
             def render(name, ctx, local_defs, super_defs):
                 try:
@@ -66,7 +66,8 @@ class Preprocessor(object):
                 except KeyError:
                     self.preprocess_template(engine, name, ctx)
                     return engine.renders[name](ctx, local_defs, super_defs)
-            engine.global_vars['_r'] = render
+
+            engine.global_vars["_r"] = render
             return engine
         finally:
             self.lock.release()

@@ -1,15 +1,11 @@
-
 """
 """
 
-from wheezy.template.builder import SourceBuilder
-from wheezy.template.builder import builder_scan
+from wheezy.template.builder import SourceBuilder, builder_scan
 from wheezy.template.comp import allocate_lock
 from wheezy.template.compiler import Compiler
-from wheezy.template.lexer import Lexer
-from wheezy.template.lexer import lexer_scan
-from wheezy.template.parser import Parser
-from wheezy.template.parser import parser_scan
+from wheezy.template.lexer import Lexer, lexer_scan
+from wheezy.template.parser import Parser, parser_scan
 
 
 class Engine(object):
@@ -21,10 +17,7 @@ class Engine(object):
         self.templates = {}
         self.renders = {}
         self.modules = {}
-        self.global_vars = {
-            '_r': self.render,
-            '_i': self.import_name
-        }
+        self.global_vars = {"_r": self.render, "_i": self.import_name}
         self.loader = loader
         self.template_class = template_class or Template
         self.compiler = Compiler(self.global_vars, -2)
@@ -87,13 +80,15 @@ class Engine(object):
 
                 try:
                     render_template = self.compiler.compile_source(
-                        source, name)['render']
+                        source, name
+                    )["render"]
                 except SyntaxError as e:
                     raise complement_syntax_error(e, template_source, source)
 
                 self.renders[name] = render_template
                 self.templates[name] = self.template_class(
-                    name, render_template)
+                    name, render_template
+                )
         finally:
             self.lock.release()
 
@@ -112,7 +107,8 @@ class Engine(object):
 
                 try:
                     self.modules[name] = self.compiler.compile_module(
-                        source, name)
+                        source, name
+                    )
                 except SyntaxError as e:
                     raise complement_syntax_error(e, template_source, source)
         finally:
@@ -123,7 +119,7 @@ class Template(object):
     """ Simple template class.
     """
 
-    __slots__ = ('name', 'render_template')
+    __slots__ = ("name", "render_template")
 
     def __init__(self, name, render_template):
         self.name = name
@@ -135,12 +131,15 @@ class Template(object):
 
 # region: internal details
 
+
 def print_debug(name, tokens, nodes, source):  # pragma: nocover
-    print(name.center(80, '-'))
+    print(name.center(80, "-"))
     from pprint import pprint
+
     # pprint(tokens)
     pprint(nodes)
     from wheezy.template.utils import print_source
+
     print_source(source, -1)
 
 
@@ -182,20 +181,21 @@ generated snippet:
 
     %s""" % (
         err.text,
-        source_chunk(template_source, err.lineno-2, 1),
+        source_chunk(template_source, err.lineno - 2, 1),
         source_chunk(source, err.lineno, -1),
-        err.text.strip()
+        err.text.strip(),
     )
     return err.__class__(
-        err.msg, (err.filename, err.lineno-2, err.offset, text))
+        err.msg, (err.filename, err.lineno - 2, err.offset, text)
+    )
 
 
 def source_chunk(source, lineno, offset, extra=2):
-    lines = source.split('\n', lineno + extra)
+    lines = source.split("\n", lineno + extra)
     s = max(0, lineno - extra - 1)
     e = min(len(lines), lineno + extra)
     r = []
     for i in range(s, e):
         line = lines[i]
-        r.append('  %02d %s' % (i + offset, line))
-    return '\n'.join(r)
+        r.append("  %02d %s" % (i + offset, line))
+    return "\n".join(r)

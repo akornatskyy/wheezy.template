@@ -7,7 +7,6 @@ from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
 from wheezy.template.loader import DictLoader
 
-
 widgets_a = """
 @def say_hi(name):
     Hi, @name.
@@ -42,29 +41,25 @@ page_c = """
 """
 
 pages = {
-    'widgets_a': widgets_a,
-    'widgets_b': widgets_b,
-    'page_a': page_a,
-    'page_b': page_b,
-    'page_c': page_c
+    "widgets_a": widgets_a,
+    "widgets_b": widgets_b,
+    "page_a": page_a,
+    "page_b": page_b,
+    "page_c": page_c,
 }
 
-engine = Engine(
-    loader=DictLoader(pages),
-    extensions=[CoreExtension()]
-)
+engine = Engine(loader=DictLoader(pages), extensions=[CoreExtension()])
 
 
 class TestCase(unittest.TestCase):
-
     def test_render(self):
-        for page in ('page_a', 'page_b', 'page_c'):
+        for page in ("page_a", "page_b", "page_c"):
             template = engine.get_template(page)
-            r = template.render({'widgets_impl': 'a'})
-            self.assertEqual('Hi, World.', r.strip())
-            r = template.render({'widgets_impl': 'b'})
-            self.assertEqual('Hello, World.', r.strip())
+            r = template.render({"widgets_impl": "a"})
+            self.assertEqual("Hi, World.", r.strip())
+            r = template.render({"widgets_impl": "b"})
+            self.assertEqual("Hello, World.", r.strip())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
