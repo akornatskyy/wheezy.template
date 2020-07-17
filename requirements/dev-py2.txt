@@ -7,19 +7,12 @@
 apipkg==1.5               # via execnet
 atomicwrites==1.4.0       # via pytest
 attrs==19.3.0             # via pytest
-backports.functools-lru-cache==1.6.1  # via wcwidth
 click==7.1.2              # via pip-tools
-colorama==0.4.3           # via pytest
-configparser==4.0.2       # via importlib-metadata
-contextlib2==0.6.0.post1  # via importlib-metadata, zipp
 coverage==5.2             # via pytest-cov
 execnet==1.7.1            # via pytest-cache
-funcsigs==1.0.2           # via mock, pytest
-importlib-metadata==1.7.0  # via pluggy, pytest
 mock==3.0.5               # via -r requirements/dev.in
-more-itertools==5.0.0     # via pytest
+more-itertools==8.4.0     # via pytest
 packaging==20.4           # via pytest
-pathlib2==2.3.5           # via importlib-metadata, pytest
 pep8==1.7.1               # via pytest-pep8
 pip-tools==5.2.1          # via -r requirements/dev.in
 pluggy==0.13.1            # via pytest
@@ -29,10 +22,8 @@ pytest-cache==1.0         # via pytest-pep8
 pytest-cov==2.10.0        # via -r requirements/dev.in
 pytest-pep8==1.0.6        # via -r requirements/dev.in
 pytest==4.6.11            # via -r requirements/dev.in, pytest-cache, pytest-cov, pytest-pep8
-scandir==1.10.0           # via pathlib2
-six==1.15.0               # via mock, more-itertools, packaging, pathlib2, pip-tools, pytest
+six==1.15.0               # via mock, packaging, pip-tools, pytest
 wcwidth==0.2.5            # via pytest
-zipp==1.2.0               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
