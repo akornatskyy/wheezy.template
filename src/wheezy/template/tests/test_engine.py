@@ -5,8 +5,7 @@ import unittest
 
 
 class EngineTestCase(unittest.TestCase):
-    """ Test the ``Engine``.
-    """
+    """Test the ``Engine``."""
 
     def setUp(self):
         from wheezy.template.engine import Engine
@@ -15,23 +14,19 @@ class EngineTestCase(unittest.TestCase):
         self.engine = Engine(loader=DictLoader(templates={}), extensions=[])
 
     def test_template_not_found(self):
-        """ Raises IOError.
-        """
+        """Raises IOError."""
         self.assertRaises(IOError, lambda: self.engine.get_template("x"))
 
     def test_import_not_found(self):
-        """ Raises IOError.
-        """
+        """Raises IOError."""
         self.assertRaises(IOError, lambda: self.engine.import_name("x"))
 
     def test_remove_unknown_name(self):
-        """ Invalidate name that is not known to engine.
-        """
+        """Invalidate name that is not known to engine."""
         self.engine.remove("x")
 
     def test_remove_name(self):
-        """ Invalidate name that is known to engine.
-        """
+        """Invalidate name that is known to engine."""
         self.engine.templates["x"] = "x"
         self.engine.renders["x"] = "x"
         self.engine.modules["x"] = "x"
@@ -39,8 +34,7 @@ class EngineTestCase(unittest.TestCase):
 
 
 class EngineSyntaxErrorTestCase(unittest.TestCase):
-    """ Test the ``Engine``.
-    """
+    """Test the ``Engine``."""
 
     def setUp(self):
         from wheezy.template.engine import Engine
@@ -54,8 +48,7 @@ class EngineSyntaxErrorTestCase(unittest.TestCase):
         )
 
     def test_compile_template_error(self):
-        """ Raises SyntaxError.
-        """
+        """Raises SyntaxError."""
         self.templates[
             "x"
         ] = """
@@ -67,8 +60,7 @@ class EngineSyntaxErrorTestCase(unittest.TestCase):
         )
 
     def test_compile_import_error(self):
-        """ Raises SyntaxError.
-        """
+        """Raises SyntaxError."""
         self.templates[
             "m"
         ] = """

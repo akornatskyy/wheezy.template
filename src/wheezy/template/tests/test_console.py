@@ -7,8 +7,7 @@ from wheezy.template.console import json
 
 
 class Console(object):
-    """ Test the console ``main`` function.
-    """
+    """Test the console ``main`` function."""
 
     def test_usage(self):
         assert 2 == main(["-h"])
@@ -31,5 +30,4 @@ if json:
     from wheezy.template.console import main
 
     class ConsoleTestCase(unittest.TestCase, Console):
-        """ Test the console ``main`` function.
-        """
+        """Test the console ``main`` function."""

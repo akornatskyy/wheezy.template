@@ -5,12 +5,10 @@ import unittest
 
 
 class LexerTestCase(unittest.TestCase):
-    """ Test the ``Lexer``.
-    """
+    """Test the ``Lexer``."""
 
     def test_tokenize(self):
-        """ Test with simple rules
-        """
+        """Test with simple rules"""
         import re
 
         from wheezy.template.lexer import Lexer, lexer_scan
@@ -46,16 +44,14 @@ class LexerTestCase(unittest.TestCase):
         ] == lexer.tokenize("hello\n world")
 
     def test_trivial(self):
-        """ Empty rules and source
-        """
+        """Empty rules and source"""
         from wheezy.template.lexer import Lexer
 
         lexer = Lexer([])
         assert [] == lexer.tokenize("")
 
     def test_raises_error(self):
-        """ If there is no match it raises AssertionError.
-        """
+        """If there is no match it raises AssertionError."""
         from wheezy.template.lexer import Lexer
 
         lexer = Lexer([])

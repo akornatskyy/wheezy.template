@@ -3,8 +3,8 @@
 
 
 def find_all_balanced(text, start=0):
-    """ Finds balanced ``([`` with ``])`` assuming
-        that ``start`` is pointing to ``(`` or ``[`` in ``text``.
+    """Finds balanced ``([`` with ``])`` assuming
+    that ``start`` is pointing to ``(`` or ``[`` in ``text``.
     """
     if start >= len(text) or text[start] not in "([":
         return start
@@ -18,8 +18,8 @@ def find_all_balanced(text, start=0):
 
 
 def find_balanced(text, start=0, start_sep="(", end_sep=")"):
-    """ Finds balanced ``start_sep`` with ``end_sep`` assuming
-        that ``start`` is pointing to ``start_sep`` in ``text``.
+    """Finds balanced ``start_sep`` with ``end_sep`` assuming
+    that ``start`` is pointing to ``start_sep`` in ``text``.
     """
     if start >= len(text) or start_sep != text[start]:
         return start

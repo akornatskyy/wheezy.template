@@ -5,8 +5,7 @@ import unittest
 
 
 class ParserTestCase(unittest.TestCase):
-    """ Test the ``Parser``.
-    """
+    """Test the ``Parser``."""
 
     def setUp(self):
         from wheezy.template.parser import Parser
@@ -21,8 +20,7 @@ class ParserTestCase(unittest.TestCase):
         ]
 
     def test_end_continue(self):
-        """ Ensure end nodes are inserted before continue tokens.
-        """
+        """Ensure end nodes are inserted before continue tokens."""
         self.parser.continue_tokens = ["b"]
         nodes = list(self.parser.end_continue(self.tokens))
         assert 7 == len(nodes)
@@ -32,15 +30,14 @@ class ParserTestCase(unittest.TestCase):
         assert (4, "b", 14) == nodes[5]
 
     def test_parse_unchanged(self):
-        """ If there is no parser tokens defined the result is unchanged
-            input.
+        """If there is no parser tokens defined the result is unchanged
+        input.
         """
         nodes = list(self.parser.parse(self.tokens))
         assert self.tokens == nodes
 
     def test_parse_with_rules(self):
-        """ Ensure the rules applied.
-        """
+        """Ensure the rules applied."""
         self.parser.rules["a"] = lambda value: value * 100
         self.parser.rules["b"] = lambda value: value * 10
         nodes = list(self.parser.parse(self.tokens))
@@ -49,8 +46,8 @@ class ParserTestCase(unittest.TestCase):
         assert (4, "b", 140) == nodes[3]
 
     def test_out_tokens(self):
-        """ Tokens from ``out_tokens`` are combined together into a single
-            node.
+        """Tokens from ``out_tokens`` are combined together into a single
+        node.
         """
         self.parser.out_tokens = ["a", "b"]
         nodes = list(self.parser.parse(self.tokens))
@@ -68,8 +65,7 @@ class ParserTestCase(unittest.TestCase):
         ) == nodes[1]
 
     def test_compound(self):
-        """
-        """
+        """"""
         self.parser.compound_tokens = ["b"]
         self.parser.end_tokens = ["c"]
         nodes = list(self.parser.parse(self.tokens))

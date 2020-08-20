@@ -9,8 +9,7 @@ from wheezy.template.parser import Parser, parser_scan
 
 
 class Engine(object):
-    """ The core component of template engine.
-    """
+    """The core component of template engine."""
 
     def __init__(self, loader, extensions, template_class=None):
         self.lock = allocate_lock()
@@ -26,8 +25,7 @@ class Engine(object):
         self.builder = SourceBuilder(**builder_scan(extensions))
 
     def get_template(self, name):
-        """ Returns compiled template.
-        """
+        """Returns compiled template."""
         try:
             return self.templates[name]
         except KeyError:
@@ -35,8 +33,7 @@ class Engine(object):
             return self.templates[name]
 
     def render(self, name, ctx, local_defs, super_defs):
-        """ Renders template by name in given context.
-        """
+        """Renders template by name in given context."""
         try:
             return self.renders[name](ctx, local_defs, super_defs)
         except KeyError:
@@ -44,8 +41,7 @@ class Engine(object):
             return self.renders[name](ctx, local_defs, super_defs)
 
     def remove(self, name):
-        """ Removes given ``name`` from internal cache.
-        """
+        """Removes given ``name`` from internal cache."""
         self.lock.acquire(1)
         try:
             if name in self.renders:
@@ -116,8 +112,7 @@ class Engine(object):
 
 
 class Template(object):
-    """ Simple template class.
-    """
+    """Simple template class."""
 
     __slots__ = ("name", "render_template")
 
@@ -144,7 +139,7 @@ def print_debug(name, tokens, nodes, source):  # pragma: nocover
 
 
 def complement_syntax_error(err, template_source, source):
-    """ Complements SyntaxError with template and source snippets,
+    """Complements SyntaxError with template and source snippets,
     like one below:
 
     .. code-block:: none

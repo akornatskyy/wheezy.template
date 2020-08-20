@@ -7,8 +7,7 @@ from mock import Mock, patch
 
 
 class FileLoaderTestCase(unittest.TestCase):
-    """ Test the ``FileLoader``.
-    """
+    """Test the ``FileLoader``."""
 
     def setUp(self):
         import os.path
@@ -44,24 +43,20 @@ class FileLoaderTestCase(unittest.TestCase):
         ) == self.loader.list_names()
 
     def test_load_existing(self):
-        """ Tests load.
-        """
+        """Tests load."""
         assert "" == self.loader.load("__init__.py")
 
     def test_load_not_found(self):
-        """ Tests load if the name is not found.
-        """
+        """Tests load if the name is not found."""
         assert not self.loader.load("tmpl-x.html")
 
     def test_load_not_a_file(self):
-        """ Tests load if the name is not a file.
-        """
+        """Tests load if the name is not a file."""
         assert not self.loader.load("..")
 
 
 class DictLoaderTestCase(unittest.TestCase):
-    """ Test the ``DictLoader``.
-    """
+    """Test the ``DictLoader``."""
 
     def setUp(self):
         from wheezy.template.loader import DictLoader
@@ -71,55 +66,51 @@ class DictLoaderTestCase(unittest.TestCase):
         )
 
     def test_list_names(self):
-        """ Tests list_names.
-        """
+        """Tests list_names."""
         assert ("shared/master.html", "tmpl1.html") == self.loader.list_names()
 
     def test_load_existing(self):
-        """ Tests load.
-        """
+        """Tests load."""
         assert "x" == self.loader.load("tmpl1.html")
 
     def test_load_not_found(self):
-        """ Tests load if the name is not found.
-        """
+        """Tests load if the name is not found."""
         assert self.loader.load("tmpl-x.html") is None
 
 
 class ChainLoaderTestCase(unittest.TestCase):
-    """ Test the ``ChainLoader``.
-    """
+    """Test the ``ChainLoader``."""
 
     def setUp(self):
         from wheezy.template.loader import ChainLoader, DictLoader
 
         self.loader = ChainLoader(
             loaders=[
-                DictLoader(templates={"tmpl1.html": "x1",}),
+                DictLoader(
+                    templates={
+                        "tmpl1.html": "x1",
+                    }
+                ),
                 DictLoader(templates={"shared/master.html": "x2"}),
             ]
         )
 
     def test_list_names(self):
-        """ Tests list_names.
-        """
+        """Tests list_names."""
         assert ("shared/master.html", "tmpl1.html") == self.loader.list_names()
 
     def test_load_existing(self):
-        """ Tests load.
-        """
+        """Tests load."""
         assert "x1" == self.loader.load("tmpl1.html")
         assert "x2" == self.loader.load("shared/master.html")
 
     def test_load_missing(self):
-        """ Tests load not found.
-        """
+        """Tests load not found."""
         assert not self.loader.load("missing")
 
 
 class PreprocessLoaderTestCase(unittest.TestCase):
-    """ Test the ``PreprocessLoader``.
-    """
+    """Test the ``PreprocessLoader``."""
 
     def setUp(self):
         from wheezy.template.loader import DictLoader, PreprocessLoader
@@ -136,19 +127,16 @@ class PreprocessLoaderTestCase(unittest.TestCase):
         self.loader = PreprocessLoader(engine, {"x": 1})
 
     def test_list_names(self):
-        """ Tests list_names.
-        """
+        """Tests list_names."""
         assert ("shared/master.html", "tmpl1.html") == self.loader.list_names()
 
     def test_load_existing(self):
-        """ Tests load existing.
-        """
+        """Tests load existing."""
         assert "x" == self.loader.load("tmpl1.html")
 
 
 class AutoReloadProxyTestCase(unittest.TestCase):
-    """ Test the ``PreprocessLoader``.
-    """
+    """Test the ``PreprocessLoader``."""
 
     def setUp(self):
         import warnings
@@ -164,16 +152,14 @@ class AutoReloadProxyTestCase(unittest.TestCase):
         warnings.simplefilter("default")
 
     def test_disabled(self):
-        """ Tests autoreload disabled.
-        """
+        """Tests autoreload disabled."""
         from wheezy.template.loader import autoreload
 
         assert autoreload(None, enabled=False) is None
 
     @patch("os.stat")
     def test_get_template(self, mock_stat):
-        """ Tests get_template.
-        """
+        """Tests get_template."""
         import stat
 
         mock_stat.return_value.__getitem__.return_value = 777
@@ -187,8 +173,7 @@ class AutoReloadProxyTestCase(unittest.TestCase):
 
     @patch("os.stat")
     def test_render(self, mock_stat):
-        """ Tests render.
-        """
+        """Tests render."""
         mock_stat.return_value.__getitem__.return_value = 777
         ctx = {1: 1}
         local_defs = {2: 2}
@@ -196,21 +181,18 @@ class AutoReloadProxyTestCase(unittest.TestCase):
         assert "x" == self.proxy.render("t.html", ctx, local_defs, super_defs)
 
     def test_getattr(self):
-        """ Tests __getattr__.
-        """
+        """Tests __getattr__."""
         self.mock_engine.x = 100
         assert 100 == self.proxy.x
 
     def test_file_not_found(self):
-        """ Tests file not found.
-        """
+        """Tests file not found."""
         self.mock_engine.loader.get_fullname.return_value = None
         assert not self.proxy.file_changed("t.html")
         self.mock_engine.loader.get_fullname.assert_called_once_with("t.html")
 
     def test_file_not_changed_first_access(self):
-        """ Tests not changed on first access.
-        """
+        """Tests not changed on first access."""
         from time import time
 
         self.proxy.names["t.html"] = int(time())
@@ -218,8 +200,7 @@ class AutoReloadProxyTestCase(unittest.TestCase):
 
     @patch("os.stat")
     def test_file_not_changed_known(self, mock_stat):
-        """ Test not changed for the file that was previously accessed.
-        """
+        """Test not changed for the file that was previously accessed."""
         self.proxy.names["t.html"] = 777
         mock_stat.return_value.__getitem__.return_value = 777
         assert not self.proxy.file_changed("t.html")

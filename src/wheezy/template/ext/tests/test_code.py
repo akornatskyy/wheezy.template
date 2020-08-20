@@ -5,8 +5,7 @@ import unittest
 
 
 class LexerTestCase(unittest.TestCase):
-    """ Test the ``CodeExtension`` lexers.
-    """
+    """Test the ``CodeExtension`` lexers."""
 
     def setUp(self):
         from wheezy.template.engine import Engine
@@ -21,8 +20,7 @@ class LexerTestCase(unittest.TestCase):
         return self.engine.lexer.tokenize(source)
 
     def test_code_token(self):
-        """ Test code token.
-        """
+        """Test code token."""
         tokens = self.tokenize("\n @(i = 1)")
         assert 1 == len(tokens)
         assert (1, "code", "(i = 1)") == tokens[0]
@@ -31,8 +29,7 @@ class LexerTestCase(unittest.TestCase):
 
 
 class ParserTestCase(unittest.TestCase):
-    """ Test the ``CodeExtension`` parsers.
-    """
+    """Test the ``CodeExtension`` parsers."""
 
     def setUp(self):
         from wheezy.template.engine import Engine
@@ -49,20 +46,17 @@ class ParserTestCase(unittest.TestCase):
         )
 
     def test_code_empty(self):
-        """ Test parse_code.
-        """
+        """Test parse_code."""
         nodes = self.parse("@()")
         assert [(1, "code", [""])] == nodes
 
     def test_code(self):
-        """ Test parse_code.
-        """
+        """Test parse_code."""
         nodes = self.parse("@(i = 1)")
         assert [(1, "code", ["i = 1"])] == nodes
 
     def test_code_multiline(self):
-        """ Test parse_code multiline.
-        """
+        """Test parse_code multiline."""
         nodes = self.parse(
             """\
 @(
@@ -75,8 +69,7 @@ class ParserTestCase(unittest.TestCase):
 
 
 class BuilderTestCase(unittest.TestCase):
-    """ Test the ``CodeExtension`` generators.
-    """
+    """Test the ``CodeExtension`` generators."""
 
     def setUp(self):
         from wheezy.template.engine import Engine
@@ -126,8 +119,7 @@ def x():
 
 
 class TemplateTestCase(unittest.TestCase):
-    """ Test the ``CodeExtension`` compiled templates.
-    """
+    """Test the ``CodeExtension`` compiled templates."""
 
     def setUp(self):
         from wheezy.template.engine import Engine

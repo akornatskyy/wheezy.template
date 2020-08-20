@@ -17,17 +17,17 @@ RE_INT_VALUE = re.compile(r"^(?P<value>(\d+))$")
 
 
 class DeterminedExtension(object):
-    """ Tranlates function calls between template engines.
+    """Tranlates function calls between template engines.
 
-        Strictly determined known calls are converted to preprocessor
-        calls, e.g.::
+    Strictly determined known calls are converted to preprocessor
+    calls, e.g.::
 
-            @_('Name:')
-            @path_for('default')
-            @path_for('static', path='/static/css/site.css')
+        @_('Name:')
+        @path_for('default')
+        @path_for('static', path='/static/css/site.css')
 
-        Those that are not strictly determined are ignored and processed
-        by runtime engine.
+    Those that are not strictly determined are ignored and processed
+    by runtime engine.
     """
 
     def __init__(self, known_calls, runtime_token_start="@", token_start="#"):
@@ -56,18 +56,18 @@ class DeterminedExtension(object):
 
 
 def determined(expression):
-    """ Checks if expresion is strictly determined.
+    """Checks if expresion is strictly determined.
 
-        >>> determined("'default'")
-        True
-        >>> determined('name')
-        False
-        >>> determined("'default', id=id")
-        False
-        >>> determined("'default', lang=100")
-        True
-        >>> determined('')
-        True
+    >>> determined("'default'")
+    True
+    >>> determined('name')
+    False
+    >>> determined("'default', id=id")
+    False
+    >>> determined("'default', lang=100")
+    True
+    >>> determined('')
+    True
     """
     args, kwargs = parse_params(expression)
     for arg in args:
@@ -80,12 +80,12 @@ def determined(expression):
 
 
 def parse_kwargs(text):
-    """ Parses key-value type of parameters.
+    """Parses key-value type of parameters.
 
-        >>> parse_kwargs('id=item.id')
-        {'id': 'item.id'}
-        >>> sorted(parse_kwargs('lang="en", id=12').items())
-        [('id', '12'), ('lang', '"en"')]
+    >>> parse_kwargs('id=item.id')
+    {'id': 'item.id'}
+    >>> sorted(parse_kwargs('lang="en", id=12').items())
+    [('id', '12'), ('lang', '"en"')]
     """
     kwargs = {}
     for m in RE_KWARGS.finditer(text + ","):
@@ -95,16 +95,16 @@ def parse_kwargs(text):
 
 
 def parse_args(text):
-    """ Parses argument type of parameters.
+    """Parses argument type of parameters.
 
-        >>> parse_args('')
-        []
-        >>> parse_args('10, "x"')
-        ['10', '"x"']
-        >>> parse_args("'x', 100")
-        ["'x'", '100']
-        >>> parse_args('"default"')
-        ['"default"']
+    >>> parse_args('')
+    []
+    >>> parse_args('10, "x"')
+    ['10', '"x"']
+    >>> parse_args("'x', 100")
+    ["'x'", '100']
+    >>> parse_args('"default"')
+    ['"default"']
     """
     args = []
     for m in RE_ARGS.finditer(text + ","):
@@ -113,16 +113,16 @@ def parse_args(text):
 
 
 def parse_params(text):
-    """ Parses function parameters.
+    """Parses function parameters.
 
-        >>> parse_params('')
-        ([], {})
-        >>> parse_params('id=item.id')
-        ([], {'id': 'item.id'})
-        >>> parse_params('"default"')
-        (['"default"'], {})
-        >>> parse_params('"default", lang="en"')
-        (['"default"'], {'lang': '"en"'})
+    >>> parse_params('')
+    ([], {})
+    >>> parse_params('id=item.id')
+    ([], {'id': 'item.id'})
+    >>> parse_params('"default"')
+    (['"default"'], {})
+    >>> parse_params('"default", lang="en"')
+    (['"default"'], {'lang': '"en"'})
     """
     if "=" in text:
         args = text.split("=")[0]
@@ -137,16 +137,16 @@ def parse_params(text):
 
 
 def str_or_int(text):
-    """ Ensures ``text`` as string or int expression.
+    """Ensures ``text`` as string or int expression.
 
-        >>> str_or_int('"default"')
-        True
-        >>> str_or_int("'Hello'")
-        True
-        >>> str_or_int('100')
-        True
-        >>> str_or_int('item.id')
-        False
+    >>> str_or_int('"default"')
+    True
+    >>> str_or_int("'Hello'")
+    True
+    >>> str_or_int('100')
+    True
+    >>> str_or_int('item.id')
+    False
     """
     m = RE_STR_VALUE.match(text)
     if m:

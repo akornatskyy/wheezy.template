@@ -26,8 +26,7 @@ WRITER_RETURN = "return ''.join(_b)"
 
 
 def stmt_token(m):
-    """ Produces statement token.
-    """
+    """Produces statement token."""
     return m.end(), str(m.group(2)), str(m.group(1)).replace("\\\n", "")
 
 
@@ -36,8 +35,7 @@ RE_VAR_FILTER = re.compile(r"(?<!!)!\w+(!\w+)*")
 
 
 def var_token(m):
-    """ Produces variable token.
-    """
+    """Produces variable token."""
     start = m.start(1)
     pos = m.end()
     source = m.string
@@ -58,8 +56,7 @@ def var_token(m):
 
 
 def rvalue_token(m):
-    """ Produces variable token as r-value expression.
-    """
+    """Produces variable token as r-value expression."""
     return m.end(), "var", m.group(1).strip()
 
 
@@ -368,13 +365,11 @@ def build_end(builder, lineno, token, value):
 
 
 class CoreExtension(object):
-    """ Includes basic statements, variables processing and markup.
-    """
+    """Includes basic statements, variables processing and markup."""
 
     def __init__(self, token_start="@", line_join="\\"):
         def markup_token(m):
-            """ Produces markup token.
-            """
+            """Produces markup token."""
             return (
                 m.end(),
                 "markup",
@@ -412,8 +407,8 @@ class CoreExtension(object):
         )
 
         def clean_source(source):
-            """ Cleans leading whitespace before token start for all control
-                tokens. Ignores escaped token start.
+            """Cleans leading whitespace before token start for all control
+            tokens. Ignores escaped token start.
             """
             return re_clean2.sub(
                 r"\n%s\2" % token_start,

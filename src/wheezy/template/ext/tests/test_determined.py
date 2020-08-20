@@ -5,8 +5,7 @@ import unittest
 
 
 class DeterminedTestCase(unittest.TestCase):
-    """ Test the ``DeterminedExtension``.
-    """
+    """Test the ``DeterminedExtension``."""
 
     def setUp(self):
         from wheezy.template.ext.determined import DeterminedExtension
@@ -16,8 +15,8 @@ class DeterminedTestCase(unittest.TestCase):
         ).preprocessors[0]
 
     def test_determined(self):
-        """ Substitute determinded expressions for known calls to
-            preprocessor calls.
+        """Substitute determinded expressions for known calls to
+        preprocessor calls.
         """
         assert """\
             #ctx['_']('Name:')
@@ -32,8 +31,7 @@ class DeterminedTestCase(unittest.TestCase):
         )
 
     def test_undetermined(self):
-        """ Calls that are not determined left unchanged.
-        """
+        """Calls that are not determined left unchanged."""
         assert """\
             @path_for('item', id=id)
             @model.username.label(_('Username: '))

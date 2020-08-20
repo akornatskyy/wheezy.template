@@ -5,8 +5,7 @@ import unittest
 
 
 class PreprocessorTestCase(unittest.TestCase):
-    """ Test the ``Preprocessor``.
-    """
+    """Test the ``Preprocessor``."""
 
     def setUp(self):
         from wheezy.template.engine import Engine
@@ -15,13 +14,20 @@ class PreprocessorTestCase(unittest.TestCase):
         from wheezy.template.preprocessor import Preprocessor
 
         def runtime_engine_factory(loader):
-            engine = Engine(loader=loader, extensions=[CoreExtension(),])
+            engine = Engine(
+                loader=loader,
+                extensions=[
+                    CoreExtension(),
+                ],
+            )
             return engine
 
         self.templates = {}
         engine = Engine(
             loader=DictLoader(templates=self.templates),
-            extensions=[CoreExtension("#", line_join=None),],
+            extensions=[
+                CoreExtension("#", line_join=None),
+            ],
         )
         self.engine = Preprocessor(
             runtime_engine_factory, engine, key_factory=lambda ctx: ""
@@ -63,7 +69,10 @@ class PreprocessorTestCase(unittest.TestCase):
         )
 
         assert "    Hi, John!\n" == self.render(
-            "tmpl.html", ctx={"_": lambda x: x,}
+            "tmpl.html",
+            ctx={
+                "_": lambda x: x,
+            },
         )
 
     def test_remove(self):

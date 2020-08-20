@@ -5,8 +5,7 @@ import unittest
 
 
 class BlockBuilderTestCase(unittest.TestCase):
-    """ Test the ``BlockBuilder`` blocks.
-    """
+    """Test the ``BlockBuilder`` blocks."""
 
     def setUp(self):
         from wheezy.template.builder import BlockBuilder
@@ -14,34 +13,29 @@ class BlockBuilderTestCase(unittest.TestCase):
         self.builder = BlockBuilder([])
 
     def test_start_end_block(self):
-        """ Test start_block and end_block.
-        """
+        """Test start_block and end_block."""
         self.builder.start_block()
         assert self.builder.indent == "    "
         self.builder.end_block()
         assert self.builder.indent == ""
 
     def test_unexpected_end_block(self):
-        """ Test raises error.
-        """
+        """Test raises error."""
         self.assertRaises(SyntaxError, lambda: self.builder.end_block())
 
     def test_inconsistence(self):
-        """ Test add a line with wrong lineno.
-        """
+        """Test add a line with wrong lineno."""
         self.assertRaises(SyntaxError, lambda: self.builder.add(-1, ""))
 
     def test_unknown_token(self):
-        """ Test raises error if token is unknown.
-        """
+        """Test raises error if token is unknown."""
         self.assertRaises(
             SyntaxError, lambda: self.builder.build_token(1, "x", None)
         )
 
 
 class BlockBuilderAddSameLineTestCase(unittest.TestCase):
-    """ Test the ``BlockBuilder.add`` to the same line.
-    """
+    """Test the ``BlockBuilder.add`` to the same line."""
 
     def setUp(self):
         from wheezy.template.builder import BlockBuilder
@@ -70,8 +64,7 @@ class BlockBuilderAddSameLineTestCase(unittest.TestCase):
 
 
 class BlockBuilderAddNextLineTestCase(unittest.TestCase):
-    """ Test the ``BlockBuilder.add`` to add a new line.
-    """
+    """Test the ``BlockBuilder.add`` to add a new line."""
 
     def setUp(self):
         from wheezy.template.builder import BlockBuilder

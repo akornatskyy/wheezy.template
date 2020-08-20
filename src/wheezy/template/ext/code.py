@@ -44,8 +44,7 @@ def build_code(builder, lineno, token, lines):
 
 
 class CodeExtension(object):
-    """ Includes support for embedded python code.
-    """
+    """Includes support for embedded python code."""
 
     def __init__(self, token_start="@"):
 

@@ -18,11 +18,11 @@ def parser_scan(extensions):
 
 class Parser(object):
     """
-        ``continue_tokens`` are used to insert ``end`` node right
-        before them to simulate a block end. Such nodes have token
-        value ``None``.
+    ``continue_tokens`` are used to insert ``end`` node right
+    before them to simulate a block end. Such nodes have token
+    value ``None``.
 
-        ``out_tokens`` are combined together into a single node.
+    ``out_tokens`` are combined together into a single node.
     """
 
     def __init__(self, parser_rules, parser_configs=None, **ignore):
@@ -36,8 +36,8 @@ class Parser(object):
                 config(self)
 
     def end_continue(self, tokens):
-        """ If token is in ``continue_tokens`` prepend it
-            with end token so it simulate a closed block.
+        """If token is in ``continue_tokens`` prepend it
+        with end token so it simulate a closed block.
         """
         for t in tokens:
             if t[1] in self.continue_tokens:
