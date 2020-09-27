@@ -5,15 +5,15 @@
 #    pip-compile --output-file=requirements/dev-py2.txt requirements/dev.in
 #
 atomicwrites==1.4.0       # via pytest
-attrs==20.1.0             # via pytest
+attrs==20.2.0             # via pytest
 backports.functools-lru-cache==1.6.1  # via wcwidth
 click==7.1.2              # via pip-tools
 colorama==0.4.3           # via pytest
 configparser==4.0.2       # via importlib-metadata
 contextlib2==0.6.0.post1  # via importlib-metadata
-coverage==5.2.1           # via pytest-cov
+coverage==5.3             # via pytest-cov
 funcsigs==1.0.2           # via mock, pytest
-importlib-metadata==1.7.0  # via pluggy, pytest
+importlib-metadata==2.0.0  # via pluggy, pytest
 mock==3.0.5               # via -r requirements/dev.in
 more-itertools==5.0.0     # via pytest
 packaging==20.4           # via pytest
