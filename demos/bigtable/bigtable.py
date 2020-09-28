@@ -32,11 +32,25 @@ ctx = {
     ]
 }
 
+tests = []
+
+
+def test(n=100, name=None):
+    if name:
+        tests.append((name, None, None))
+        return
+
+    def decorator(f):
+        tests.append((f.__name__[5:], f, n))
+
+    return decorator
+
 
 # region: python list append
 
 if PY3:
 
+    @test()
     def test_list_append():
         b = []
         w = b.append
@@ -57,6 +71,7 @@ if PY3:
 
 else:
 
+    @test()
     def test_list_append():  # noqa
         b = []
         w = b.append
@@ -79,6 +94,7 @@ else:
 
 if PY3:  # noqa: C901
 
+    @test()
     def test_join_yield():
         def root():
             table = ctx["table"]
@@ -99,6 +115,7 @@ if PY3:  # noqa: C901
 
 else:
 
+    @test()
     def test_join_yield():
         def root():
             table = ctx["table"]
@@ -121,6 +138,7 @@ else:
 
 if PY3:
 
+    @test()
     def test_list_extend():
         b = []
         e = b.extend
@@ -145,6 +163,7 @@ if PY3:
 
 else:
 
+    @test()
     def test_list_extend():  # noqa
         b = []
         e = b.extend
@@ -174,7 +193,7 @@ try:
     from wheezy.template.ext.core import CoreExtension
     from wheezy.template.loader import DictLoader
 except ImportError:
-    test_wheezy_template = None
+    test(name="wheezy_template")
 else:
     engine = Engine(
         loader=DictLoader(
@@ -200,6 +219,7 @@ else:
     engine.global_vars.update({"h": escape})
     wheezy_template = engine.get_template("x")
 
+    @test()
     def test_wheezy_template():
         return wheezy_template.render(ctx)
 
@@ -209,7 +229,7 @@ else:
 try:
     from jinja2 import Environment
 except ImportError:
-    test_jinja2 = None
+    test(name="jinja2")
 else:
     jinja2_template = Environment().from_string(
         s(
@@ -227,6 +247,7 @@ else:
         )
     )
 
+    @test(30)
     def test_jinja2():
         return jinja2_template.render(ctx)
 
@@ -236,7 +257,7 @@ else:
 try:
     from tornado.template import Template
 except ImportError:
-    test_tornado = None
+    test(name="tornado")
 else:
     tornado_template = Template(
         s(
@@ -254,6 +275,7 @@ else:
         )
     )
 
+    @test(10)
     def test_tornado():
         return tornado_template.generate(**ctx).decode("utf8")
 
@@ -263,7 +285,7 @@ else:
 try:
     from mako.template import Template
 except ImportError:
-    test_mako = None
+    test(name="mako")
 else:
     mako_template = Template(
         s(
@@ -281,6 +303,7 @@ else:
         )
     )
 
+    @test(30)
     def test_mako():
         return mako_template.render(**ctx)
 
@@ -290,7 +313,7 @@ else:
 try:
     import tenjin
 except ImportError:
-    test_tenjin = None
+    test(name="tenjin")
 else:
     try:
         import webext
@@ -318,6 +341,7 @@ else:
         )
     )
 
+    @test(40)
     def test_tenjin():
         return tenjin_template.render(ctx, helpers)
 
@@ -329,7 +353,7 @@ try:
     from gluon.html import xmlescape
     from gluon.template import get_parsed
 except ImportError:
-    test_web2py = None
+    test(name="web2py")
 else:
     # see gluon.globals.Response
     class DummyResponse(object):
@@ -362,13 +386,14 @@ else:
         "exec",
     )
 
+    @test(1)
     def test_web2py():
         response = DummyResponse()
         exec(web2py_template, {}, dict(response=response, **ctx))
         return response.body.getvalue().decode("utf8")
 
 
-# region: django
+# region: djang
 
 try:
     import django
@@ -382,7 +407,7 @@ try:
     django.setup()
     from django.template import Context, Template
 except ImportError:
-    test_django = None
+    test(name="django")
 else:
     django_template = Template(
         s(
@@ -400,6 +425,7 @@ else:
         )
     )
 
+    @test(1)
     def test_django():
         return django_template.render(Context(ctx))
 
@@ -409,7 +435,7 @@ else:
 try:
     from chameleon.zpt.template import PageTemplate
 except ImportError:
-    test_chameleon = None
+    test(name="chameleon")
 else:
     chameleon_template = PageTemplate(
         s(
@@ -425,6 +451,7 @@ else:
         )
     )
 
+    @test(10)
     def test_chameleon():
         return chameleon_template.render(**ctx)
 
@@ -434,7 +461,7 @@ else:
 try:
     from Cheetah.Template import Template
 except ImportError:
-    test_cheetah3 = None
+    test(name="cheetah3")
 else:
     cheetah_ctx = {}
     cheetah_template = Template(
@@ -459,6 +486,7 @@ else:
         searchList=[cheetah_ctx],
     )
 
+    @test(5)
     def test_cheetah3():
         cheetah_ctx.update(ctx)
         output = cheetah_template.respond()
@@ -472,7 +500,7 @@ try:
     import spitfire
     import spitfire.compiler.util
 except ImportError:
-    test_spitfire = None
+    test(name="spitfire")
 else:
     spitfire_template = spitfire.compiler.util.load_template(
         s(
@@ -494,6 +522,7 @@ else:
         {"enable_filters": True},
     )
 
+    @test(1)
     def test_spitfire():
         return spitfire_template(search_list=[ctx]).main()
 
@@ -503,10 +532,11 @@ else:
 try:  # noqa: C901
     from qpy import join_xml, xml, xml_quote
 except ImportError:
-    test_qpy_list_append = None
+    test(name="qpy_list_append")
 else:
     if PY3:
 
+        @test(1)
         def test_qpy_list_append():
             b = []
             w = b.append
@@ -526,6 +556,7 @@ else:
 
     else:
 
+        @test(1)
         def test_qpy_list_append():
             b = []
             w = b.append
@@ -549,7 +580,7 @@ else:
 try:
     from bottle import SimpleTemplate
 except ImportError:
-    test_bottle = None
+    test(name="bottle")
 else:
     bottle_template = SimpleTemplate(
         s(
@@ -567,39 +598,133 @@ else:
         )
     )
 
+    @test(30)
     def test_bottle():
         return bottle_template.render(**ctx)
 
 
-def run(number=100):
+# region: chevron
+
+try:
+    import chevron
+except ImportError:
+    test(name="chevron")
+else:
+    chevron_template = tuple(
+        chevron.tokenizer.tokenize(
+            """
+<table>
+    {{#table}}
+    <tr>
+        {{#.}}
+        <td>{{key}}</td><td>{{value}}</td>
+        {{/.}}
+    </tr>
+    {{/table}}
+</table>
+"""
+        )
+    )
+    ctx2 = {
+        "table": [
+            {"key": k, "value": v}
+            for row in ctx["table"]
+            for k, v in row.items()
+        ]
+    }
+
+    @test(1)
+    def test_chevron():
+        return chevron.render(chevron_template, ctx2)
+
+
+# region: liquid
+
+try:
+    from liquid import Liquid
+except ImportError:
+    test(name="liquid")
+else:
+    liquid_args = [
+        s(
+            """
+<table>
+    {% for row in table %}
+    <tr>
+        {% for key in row %}
+        <td>{{key | escape}}</td><td>{{row[key] | str | escape}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+"""
+        )
+    ]
+    if PY3:
+        liquid_args.append({"mode": "python"})
+    liquid_template = Liquid(*liquid_args)
+
+    @test(1)
+    def test_liquid():
+        return liquid_template.render(**ctx)
+
+
+# region: pybars3
+
+try:
+    from pybars import Compiler
+except ImportError:
+    test(name="pybars3")
+else:
+    compiler = Compiler()
+    pybars3_template = compiler.compile(
+        s(
+            """
+<table>
+    {{#each table }}
+    <tr>
+        {{#each . }}
+        <td>{{@key}}</td><td>{{.}}</td>
+        {{/each}}
+    </tr>
+    {{/each}}
+</table>
+"""
+        )
+    )
+
+    @test(1)
+    def test_pybars3():
+        return pybars3_template(ctx)
+
+
+def run():
     import profile
     from pstats import Stats
-    from timeit import Timer
+    from timeit import repeat
 
-    names = globals().keys()
-    names = sorted(
-        [(name, globals()[name]) for name in names if name.startswith("test_")]
-    )
     print("                     msec    rps  tcalls  funcs")
-    for name, test in names:
+    for name, test, number in sorted(tests):
         if test:
-            assert isinstance(test(), s)
-            t = Timer(setup="from __main__ import %s as t" % name, stmt="t()")
-            # t = t.timeit(number=number)
-            t = min(t.repeat(number=number))
-            st = Stats(profile.Profile().runctx("test()", globals(), locals()))
-            print(
-                "%-17s %7.2f %6.2f %7d %6d"
-                % (
-                    name[5:],
-                    1000 * t / number,
-                    number / t,
-                    st.total_calls,
-                    len(st.stats),
+            try:
+                st = Stats(
+                    profile.Profile().runctx("test()", globals(), locals())
                 )
-            )
+                t = min(repeat(test, number=number))
+                print(
+                    "%-17s %7.2f %6.2f %7d %6d"
+                    % (
+                        name,
+                        1000 * t / number,
+                        number / t,
+                        st.total_calls,
+                        len(st.stats),
+                    )
+                )
+            except Exception:
+                print("%-26s failed" % name)
         else:
-            print("%-26s not installed" % name[5:])
+            print("%-26s not installed" % name)
 
 
 if __name__ == "__main__":
