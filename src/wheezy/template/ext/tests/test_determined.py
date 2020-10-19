@@ -3,18 +3,18 @@
 
 import unittest
 
+from wheezy.template.ext.determined import DeterminedExtension
+
 
 class DeterminedTestCase(unittest.TestCase):
     """Test the ``DeterminedExtension``."""
 
-    def setUp(self):
-        from wheezy.template.ext.determined import DeterminedExtension
-
+    def setUp(self) -> None:
         self.preprocess = DeterminedExtension(
             known_calls=["path_for", "_"]
         ).preprocessors[0]
 
-    def test_determined(self):
+    def test_determined(self) -> None:
         """Substitute determinded expressions for known calls to
         preprocessor calls.
         """
@@ -30,7 +30,7 @@ class DeterminedTestCase(unittest.TestCase):
         """
         )
 
-    def test_undetermined(self):
+    def test_undetermined(self) -> None:
         """Calls that are not determined left unchanged."""
         assert """\
             @path_for('item', id=id)

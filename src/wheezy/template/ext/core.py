@@ -1,9 +1,7 @@
-"""
-"""
-
 import re
+import typing
 
-from wheezy.template.comp import PY3
+from wheezy.template.typing import Builder, LexerRule, ParserConfig, Token
 from wheezy.template.utils import find_all_balanced
 
 # region: config
@@ -15,7 +13,7 @@ reserved_tokens = ["require", "#", "include", "import ", "from "]
 all_tokens = end_tokens + compound_tokens + reserved_tokens
 out_tokens = ["markup", "var", "include"]
 extends_tokens = ["def ", "require", "import ", "from "]
-known_var_filters = {"s": PY3 and "str" or "unicode"}
+known_var_filters = {"s": "str"}
 
 
 WRITER_DECLARE = "_b = []; w = _b.append"
@@ -25,7 +23,7 @@ WRITER_RETURN = "return ''.join(_b)"
 # region: lexer extensions
 
 
-def stmt_token(m):
+def stmt_token(m: typing.Match[str]) -> Token:
     """Produces statement token."""
     return m.end(), str(m.group(2)), str(m.group(1)).replace("\\\n", "")
 
@@ -34,7 +32,7 @@ RE_VAR = re.compile(r"(\.\w+)+")
 RE_VAR_FILTER = re.compile(r"(?<!!)!\w+(!\w+)*")
 
 
-def var_token(m):
+def var_token(m: typing.Match[str]) -> Token:
     """Produces variable token."""
     start = m.start(1)
     pos = m.end()
@@ -43,19 +41,19 @@ def var_token(m):
         end = find_all_balanced(source, pos)
         if pos == end:
             break
-        m = RE_VAR.match(source, end)
-        if not m:
+        mm = RE_VAR.match(source, end)
+        if not mm:
             break
-        pos = m.end()
+        pos = mm.end()
     value = source[start:end]
-    m = RE_VAR_FILTER.match(source, end)
-    if m:
-        end = m.end()
-        value += "!" + m.group()
+    mm = RE_VAR_FILTER.match(source, end)
+    if mm:
+        end = mm.end()
+        value += "!" + mm.group()
     return end, "var", value
 
 
-def rvalue_token(m):
+def rvalue_token(m: typing.Match[str]) -> Token:
     """Produces variable token as r-value expression."""
     return m.end(), "var", m.group(1).strip()
 
@@ -63,7 +61,7 @@ def rvalue_token(m):
 # region: parser config
 
 
-def configure_parser(parser):
+def configure_parser(parser: ParserConfig) -> None:
     parser.end_tokens.extend(end_tokens)
     parser.continue_tokens.extend(continue_tokens)
     parser.compound_tokens.extend(compound_tokens)
@@ -73,24 +71,24 @@ def configure_parser(parser):
 # region: parser
 
 
-def parse_require(value):
+def parse_require(value: str) -> typing.List[str]:
     return [v.strip(" ") for v in value.rstrip()[8:-1].split(",")]
 
 
-def parse_extends(value):
+def parse_extends(value: str) -> str:
     return value.rstrip()[8:-1]
 
 
-def parse_include(value):
+def parse_include(value: str) -> str:
     return value.rstrip()[8:-1]
 
 
-def parse_import(value):
+def parse_import(value: str) -> typing.Tuple[str, str]:
     name, var = value[7:].rsplit(" as ", 1)
     return name, var
 
 
-def parse_from(value):
+def parse_from(value: str) -> typing.Tuple[str, str, str]:
     name, var = value[5:].rsplit(" import ", 1)
     s = var.rsplit(" as ", 1)
     if len(s) == 2:
@@ -100,7 +98,9 @@ def parse_from(value):
     return name, var, alias
 
 
-def parse_var(value):
+def parse_var(
+    value: str,
+) -> typing.Tuple[str, typing.Optional[typing.List[str]]]:
     if "!!" not in value:
         return value, None
     var, var_filter = value.rsplit("!!", 1)
@@ -110,7 +110,9 @@ def parse_var(value):
 # region: block_builders
 
 
-def build_extends(builder, lineno, token, nodes):
+def build_extends(
+    builder: Builder, lineno: int, token: str, nodes: typing.List[typing.Any]
+) -> bool:
     assert token == "render"
     n = len(nodes)
     if not n:
@@ -131,7 +133,9 @@ def build_extends(builder, lineno, token, nodes):
     return True
 
 
-def build_module(builder, lineno, token, nodes):
+def build_module(
+    builder: Builder, lineno: int, token: str, nodes: typing.List[typing.Any]
+) -> bool:
     assert token == "module"
     for lineno, token, value in nodes:
         if token == "def ":
@@ -139,14 +143,21 @@ def build_module(builder, lineno, token, nodes):
     return True
 
 
-def build_import(builder, lineno, token, value):
+def build_import(
+    builder: Builder, lineno: int, token: str, value: typing.Tuple[str, str]
+) -> bool:
     assert token == "import "
     name, var = value
     builder.add(lineno, var + " = _i(" + name + ")")
     return True
 
 
-def build_from(builder, lineno, token, value):
+def build_from(
+    builder: Builder,
+    lineno: int,
+    token: str,
+    value: typing.Tuple[str, str, str],
+) -> bool:
     assert token == "from "
     name, var, alias = value
     builder.add(
@@ -155,7 +166,9 @@ def build_from(builder, lineno, token, value):
     return True
 
 
-def build_render_single_markup(builder, lineno, token, nodes):
+def build_render_single_markup(
+    builder: Builder, lineno: int, token: str, nodes: typing.List[typing.Any]
+) -> bool:
     assert lineno <= 0
     assert token == "render"
     if len(nodes) > 1:
@@ -176,7 +189,9 @@ def build_render_single_markup(builder, lineno, token, nodes):
     return True
 
 
-def build_render(builder, lineno, token, nodes):
+def build_render(
+    builder: Builder, lineno: int, token: str, nodes: typing.Iterable[Token]
+) -> bool:
     assert lineno <= 0
     assert token == "render"
     builder.add(lineno, WRITER_DECLARE)
@@ -186,7 +201,9 @@ def build_render(builder, lineno, token, nodes):
     return True
 
 
-def build_def_syntax_check(builder, lineno, token, value):
+def build_def_syntax_check(
+    builder: Builder, lineno: int, token: str, value: typing.Any
+) -> bool:
     assert token == "def "
     stmt, nodes = value
     lineno, token, value = nodes[0]
@@ -216,7 +233,9 @@ Add a line before it with @#ignore or leave it empty.
     return False
 
 
-def build_def_empty(builder, lineno, token, value):
+def build_def_empty(
+    builder: Builder, lineno: int, token: str, value: typing.Any
+) -> bool:
     assert token == "def "
     stmt, nodes = value
     if len(nodes) > 1:
@@ -242,7 +261,9 @@ def build_def_empty(builder, lineno, token, value):
     return True
 
 
-def build_def_single_markup(builder, lineno, token, value):
+def build_def_single_markup(
+    builder: Builder, lineno: int, token: str, value: typing.Any
+) -> bool:
     assert token == "def "
     stmt, nodes = value
     if len(nodes) > 2:
@@ -274,7 +295,9 @@ def build_def_single_markup(builder, lineno, token, value):
     return True
 
 
-def build_def(builder, lineno, token, value):
+def build_def(
+    builder: Builder, lineno: int, token: str, value: typing.Any
+) -> bool:
     assert token == "def "
     stmt, nodes = value
     def_name = stmt[4 : stmt.index("(", 5)]
@@ -301,19 +324,25 @@ def build_def(builder, lineno, token, value):
     return True
 
 
-def build_out(builder, lineno, token, nodes):
+def build_out(
+    builder: Builder, lineno: int, token: str, nodes: typing.Iterable[Token]
+) -> bool:
     assert token == "out"
     builder.build_block(nodes)
     return True
 
 
-def build_include(builder, lineno, token, value):
+def build_include(
+    builder: Builder, lineno: int, token: str, value: str
+) -> bool:
     assert token == "include"
     builder.add(lineno, "w(_r(" + value + ", ctx, local_defs, super_defs))")
     return True
 
 
-def build_var(builder, lineno, token, value):
+def build_var(
+    builder: Builder, lineno: int, token: str, value: typing.Any
+) -> bool:
     assert token == "var"
     var, var_filters = value
     if var_filters:
@@ -323,14 +352,18 @@ def build_var(builder, lineno, token, value):
     return True
 
 
-def build_markup(builder, lineno, token, value):
+def build_markup(
+    builder: Builder, lineno: int, token: str, value: str
+) -> bool:
     assert token == "markup"
     if value:
         builder.add(lineno, "w(" + value + ")")
     return True
 
 
-def build_compound(builder, lineno, token, value):
+def build_compound(
+    builder: Builder, lineno: int, token: str, value: typing.Any
+) -> bool:
     assert token in compound_tokens
     stmt, nodes = value
     builder.add(lineno, stmt)
@@ -340,7 +373,9 @@ def build_compound(builder, lineno, token, value):
     return True
 
 
-def build_require(builder, lineno, token, variables):
+def build_require(
+    builder: Builder, lineno: int, token: str, variables: typing.List[str]
+) -> bool:
     assert token == "require"
     builder.add(
         lineno,
@@ -349,13 +384,17 @@ def build_require(builder, lineno, token, variables):
     return True
 
 
-def build_comment(builder, lineno, token, comment):
+def build_comment(
+    builder: Builder, lineno: int, token: str, comment: str
+) -> bool:
     assert token == "#"
     builder.add(lineno, comment)
     return True
 
 
-def build_end(builder, lineno, token, value):
+def build_end(
+    builder: Builder, lineno: int, token: str, value: typing.Any
+) -> bool:
     if builder.lineno != lineno:
         builder.add(lineno - 1, "")
     return True
@@ -367,8 +406,8 @@ def build_end(builder, lineno, token, value):
 class CoreExtension(object):
     """Includes basic statements, variables processing and markup."""
 
-    def __init__(self, token_start="@", line_join="\\"):
-        def markup_token(m):
+    def __init__(self, token_start: str = "@", line_join: str = "\\"):
+        def markup_token(m: typing.Match[str]) -> Token:
             """Produces markup token."""
             return (
                 m.end(),
@@ -376,7 +415,7 @@ class CoreExtension(object):
                 m.group().replace(token_start + token_start, token_start),
             )
 
-        self.lexer_rules = {
+        self.lexer_rules: typing.Dict[int, LexerRule] = {
             100: (
                 re.compile(
                     r"%s((%s).*?(?<!\\))(\n|$)"
@@ -406,7 +445,7 @@ class CoreExtension(object):
             r"\n([ ]+)%s(%s)" % (token_start, "|".join(all_tokens)), re.S
         )
 
-        def clean_source(source):
+        def clean_source(source: str) -> str:
             """Cleans leading whitespace before token start for all control
             tokens. Ignores escaped token start.
             """
@@ -424,7 +463,7 @@ class CoreExtension(object):
         if line_join:
             line_join += "\n"
 
-            def parse_markup(value):
+            def parse_markup(value: str) -> typing.Optional[str]:
                 value = value.replace(line_join, "")
                 if value:
                     return repr(value)
@@ -433,7 +472,7 @@ class CoreExtension(object):
 
         else:
 
-            def parse_markup(value):  # noqa
+            def parse_markup(value: str) -> typing.Optional[str]:  # noqa
                 if value:
                     return repr(value)
                 else:

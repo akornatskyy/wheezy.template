@@ -1,21 +1,46 @@
-"""
-"""
+import typing
+from types import ModuleType
 
 from wheezy.template.builder import SourceBuilder, builder_scan
-from wheezy.template.comp import allocate_lock
+from wheezy.template.comp import allocate_lock  # type: ignore[attr-defined]
 from wheezy.template.compiler import Compiler
 from wheezy.template.lexer import Lexer, lexer_scan
 from wheezy.template.parser import Parser, parser_scan
+from wheezy.template.typing import (
+    Loader,
+    RenderTemplate,
+    SupportsRender,
+    TemplateClass,
+    Token,
+)
+
+
+class Template(SupportsRender):
+    """Simple template class."""
+
+    __slots__ = ("name", "render_template")
+
+    def __init__(self, name: str, render_template: RenderTemplate) -> None:
+        self.name = name
+        self.render_template = render_template
+
+    def render(self, ctx: typing.Mapping[str, typing.Any]) -> str:
+        return self.render_template(ctx, {}, {})
 
 
 class Engine(object):
     """The core component of template engine."""
 
-    def __init__(self, loader, extensions, template_class=None):
+    def __init__(
+        self,
+        loader: Loader,
+        extensions: typing.List[typing.Any],
+        template_class: typing.Optional[TemplateClass] = None,
+    ) -> None:
         self.lock = allocate_lock()
-        self.templates = {}
-        self.renders = {}
-        self.modules = {}
+        self.templates: typing.Dict[str, SupportsRender] = {}
+        self.renders: typing.Dict[str, RenderTemplate] = {}
+        self.modules: typing.Dict[str, ModuleType] = {}
         self.global_vars = {"_r": self.render, "_i": self.import_name}
         self.loader = loader
         self.template_class = template_class or Template
@@ -24,7 +49,7 @@ class Engine(object):
         self.parser = Parser(**parser_scan(extensions))
         self.builder = SourceBuilder(**builder_scan(extensions))
 
-    def get_template(self, name):
+    def get_template(self, name: str) -> SupportsRender:
         """Returns compiled template."""
         try:
             return self.templates[name]
@@ -32,17 +57,24 @@ class Engine(object):
             self.compile_template(name)
             return self.templates[name]
 
-    def render(self, name, ctx, local_defs, super_defs):
+    def render(
+        self,
+        name: str,
+        ctx: typing.Mapping[str, typing.Any],
+        local_defs: typing.Mapping[str, typing.Any],
+        super_defs: typing.Mapping[str, typing.Any],
+    ) -> str:
         """Renders template by name in given context."""
         try:
+
             return self.renders[name](ctx, local_defs, super_defs)
         except KeyError:
             self.compile_template(name)
             return self.renders[name](ctx, local_defs, super_defs)
 
-    def remove(self, name):
+    def remove(self, name: str) -> None:
         """Removes given ``name`` from internal cache."""
-        self.lock.acquire(1)
+        self.lock.acquire(True)
         try:
             if name in self.renders:
                 del self.templates[name]
@@ -54,15 +86,15 @@ class Engine(object):
 
     # region: internal details
 
-    def import_name(self, name):
+    def import_name(self, name: str) -> ModuleType:
         try:
             return self.modules[name]
         except KeyError:
             self.compile_import(name)
             return self.modules[name]
 
-    def compile_template(self, name):
-        self.lock.acquire(1)
+    def compile_template(self, name: str) -> None:
+        self.lock.acquire(True)
         try:
             if name not in self.renders:
                 template_source = self.loader.load(name)
@@ -88,8 +120,8 @@ class Engine(object):
         finally:
             self.lock.release()
 
-    def compile_import(self, name):
-        self.lock.acquire(1)
+    def compile_import(self, name: str) -> None:
+        self.lock.acquire(True)
         try:
             if name not in self.modules:
                 template_source = self.loader.load(name)
@@ -111,23 +143,15 @@ class Engine(object):
             self.lock.release()
 
 
-class Template(object):
-    """Simple template class."""
-
-    __slots__ = ("name", "render_template")
-
-    def __init__(self, name, render_template):
-        self.name = name
-        self.render_template = render_template
-
-    def render(self, ctx):
-        return self.render_template(ctx, {}, {})
-
-
 # region: internal details
 
 
-def print_debug(name, tokens, nodes, source):  # pragma: nocover
+def print_debug(
+    name: str,
+    tokens: typing.List[Token],
+    nodes: typing.List[typing.Any],
+    source: str,
+) -> None:  # pragma: nocover
     print(name.center(80, "-"))
     from pprint import pprint
 
@@ -138,7 +162,9 @@ def print_debug(name, tokens, nodes, source):  # pragma: nocover
     print_source(source, -1)
 
 
-def complement_syntax_error(err, template_source, source):
+def complement_syntax_error(
+    err: SyntaxError, template_source: str, source: str
+) -> SyntaxError:
     """Complements SyntaxError with template and source snippets,
     like one below:
 
@@ -166,6 +192,7 @@ def complement_syntax_error(err, template_source, source):
         SyntaxError: invalid syntax
 
     """
+    lineno = err.lineno or 0
     text = """\
 %s
 template snippet:
@@ -176,16 +203,14 @@ generated snippet:
 
     %s""" % (
         err.text,
-        source_chunk(template_source, err.lineno - 2, 1),
-        source_chunk(source, err.lineno, -1),
-        err.text.strip(),
+        source_chunk(template_source, lineno - 2, 1),
+        source_chunk(source, lineno, -1),
+        err.text and err.text.strip() or "",
     )
-    return err.__class__(
-        err.msg, (err.filename, err.lineno - 2, err.offset, text)
-    )
+    return err.__class__(err.msg, (err.filename, lineno - 2, err.offset, text))
 
 
-def source_chunk(source, lineno, offset, extra=2):
+def source_chunk(source: str, lineno: int, offset: int, extra: int = 2) -> str:
     lines = source.split("\n", lineno + extra)
     s = max(0, lineno - extra - 1)
     e = min(len(lines), lineno + extra)

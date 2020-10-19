@@ -1,7 +1,5 @@
-"""
-"""
-
 import re
+import typing
 
 from wheezy.template.utils import find_balanced
 
@@ -30,14 +28,19 @@ class DeterminedExtension(object):
     by runtime engine.
     """
 
-    def __init__(self, known_calls, runtime_token_start="@", token_start="#"):
+    def __init__(
+        self,
+        known_calls: typing.List[str],
+        runtime_token_start: str = "@",
+        token_start: str = "#",
+    ) -> None:
         self.token_start = token_start
         self.pattern = re.compile(
             r"%s(%s)(?=\()" % (runtime_token_start, "|".join(known_calls))
         )
         self.preprocessors = [self.preprocess]
 
-    def preprocess(self, source):
+    def preprocess(self, source: str) -> str:
         result = []
         start = 0
         for m in self.pattern.finditer(source):
@@ -55,7 +58,7 @@ class DeterminedExtension(object):
             return source
 
 
-def determined(expression):
+def determined(expression: str) -> bool:
     """Checks if expresion is strictly determined.
 
     >>> determined("'default'")
@@ -79,7 +82,7 @@ def determined(expression):
     return True
 
 
-def parse_kwargs(text):
+def parse_kwargs(text: str) -> typing.Mapping[str, str]:
     """Parses key-value type of parameters.
 
     >>> parse_kwargs('id=item.id')
@@ -94,7 +97,7 @@ def parse_kwargs(text):
     return kwargs
 
 
-def parse_args(text):
+def parse_args(text: str) -> typing.List[str]:
     """Parses argument type of parameters.
 
     >>> parse_args('')
@@ -112,7 +115,9 @@ def parse_args(text):
     return args
 
 
-def parse_params(text):
+def parse_params(
+    text: str,
+) -> typing.Tuple[typing.List[str], typing.Mapping[str, str]]:
     """Parses function parameters.
 
     >>> parse_params('')
@@ -136,7 +141,7 @@ def parse_params(text):
         return parse_args(text), {}
 
 
-def str_or_int(text):
+def str_or_int(text: str) -> bool:
     """Ensures ``text`` as string or int expression.
 
     >>> str_or_int('"default"')

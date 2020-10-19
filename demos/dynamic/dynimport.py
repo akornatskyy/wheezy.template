@@ -52,7 +52,7 @@ engine = Engine(loader=DictLoader(pages), extensions=[CoreExtension()])
 
 
 class TestCase(unittest.TestCase):
-    def test_render(self):
+    def test_render(self) -> None:
         for page in ("page_a", "page_b", "page_c"):
             template = engine.get_template(page)
             r = template.render({"widgets_impl": "a"})

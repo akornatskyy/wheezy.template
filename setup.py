@@ -3,11 +3,11 @@
 import os
 import re
 
-from setuptools import setup
+from setuptools import setup  # type: ignore[import]
 
 extra = {}
 try:
-    from Cython.Build import cythonize
+    from Cython.Build import cythonize  # type: ignore[import]
 
     p = os.path.join("src", "wheezy", "template")
     extra["ext_modules"] = cythonize(
@@ -24,7 +24,7 @@ except ImportError:
 
 README = open("README.md").read()
 VERSION = (
-    re.search(
+    re.search(  # type: ignore
         r'__version__ = "(.+)"',
         open("src/wheezy/template/__init__.py").read(),
     )
@@ -35,6 +35,7 @@ VERSION = (
 setup(
     name="wheezy.template",
     version=VERSION,
+    python_requires=">=3.6",
     description="A lightweight template library",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -49,16 +50,6 @@ setup(
         "Natural Language :: English",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.4",
-        "Programming Language :: Python :: 2.5",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.2",
-        "Programming Language :: Python :: 3.3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
@@ -73,6 +64,7 @@ setup(
     ],
     keywords="html markup template preprocessor",
     packages=["wheezy", "wheezy.template", "wheezy.template.ext"],
+    package_data={"wheezy.template": ["py.typed"]},
     package_dir={"": "src"},
     namespace_packages=["wheezy"],
     zip_safe=False,

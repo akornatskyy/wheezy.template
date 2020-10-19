@@ -1,19 +1,18 @@
-""" Unit tests for ``wheezy.templates.preprocessor.Preprocessor``.
-"""
-
+import typing
 import unittest
+
+from wheezy.template.engine import Engine
+from wheezy.template.ext.core import CoreExtension
+from wheezy.template.loader import DictLoader
+from wheezy.template.preprocessor import Preprocessor
+from wheezy.template.typing import Loader
 
 
 class PreprocessorTestCase(unittest.TestCase):
     """Test the ``Preprocessor``."""
 
-    def setUp(self):
-        from wheezy.template.engine import Engine
-        from wheezy.template.ext.core import CoreExtension
-        from wheezy.template.loader import DictLoader
-        from wheezy.template.preprocessor import Preprocessor
-
-        def runtime_engine_factory(loader):
+    def setUp(self) -> None:
+        def runtime_engine_factory(loader: Loader) -> Engine:
             engine = Engine(
                 loader=loader,
                 extensions=[
@@ -22,22 +21,22 @@ class PreprocessorTestCase(unittest.TestCase):
             )
             return engine
 
-        self.templates = {}
+        self.templates: typing.Dict[str, str] = {}
         engine = Engine(
             loader=DictLoader(templates=self.templates),
             extensions=[
-                CoreExtension("#", line_join=None),
+                CoreExtension("#", line_join=""),
             ],
         )
         self.engine = Preprocessor(
             runtime_engine_factory, engine, key_factory=lambda ctx: ""
         )
 
-    def render(self, name, ctx):
+    def render(self, name: str, ctx: typing.Mapping[str, typing.Any]) -> str:
         template = self.engine.get_template(name)
         return template.render(ctx)
 
-    def test_render(self):
+    def test_render(self) -> None:
         self.templates[
             "test.html"
         ] = """\
@@ -49,7 +48,7 @@ class PreprocessorTestCase(unittest.TestCase):
             "test.html", ctx={"_": lambda x: x, "username": "John"}
         )
 
-    def test_extends(self):
+    def test_extends(self) -> None:
         self.templates.update(
             {
                 "master.html": """\
@@ -75,7 +74,7 @@ class PreprocessorTestCase(unittest.TestCase):
             },
         )
 
-    def test_remove(self):
+    def test_remove(self) -> None:
         self.templates["test.html"] = "Hello"
         assert "Hello" == self.render("test.html", {})
         self.engine.remove("x")

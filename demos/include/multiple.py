@@ -56,7 +56,7 @@ engine = Engine(loader=DictLoader(pages), extensions=[CoreExtension()])
 
 
 class TestCase(unittest.TestCase):
-    def test_render(self):
+    def test_render(self) -> None:
         template = engine.get_template("page_all")
         r = template.render({})
         self.assertEqual(["a", "b"], r.split())

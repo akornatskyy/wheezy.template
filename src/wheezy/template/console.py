@@ -1,8 +1,7 @@
-"""
-"""
-
 import getopt
+import json
 import sys
+import typing
 
 from wheezy.template.engine import Engine
 from wheezy.template.ext.code import CodeExtension
@@ -10,32 +9,30 @@ from wheezy.template.ext.core import CoreExtension
 from wheezy.template.loader import FileLoader
 
 try:
-    import json
+    from wheezy.html.utils import escape_html as escape  # type: ignore[import]
 except ImportError:  # pragma: nocover
-    try:
-        import simplejson as json
-    except ImportError:  # pragma: nocover
-        json = None
-
-try:
-    from wheezy.html.utils import escape_html as escape
-except ImportError:  # pragma: nocover
-    try:
-        from html import escape
-    except ImportError:  # pragma: nocover
-        from cgi import escape
+    from html import escape
 
 
-class AttrDict(dict):
-    __getattr__ = dict.__getitem__
-    __setattr__ = dict.__setitem__
+class Options:
+    def __init__(
+        self,
+        token_start: str = "@",
+        searchpath: typing.Optional[typing.List[str]] = None,
+        extensions: typing.Optional[typing.List[str]] = None,
+    ) -> None:
+        self.token_start = token_start
+        self.searchpath = searchpath or ["."]
+        self.extensions = extensions or []
+        self.template = ""
+        self.context: typing.List[str] = []
 
 
-def main(args=None):
+def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     if not json:  # pragma: nocover
         print("error: json module is not available")
         return 1
-    args = parse_args(args or sys.argv[1:])
+    args = parse_args(argv or sys.argv[1:])
     if not args:
         return 2
     ts = args.token_start
@@ -48,46 +45,48 @@ def main(args=None):
     return 0
 
 
-def load_context(sources):
-    c = {}
+def load_context(sources: typing.List[str]) -> typing.Mapping[str, typing.Any]:
+    c: typing.Dict[str, typing.Any] = {}
     for s in sources:
         if s.endswith(".json"):
-            s = json.load(open(s))
+            d = json.load(open(s))
         else:
-            s = json.loads(s)
-        c.update(s)
+            d = json.loads(s)
+        c.update(d)
     return c
 
 
-def parse_args(args):
+def parse_args(args: typing.List[str]) -> typing.Optional[Options]:
     try:
         opts, value = getopt.getopt(args, "s:t:wh")
     except getopt.GetoptError:
         e = sys.exc_info()[1]
         usage()
         print("error: %s" % e)
-        return
-    args = AttrDict(token_start="@", searchpath=["."], extensions=[])
+        return None
+    d = Options(token_start="@", searchpath=["."], extensions=[])
     for o, a in opts:
         if o == "-h":
-            return
+            return None
         elif o == "-t":
-            args.token_start = a
+            d.token_start = a
         elif o == "-s":
-            args.searchpath = a.split(";")
+            d.searchpath = a.split(";")
         elif o == "-w":  # pragma: nocover
-            from wheezy.html.ext.template import WhitespaceExtension
+            from wheezy.html.ext.template import (  # type: ignore[import]
+                WhitespaceExtension,
+            )
 
-            args.extensions.append(WhitespaceExtension())
+            d.extensions.append(WhitespaceExtension())
     if not value:
         usage()
-        return
-    args.template = value[0]
-    args.context = value[1:]
-    return args
+        return None
+    d.template = value[0]
+    d.context = value[1:]
+    return d
 
 
-def usage():
+def usage() -> None:
     from datetime import datetime
     from os.path import basename
 

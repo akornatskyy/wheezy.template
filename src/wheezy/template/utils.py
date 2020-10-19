@@ -1,8 +1,4 @@
-"""
-"""
-
-
-def find_all_balanced(text, start=0):
+def find_all_balanced(text: str, start: int = 0) -> int:
     """Finds balanced ``([`` with ``])`` assuming
     that ``start`` is pointing to ``(`` or ``[`` in ``text``.
     """
@@ -17,7 +13,9 @@ def find_all_balanced(text, start=0):
             return pos
 
 
-def find_balanced(text, start=0, start_sep="(", end_sep=")"):
+def find_balanced(
+    text: str, start: int = 0, start_sep: str = "(", end_sep: str = ")"
+) -> int:
     """Finds balanced ``start_sep`` with ``end_sep`` assuming
     that ``start`` is pointing to ``start_sep`` in ``text``.
     """
@@ -37,7 +35,7 @@ def find_balanced(text, start=0, start_sep="(", end_sep=")"):
     return start
 
 
-def print_source(source, lineno=1):  # pragma: nocover
+def print_source(source: str, lineno: int = 1) -> None:  # pragma: nocover
     lines = []
     for line in source.split("\n"):
         lines.append("%02d " % lineno + line)

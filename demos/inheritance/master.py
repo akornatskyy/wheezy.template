@@ -45,7 +45,7 @@ engine = Engine(loader=DictLoader(pages), extensions=[CoreExtension()])
 
 
 class TestCase(unittest.TestCase):
-    def test_render(self):
+    def test_render(self) -> None:
         template = engine.get_template("page_b")
         r = template.render({})
         assert ["b", "a", "super"] == r.split()

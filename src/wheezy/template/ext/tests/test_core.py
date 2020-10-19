@@ -1,37 +1,32 @@
-""" Unit tests for ``wheezy.templates.ext.core``.
-"""
-
+import typing
 import unittest
 
-from wheezy.template.comp import PY3
+from wheezy.template.engine import Engine
+from wheezy.template.ext.core import CoreExtension, all_tokens
+from wheezy.template.loader import DictLoader
+from wheezy.template.typing import Token
 
 hello = "\u043f\u0440\u0438\u0432\u0456\u0442"
-if not PY3:  # pragma: nocover
-    hello = unicode(hello, "unicode_escape")  # noqa
 
 
 class CleanSourceTestCase(unittest.TestCase):
     """Test the ``clean_source``."""
 
-    def setUp(self):
-        from wheezy.template.ext.core import CoreExtension
-
+    def setUp(self) -> None:
         self.clean_source = CoreExtension().preprocessors[0]
 
-    def test_new_line(self):
+    def test_new_line(self) -> None:
         """Replace windows new line with linux new line."""
         assert "a\nb" == self.clean_source("a\r\nb")
 
-    def test_clean_leading_whitespace(self):
+    def test_clean_leading_whitespace(self) -> None:
         """Remove leading whitespace before @<stmt>, e.g. @if, @for, etc."""
-        from wheezy.template.ext.core import all_tokens
-
         for token in all_tokens:
             assert "@" + token == self.clean_source("  @" + token)
             assert "\n@" + token == self.clean_source("\n  @" + token)
             assert "a\n@" + token == self.clean_source("a\n  @" + token)
 
-    def test_leave_leading_whitespace(self):
+    def test_leave_leading_whitespace(self) -> None:
         """Leave leading whitespace before @<var> tokens."""
         assert "a\n\n   @b" == self.clean_source("a\n\n   @b")
         assert "a\n @b" == self.clean_source("a\n @b")
@@ -39,7 +34,7 @@ class CleanSourceTestCase(unittest.TestCase):
         assert "a@b" == self.clean_source("a@b")
         assert "  @b" == self.clean_source("  @b")
 
-    def test_ignore(self):
+    def test_ignore(self) -> None:
         """Ignore double @."""
         assert "a\n  @@b" == self.clean_source("a\n  @@b")
         assert "  @@b" == self.clean_source("  @@b")
@@ -48,36 +43,32 @@ class CleanSourceTestCase(unittest.TestCase):
 class LexerTestCase(unittest.TestCase):
     """Test the ``CoreExtension`` lexers."""
 
-    def setUp(self):
-        from wheezy.template.engine import Engine
-        from wheezy.template.ext.core import CoreExtension
-        from wheezy.template.loader import DictLoader
-
+    def setUp(self) -> None:
         self.engine = Engine(
             loader=DictLoader({}), extensions=[CoreExtension()]
         )
 
-    def tokenize(self, source):
+    def tokenize(self, source: str) -> typing.List[Token]:
         return self.engine.lexer.tokenize(source)
 
-    def test_stmt_token(self):
+    def test_stmt_token(self) -> None:
         """Test statement token."""
         tokens = self.tokenize("@require(title, users)\n")
         assert (1, "require", "require(title, users)") == tokens[0]
 
-    def test_comment_token(self):
+    def test_comment_token(self) -> None:
         """Test statement token."""
         tokens = self.tokenize("@#ignore\\\n@end\n")
         assert (1, "#", "#ignore@end") == tokens[0]
 
-    def test_line_join(self):
+    def test_line_join(self) -> None:
         """Test line join."""
         tokens = self.tokenize("a \\\nb")
         assert (1, "markup", "a \\\nb") == tokens[0]
         tokens = self.tokenize("a \\\\\nb")
         assert (1, "markup", "a \\\\\nb") == tokens[0]
 
-    def test_var_token(self):
+    def test_var_token(self) -> None:
         """Test variable token."""
         tokens = self.tokenize("@user.name ")
         assert (1, "var", "user.name") == tokens[0]
@@ -88,13 +79,13 @@ class LexerTestCase(unittest.TestCase):
         tokens = self.tokenize('@f("a@a!x")!h')
         assert (1, "var", 'f("a@a!x")!!h') == tokens[0]
 
-    def test_var_token_unicode(self):
+    def test_var_token_unicode(self) -> None:
         """Test variable token with unicode string as argument."""
         t = '_("' + hello + '")'
         tokens = self.tokenize("@" + t)
         assert (1, "var", t) == tokens[0]
 
-    def test_var_token_filter(self):
+    def test_var_token_filter(self) -> None:
         """Test variable token filter."""
         tokens = self.tokenize("@user.age!s")
         assert (1, "var", "user.age!!s") == tokens[0]
@@ -111,7 +102,7 @@ class LexerTestCase(unittest.TestCase):
         assert (1, "var", "user") == tokens[0]
         assert (1, "markup", "! ") == tokens[1]
 
-    def test_rvalue_token(self):
+    def test_rvalue_token(self) -> None:
         """Test rvalue token."""
         tokens = self.tokenize("@{user.name}")
         assert (1, "var", "user.name") == tokens[0]
@@ -120,20 +111,20 @@ class LexerTestCase(unittest.TestCase):
         tokens = self.tokenize("@{ s(user.age) }")
         assert (1, "var", "s(user.age)") == tokens[0]
 
-    def test_rvalue_token_unicode(self):
+    def test_rvalue_token_unicode(self) -> None:
         """Test rvalue token with unicode string as argument."""
         t = '_("' + hello + '")'
         tokens = self.tokenize("@{ " + t + " }")
         assert (1, "var", t) == tokens[0]
 
-    def test_rvalue_token_filter(self):
+    def test_rvalue_token_filter(self) -> None:
         """Test rvalue token filter."""
         tokens = self.tokenize("@{ user.age!!s }")
         assert (1, "var", "user.age!!s") == tokens[0]
         tokens = self.tokenize("@{ user.age!!s!h }")
         assert (1, "var", "user.age!!s!h") == tokens[0]
 
-    def test_markup_token(self):
+    def test_markup_token(self) -> None:
         """Test markup token."""
         tokens = self.tokenize(" test ")
         assert 1 == len(tokens)
@@ -141,7 +132,7 @@ class LexerTestCase(unittest.TestCase):
         tokens = self.tokenize("x@n")
         assert (1, "markup", "x") == tokens[0]
 
-    def test_markup_token_escape(self):
+    def test_markup_token_escape(self) -> None:
         """Test markup token with escape."""
         tokens = self.tokenize("support@@acme.org")
         assert 1 == len(tokens)
@@ -151,36 +142,32 @@ class LexerTestCase(unittest.TestCase):
 class ParserTestCase(unittest.TestCase):
     """Test the ``CoreExtension`` parsers."""
 
-    def setUp(self):
-        from wheezy.template.engine import Engine
-        from wheezy.template.ext.core import CoreExtension
-        from wheezy.template.loader import DictLoader
-
+    def setUp(self) -> None:
         self.engine = Engine(
             loader=DictLoader({}), extensions=[CoreExtension()]
         )
 
-    def parse(self, source):
+    def parse(self, source: str) -> typing.List[typing.Any]:
         return list(
             self.engine.parser.parse(self.engine.lexer.tokenize(source))
         )
 
-    def test_require(self):
+    def test_require(self) -> None:
         """Test parse_require."""
         nodes = self.parse("@require(title, users)\n")
         assert [(1, "require", ["title", "users"])] == nodes
 
-    def test_extends(self):
+    def test_extends(self) -> None:
         """Test parse_extends."""
         nodes = self.parse('@extends("shared/master.html")\n')
         assert [(1, "extends", ('"shared/master.html"', []))] == nodes
 
-    def test_include(self):
+    def test_include(self) -> None:
         """Test parse_include."""
         nodes = self.parse('@include("shared/scripts.html")\n')
         assert [(1, "out", [(1, "include", '"shared/scripts.html"')])] == nodes
 
-    def test_markup(self):
+    def test_markup(self) -> None:
         """Test parse_markup."""
         nodes = self.parse(
             """
@@ -201,7 +188,7 @@ class ParserTestCase(unittest.TestCase):
         nodes = self.parse("")
         assert [] == nodes
 
-    def test_line_join(self):
+    def test_line_join(self) -> None:
         nodes = self.parse("a \\\nb")
         assert [(1, "out", [(1, "markup", "'a b'")])] == nodes
         nodes = self.parse("\\\n")
@@ -209,7 +196,7 @@ class ParserTestCase(unittest.TestCase):
         nodes = self.parse("a \\\\\nb")
         assert [(1, "out", [(1, "markup", "'a \\\\b'")])] == nodes
 
-    def test_var(self):
+    def test_var(self) -> None:
         """Test parse_markup."""
         nodes = self.parse("@name!h!")
         assert [
@@ -248,27 +235,23 @@ class ParserTestCase(unittest.TestCase):
 class ParserLineJoinTestCase(unittest.TestCase):
     """Test the ``CoreExtension`` parsers."""
 
-    def setUp(self):
-        from wheezy.template.engine import Engine
-        from wheezy.template.ext.core import CoreExtension
-        from wheezy.template.loader import DictLoader
-
+    def setUp(self) -> None:
         self.engine = Engine(
-            loader=DictLoader({}), extensions=[CoreExtension(line_join=None)]
+            loader=DictLoader({}), extensions=[CoreExtension(line_join="")]
         )
 
-    def parse(self, source):
+    def parse(self, source: str) -> typing.List[typing.Any]:
         return list(
             self.engine.parser.parse(self.engine.lexer.tokenize(source))
         )
 
-    def test_markup(self):
+    def test_markup(self) -> None:
         """Test parse_markup."""
         nodes = self.parse("")
         assert [] == nodes
         assert not self.engine.parser.rules["markup"]("")
 
-    def test_line_join(self):
+    def test_line_join(self) -> None:
         nodes = self.parse("a \\\nb")
         assert [(1, "out", [(1, "markup", "'a \\\\\\nb'")])] == nodes
         nodes = self.parse("a \\\\\nb")
@@ -278,37 +261,33 @@ class ParserLineJoinTestCase(unittest.TestCase):
 class BuilderTestCase(unittest.TestCase):
     """Test the ``CoreExtension`` builders."""
 
-    def setUp(self):
-        from wheezy.template.engine import Engine
-        from wheezy.template.ext.core import CoreExtension
-        from wheezy.template.loader import DictLoader
-
+    def setUp(self) -> None:
         self.engine = Engine(
             loader=DictLoader({}), extensions=[CoreExtension()]
         )
 
-    def build_source(self, source):
+    def build_source(self, source: str) -> str:
         nodes = list(
             self.engine.parser.parse(self.engine.lexer.tokenize(source))
         )
         return self.engine.builder.build_source(nodes)
 
-    def build_render(self, source):
+    def build_render(self, source: str) -> str:
         nodes = list(
             self.engine.parser.parse(self.engine.lexer.tokenize(source))
         )
         return self.engine.builder.build_render(nodes)
 
-    def test_markup(self):
+    def test_markup(self) -> None:
         assert "w('Hello')" == self.build_source("Hello")
         assert "" == self.build_source("")
 
-    def test_line_join(self):
+    def test_line_join(self) -> None:
         assert "" == self.build_source("\\\n")
         assert "w('a b')" == self.build_source("a \\\nb")
         assert "w('a \\\\b')" == self.build_source("a \\\\\nb")
 
-    def test_comment(self):
+    def test_comment(self) -> None:
         assert """\
 w('Hello')
 # comment
@@ -319,7 +298,7 @@ Hello\\
  World"""
         )
 
-    def test_require(self):
+    def test_require(self) -> None:
         assert """\
 title = ctx['title']; username = ctx['username']
 w(username)""" == self.build_source(
@@ -328,7 +307,7 @@ w(username)""" == self.build_source(
 @username"""
         )
 
-    def test_out(self):
+    def test_out(self) -> None:
         """Test build_out."""
         expected = "w('Welcome, '); w(username); w('!')"
         assert expected == self.build_source("Welcome, @username!")
@@ -350,12 +329,12 @@ w(username); w('\\n</i>')"""
 </i>"""
         )
 
-    def test_include(self):
+    def test_include(self) -> None:
         """Test build_include."""
         expected = 'w(_r("a", ctx, local_defs, super_defs))'
         assert expected == self.build_source('@include("a")')
 
-    def test_if(self):
+    def test_if(self) -> None:
         """Test if elif else statements."""
         assert """\
 if n > 0:
@@ -375,7 +354,7 @@ else:
 """
         )
 
-    def test_for(self):
+    def test_for(self) -> None:
         assert """\
 for color in colors:
     w('    '); w(color); w('\\n')""" == self.build_source(
@@ -386,7 +365,7 @@ for color in colors:
 """
         )
 
-    def test_def(self):
+    def test_def(self) -> None:
         """Test def statement."""
         assert """\
 def link(url, text):
@@ -405,7 +384,7 @@ w('    Please '); w(link('/en/signin', 'sign in')); w('.\\n')\
 """
         )
 
-    def test_def_empty(self):
+    def test_def_empty(self) -> None:
         """Test def statement with empty function body."""
         assert """\
 def title():return ''
@@ -418,7 +397,7 @@ w(title()); w('.')""" == self.build_source(
 @title()."""
         )
 
-    def test_def_single_markup(self):
+    def test_def_single_markup(self) -> None:
         """Test def statement with a single return markup."""
         assert """\
 def title():
@@ -432,7 +411,7 @@ w(title()); w('.')""" == self.build_source(
 @title()."""
         )
 
-    def test_def_single_var(self):
+    def test_def_single_var(self) -> None:
         """Test def statement with a single return var."""
         expected = """\
 def title(x):
@@ -454,7 +433,7 @@ w(title()); w('.')"""
 @title()."""
         )
 
-    def test_render(self):
+    def test_render(self) -> None:
         """Test build_render."""
         assert """\
 def render(ctx, local_defs, super_defs):
@@ -463,7 +442,7 @@ def render(ctx, local_defs, super_defs):
             "Hello"
         )
 
-    def test_render_empty(self):
+    def test_render_empty(self) -> None:
         """Test build_render with return of empty string."""
         assert """\
 def render(ctx, local_defs, super_defs):
@@ -478,7 +457,7 @@ def render(ctx, local_defs, super_defs):
             ""
         )
 
-    def test_render_var(self):
+    def test_render_var(self) -> None:
         """Test build_render with return of var."""
         assert """\
 def render(ctx, local_defs, super_defs):
@@ -488,7 +467,7 @@ def render(ctx, local_defs, super_defs):
             "@a!h"
         )
 
-    def test_extends(self):
+    def test_extends(self) -> None:
         """Test build_extends."""
         assert """\
 def render(ctx, local_defs, super_defs):
@@ -499,7 +478,7 @@ def render(ctx, local_defs, super_defs):
 """
         )
 
-    def test_extends_with_require(self):
+    def test_extends_with_require(self) -> None:
         """Test build_extends with require token."""
         assert """\
 def render(ctx, local_defs, super_defs):
@@ -514,7 +493,7 @@ def render(ctx, local_defs, super_defs):
 """
         )
 
-    def test_extends_with_import(self):
+    def test_extends_with_import(self) -> None:
         """Test build_extends with import token."""
         assert """\
 def render(ctx, local_defs, super_defs):
@@ -529,7 +508,7 @@ def render(ctx, local_defs, super_defs):
 """
         )
 
-    def test_extends_with_from(self):
+    def test_extends_with_from(self) -> None:
         """Test build_extends with from token."""
         assert """\
 def render(ctx, local_defs, super_defs):
@@ -548,29 +527,29 @@ def render(ctx, local_defs, super_defs):
 class TemplateTestCase(unittest.TestCase):
     """Test the ``CoreExtension`` compiled templates."""
 
-    def render(self, source, ctx=None):
-        from wheezy.template.engine import Engine
-        from wheezy.template.ext.core import CoreExtension
-        from wheezy.template.loader import DictLoader
-
+    def render(
+        self,
+        source: str,
+        ctx: typing.Optional[typing.Mapping[str, typing.Any]] = None,
+    ) -> str:
         loader = DictLoader({"test.html": source})
         engine = Engine(loader=loader, extensions=[CoreExtension()])
         template = engine.get_template("test.html")
         return template.render(ctx or {})
 
-    def test_markup(self):
+    def test_markup(self) -> None:
         assert "Hello" == self.render("Hello")
         assert "" == self.render("")
         assert "" == self.render("\\\n")
 
-    def test_line_join(self):
+    def test_line_join(self) -> None:
         assert "a b" == self.render("a \\\nb")
 
-    def test_line_join_escape(self):
+    def test_line_join_escape(self) -> None:
         # TODO: escape \
         assert "a \\b" == self.render("a \\\\\nb")
 
-    def test_comment(self):
+    def test_comment(self) -> None:
         assert "Hello World" == self.render(
             """\
 Hello\\
@@ -578,7 +557,7 @@ Hello\\
  World"""
         )
 
-    def test_var(self):
+    def test_var(self) -> None:
         ctx = {"username": "John"}
         expected = "Welcome, John!"
         assert expected == self.render(
@@ -594,29 +573,15 @@ Welcome, @{ username }!""",
             ctx,
         )
 
-    def test_var_unicode(self):
+    def test_var_unicode(self) -> None:
         ctx = {"_": lambda x: x}
-        if PY3:  # pragma: nocover
-            assert hello == self.render(
-                '@require(_)\n@_("' + hello + '")', ctx
-            )
-        else:  # pragma: nocover
-            assert hello == self.render(
-                '@require(_)\n@_(u"' + hello + '")', ctx
-            )
+        assert hello == self.render('@require(_)\n@_("' + hello + '")', ctx)
 
-    def test_rvalue_unicode(self):
+    def test_rvalue_unicode(self) -> None:
         ctx = {"_": lambda x: x}
-        if PY3:  # pragma: nocover
-            assert hello == self.render(
-                '@require(_)\n@{_("' + hello + '")}', ctx
-            )
-        else:  # pragma: nocover
-            assert hello == self.render(
-                '@require(_)\n@{_(u"' + hello + '")}', ctx
-            )
+        assert hello == self.render('@require(_)\n@{_("' + hello + '")}', ctx)
 
-    def test_var_filter(self):
+    def test_var_filter(self) -> None:
         ctx = {"age": 36}
         expected = "age: 36"
         assert expected == self.render(
@@ -632,7 +597,7 @@ age: @{ age !! s }""",
             ctx,
         )
 
-    def test_rvalue(self):
+    def test_rvalue(self) -> None:
         ctx = {"accepted": True}
         assert "YES" == self.render(
             """\
@@ -640,15 +605,15 @@ age: @{ age !! s }""",
 @{ accepted and 'YES' or 'NO' }""",
             ctx,
         )
-        ctx = {"age": 36}
+        ctx2 = {"age": 36}
         assert "OK" == self.render(
             """\
 @require(age)
 @{ (age > 20 and age < 120) and 'OK' or '' }""",
-            ctx,
+            ctx2,
         )
 
-    def test_rvalue_filter(self):
+    def test_rvalue_filter(self) -> None:
         ctx = {"n": 36}
         assert "1" == self.render(
             """\
@@ -657,7 +622,7 @@ age: @{ age !! s }""",
             ctx,
         )
 
-    def test_if(self):
+    def test_if(self) -> None:
         src = """\
 @require(n)
 @if n > 0:
@@ -672,7 +637,7 @@ age: @{ age !! s }""",
         assert "    Zero" == self.render(src, {"n": 0})
         assert "    Negative" == self.render(src, {"n": -1})
 
-    def test_for(self):
+    def test_for(self) -> None:
         ctx = {"colors": ["red", "yellow"]}
         assert "    red\n    yellow\n" == self.render(
             """\
@@ -684,7 +649,7 @@ age: @{ age !! s }""",
             ctx,
         )
 
-    def test_def(self):
+    def test_def(self) -> None:
         assert "Welcome, John!" == self.render(
             """\
 @def welcome(name):
@@ -693,7 +658,7 @@ Welcome, @name!\\
 @welcome('John')"""
         )
 
-    def test_def_empty(self):
+    def test_def_empty(self) -> None:
         assert "." == self.render(
             """\
 @def title():
@@ -701,7 +666,7 @@ Welcome, @name!\\
 @title()."""
         )
 
-    def test_def_syntax_error_compound(self):
+    def test_def_syntax_error_compound(self) -> None:
         self.assertRaises(
             SyntaxError,
             lambda: self.render(
@@ -715,7 +680,7 @@ Welcome, @name!\\
             ),
         )
 
-    def test_def_no_syntax_error(self):
+    def test_def_no_syntax_error(self) -> None:
         assert "Welcome, John!" == self.render(
             """\
 @def welcome(name):
@@ -741,22 +706,18 @@ Welcome, @name!\\
 class MultiTemplateTestCase(unittest.TestCase):
     """Test the ``CoreExtension`` compiled templates."""
 
-    def setUp(self):
-        from wheezy.template.engine import Engine
-        from wheezy.template.ext.core import CoreExtension
-        from wheezy.template.loader import DictLoader
-
-        self.templates = {}
+    def setUp(self) -> None:
+        self.templates: typing.Dict[str, str] = {}
         self.engine = Engine(
             loader=DictLoader(templates=self.templates),
             extensions=[CoreExtension()],
         )
 
-    def render(self, name, ctx):
+    def render(self, name: str, ctx: typing.Mapping[str, typing.Any]) -> str:
         template = self.engine.get_template(name)
         return template.render(ctx)
 
-    def test_extends(self):
+    def test_extends(self) -> None:
         self.templates.update(
             {
                 "master.html": """\
@@ -775,7 +736,7 @@ class MultiTemplateTestCase(unittest.TestCase):
         assert "    Hi, John!\n" == self.render("tmpl.html", {})
         assert "    Hello, John!\n" == self.render("master.html", {})
 
-    def test_extends_dynamic(self):
+    def test_extends_dynamic(self) -> None:
         self.templates.update(
             {
                 "master.html": """\
@@ -797,7 +758,7 @@ class MultiTemplateTestCase(unittest.TestCase):
         )
         assert "    Hello, John!\n" == self.render("master.html", {})
 
-    def test_super(self):
+    def test_super(self) -> None:
         self.templates.update(
             {
                 "master.html": """\
@@ -815,7 +776,7 @@ class MultiTemplateTestCase(unittest.TestCase):
         )
         assert "        Hello, John!!!" == self.render("tmpl.html", {})
 
-    def test_include(self):
+    def test_include(self) -> None:
         self.templates.update(
             {
                 "footer.html": """\
@@ -835,7 +796,7 @@ Thanks, John""" == self.render(
         )
         assert "Thanks, John" == self.render("footer.html", ctx)
 
-    def test_import(self):
+    def test_import(self) -> None:
         self.templates.update(
             {
                 "helpers.html": """\
@@ -852,7 +813,7 @@ Hi, John""" == self.render(
             "tmpl.html", {}
         )
 
-    def test_import_dynamic(self):
+    def test_import_dynamic(self) -> None:
         self.templates.update(
             {
                 "helpers.html": """\
@@ -870,7 +831,7 @@ Hi, John""" == self.render(
             "tmpl.html", {"helpers_impl": "helpers.html"}
         )
 
-    def test_from_import(self):
+    def test_from_import(self) -> None:
         self.templates.update(
             {
                 "helpers.html": """\
@@ -887,7 +848,7 @@ Hi, John""" == self.render(
             "tmpl.html", {}
         )
 
-    def test_from_import_dynamic(self):
+    def test_from_import_dynamic(self) -> None:
         self.templates.update(
             {
                 "helpers.html": """\
@@ -905,7 +866,7 @@ Hi, John""" == self.render(
             "tmpl.html", {"helpers_impl": "helpers.html"}
         )
 
-    def test_from_import_as(self):
+    def test_from_import_as(self) -> None:
         self.templates.update(
             {
                 "share/helpers.html": """\
