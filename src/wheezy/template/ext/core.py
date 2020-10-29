@@ -74,7 +74,8 @@ def configure_parser(parser):
 
 
 def parse_require(value):
-    return [v.strip(" ") for v in value.rstrip()[8:-1].split(",")]
+    return [[x.strip(' ') for x in v.split(' as ', 1)]
+        for v in value.rstrip()[8:-1].split(',')]
 
 
 def parse_extends(value):
@@ -134,15 +135,24 @@ def build_extends(builder, lineno, token, nodes):
 def build_module(builder, lineno, token, nodes):
     assert token == "module"
     for lineno, token, value in nodes:
-        if token == "def ":
+        if token in ('def ', 'import ', 'require', 'code'):
             builder.build_token(lineno, token, value)
+    ln = builder.lineno
+    builder.add(ln + 1, 'class _DefsContainer(): pass')
+    builder.add(ln + 2, 'defs = _DefsContainer();defs.__dict__.update(super_defs)')
+    builder.add(ln + 3, 'return defs')
     return True
 
 
 def build_import(builder, lineno, token, value):
     assert token == "import "
     name, var = value
-    builder.add(lineno, var + " = _i(" + name + ")")
+    builder.add(lineno, var + ' = _i(' + name +
+                ', ctx, {}, {})')
+    builder.add(lineno + 1, var.join([
+        "super_defs['", "'] = ", "; ",
+        " = local_defs.setdefault('", "', ", ")"
+    ]))
     return True
 
 
@@ -150,8 +160,12 @@ def build_from(builder, lineno, token, value):
     assert token == "from "
     name, var, alias = value
     builder.add(
-        lineno, alias + " = _i(" + name + ").local_defs['" + var + "']"
+        lineno, alias + " = _i(" + name + ", ctx, {}, {})." + var
     )
+    builder.add(lineno + 1, alias.join([
+        "super_defs['", "'] = ", "; ",
+        " = local_defs.setdefault('", "', ", ")"
+    ]))
     return True
 
 
@@ -207,6 +221,11 @@ Add a line before it with @#ignore or leave it empty.
         )
         builder.add(lineno, "raise SyntaxError(%s)" % repr(error))
         builder.end_block()
+        def_name = stmt[4:stmt.index('(', 5)]
+        builder.add(lineno + 1, def_name.join([
+            "super_defs['", "'] = ", "; ",
+            " = local_defs.setdefault('", "', ", ")"
+        ]))
         return True
     elif len(nodes) > 1:
         # token before @end
@@ -344,7 +363,7 @@ def build_require(builder, lineno, token, variables):
     assert token == "require"
     builder.add(
         lineno,
-        "; ".join([name + " = ctx['" + name + "']" for name in variables]),
+        "; ".join([name[-1] + " = ctx['" + name[0] + "']" for name in variables]),
     )
     return True
 

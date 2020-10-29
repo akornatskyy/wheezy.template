@@ -97,6 +97,8 @@ class SourceBuilder(object):
 
     def build_module(self, nodes):
         builder = BlockBuilder(self.rules, lineno=self.lineno)
-        builder.add(self.lineno + 1, "local_defs = {}; super_defs = {}")
+        builder.add(self.lineno + 1,
+                    "def get_defs(ctx, local_defs, super_defs):")
+        builder.start_block()
         builder.build_token(self.lineno + 2, "module", nodes)
         return builder.to_string()
