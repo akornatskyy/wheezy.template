@@ -17,6 +17,7 @@ try:
             os.path.join(p, "ext", "__init__.py"),
         ],
         nthreads=2,
+        compiler_directives = {'language_level': 3},
         quiet=True,
     )
 except ImportError:
