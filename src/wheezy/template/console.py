@@ -1,5 +1,6 @@
 import getopt
 import json
+import os
 import sys
 import typing
 
@@ -48,7 +49,7 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
 def load_context(sources: typing.List[str]) -> typing.Mapping[str, typing.Any]:
     c: typing.Dict[str, typing.Any] = {}
     for s in sources:
-        if s.endswith(".json"):
+        if os.path.isfile(s):
             d = json.load(open(s))
         else:
             d = json.loads(s)
