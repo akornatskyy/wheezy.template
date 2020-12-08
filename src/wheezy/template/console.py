@@ -30,9 +30,6 @@ class Options:
 
 
 def main(argv: typing.Optional[typing.List[str]] = None) -> int:
-    if not json:  # pragma: nocover
-        print("error: json module is not available")
-        return 1
     args = parse_args(argv or sys.argv[1:])
     if not args:
         return 2
