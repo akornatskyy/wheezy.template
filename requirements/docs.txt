@@ -8,7 +8,6 @@ alabaster==0.7.12         # via sphinx
 babel==2.9.0              # via sphinx
 certifi==2020.12.5        # via requests
 chardet==3.0.4            # via requests
-colorama==0.4.4           # via sphinx
 docutils==0.16            # via sphinx
 idna==2.10                # via requests
 imagesize==1.2.0          # via sphinx
@@ -20,7 +19,7 @@ pyparsing==2.4.7          # via packaging
 pytz==2020.4              # via babel
 requests==2.25.0          # via sphinx
 snowballstemmer==2.0.0    # via sphinx
-sphinx-rtd-theme==0.5.0   # via -r requirements/docs.in
+sphinx-rtd-theme==0.5.1   # via -r requirements/docs.in
 sphinx==3.3.1             # via sphinx-rtd-theme
 sphinxcontrib-applehelp==1.0.2  # via sphinx
 sphinxcontrib-devhelp==1.0.2  # via sphinx
