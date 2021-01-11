@@ -171,7 +171,7 @@ else:
         )
     )
 
-    @test(30)
+    @test()
     def test_jinja2() -> str:
         return jinja2_template.render(ctx)
 
@@ -227,7 +227,7 @@ else:
         )
     )
 
-    @test(30)
+    @test()
     def test_mako() -> str:
         return mako_template.render(**ctx)
 
