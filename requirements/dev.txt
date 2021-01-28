@@ -4,21 +4,36 @@
 #
 #    pip-compile --output-file=requirements/dev.txt requirements/dev.in
 #
-atomicwrites==1.4.0       # via pytest
-attrs==20.3.0             # via pytest
-click==7.1.2              # via pip-tools
-colorama==0.4.4           # via pytest
-coverage==5.3             # via pytest-cov
-iniconfig==1.1.1          # via pytest
-packaging==20.7           # via pytest
-pip-tools==5.4.0          # via -r requirements/dev.in
-pluggy==0.13.1            # via pytest
-py==1.9.0                 # via pytest
-pyparsing==2.4.7          # via packaging
-pytest-cov==2.10.1        # via -r requirements/dev.in
-pytest==6.1.2             # via -r requirements/dev.in, pytest-cov
-six==1.15.0               # via pip-tools
-toml==0.10.2              # via pytest
+atomicwrites==1.4.0
+    # via pytest
+attrs==20.3.0
+    # via pytest
+click==7.1.2
+    # via pip-tools
+colorama==0.4.4
+    # via pytest
+coverage==5.4
+    # via pytest-cov
+iniconfig==1.1.1
+    # via pytest
+packaging==20.8
+    # via pytest
+pip-tools==5.5.0
+    # via -r requirements/dev.in
+pluggy==0.13.1
+    # via pytest
+py==1.10.0
+    # via pytest
+pyparsing==2.4.7
+    # via packaging
+pytest-cov==2.11.1
+    # via -r requirements/dev.in
+pytest==6.2.2
+    # via
+    #   -r requirements/dev.in
+    #   pytest-cov
+toml==0.10.2
+    # via pytest
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
