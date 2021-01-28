@@ -1,10 +1,9 @@
 import os.path
 import stat
 import unittest
+from unittest.mock import Mock, patch
 import warnings
 from time import time
-
-from mock import Mock, patch
 
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
