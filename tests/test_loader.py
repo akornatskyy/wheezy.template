@@ -51,7 +51,7 @@ class FileLoaderTestCase(unittest.TestCase):
 
     def test_load_existing(self) -> None:
         """Tests load."""
-        assert "" == self.loader.load("__init__.py")
+        assert "" == self.loader.load("ext/__init__.py")
 
     def test_load_not_found(self) -> None:
         """Tests load if the name is not found."""
