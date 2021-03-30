@@ -18,7 +18,9 @@ iniconfig==1.1.1
     # via pytest
 packaging==20.9
     # via pytest
-pip-tools==6.0.0
+pep517==0.10.0
+    # via pip-tools
+pip-tools==6.0.1
     # via -r requirements/dev.in
 pluggy==0.13.1
     # via pytest
@@ -33,7 +35,9 @@ pytest==6.2.2
     #   -r requirements/dev.in
     #   pytest-cov
 toml==0.10.2
-    # via pytest
+    # via
+    #   pep517
+    #   pytest
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

@@ -38,7 +38,7 @@ snowballstemmer==2.1.0
     # via sphinx
 sphinx-rtd-theme==0.5.1
     # via -r requirements/docs.in
-sphinx==3.5.2
+sphinx==3.5.3
     # via sphinx-rtd-theme
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
