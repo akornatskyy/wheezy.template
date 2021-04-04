@@ -19,10 +19,12 @@ class Options:
     def __init__(
         self,
         token_start: str = "@",
+        line_join: str = "\\",
         searchpath: typing.Optional[typing.List[str]] = None,
         extensions: typing.Optional[typing.List[str]] = None,
     ) -> None:
         self.token_start = token_start
+        self.line_join = line_join
         self.searchpath = searchpath or ["."]
         self.extensions = extensions or []
         self.template = ""
@@ -34,7 +36,7 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     if not args:
         return 2
     ts = args.token_start
-    extensions = [CoreExtension(ts), CodeExtension(ts)]
+    extensions = [CoreExtension(ts, args.line_join), CodeExtension(ts)]
     extensions.extend(args.extensions)
     engine = Engine(FileLoader(args.searchpath), extensions)
     engine.global_vars.update({"h": escape})
@@ -54,9 +56,11 @@ def load_context(sources: typing.List[str]) -> typing.Mapping[str, typing.Any]:
     return c
 
 
-def parse_args(args: typing.List[str]) -> typing.Optional[Options]:
+def parse_args(  # noqa: C901
+    args: typing.List[str],
+) -> typing.Optional[Options]:
     try:
-        opts, value = getopt.getopt(args, "s:t:wh")
+        opts, value = getopt.getopt(args, "s:t:j:wh")
     except getopt.GetoptError:
         e = sys.exc_info()[1]
         usage()
@@ -68,6 +72,8 @@ def parse_args(args: typing.List[str]) -> typing.Optional[Options]:
             return None
         elif o == "-t":
             d.token_start = a
+        elif o == "-j":
+            d.line_join = a
         elif o == "-s":
             d.searchpath = a.split(";")
         elif o == "-w":  # pragma: nocover
@@ -108,6 +114,7 @@ optional arguments:
 
   -s path     search path for templates ( . )
   -t token    token start ( @ )
+  -j token    line join ( \\ )
   -w          whitespace clean up
   -h          show this help message
 """

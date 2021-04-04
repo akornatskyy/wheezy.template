@@ -12,6 +12,7 @@ class ConsoleTestCase(unittest.TestCase):
     def test_usage(self) -> None:
         assert 2 == main(["-h"])
         assert 2 == main(["-t @"])
+        assert 2 == main(["-j \\"])
         assert 2 == main(["-x"])
 
     def test_context_file(self) -> None:
@@ -24,3 +25,6 @@ class ConsoleTestCase(unittest.TestCase):
 
     def test_master(self) -> None:
         assert 0 == main(["-s", "demos/master", "index.html"])
+
+    def test_line_join(self) -> None:
+        assert 0 == main(["-j", "\\", "-s", "demos/master", "index.html"])
