@@ -194,7 +194,7 @@ class ParserTestCase(unittest.TestCase):
         nodes = self.parse("\\\n")
         assert [(1, "out", [(1, "markup", None)])] == nodes
         nodes = self.parse("a \\\\\nb")
-        assert [(1, "out", [(1, "markup", "'a \\\\b'")])] == nodes
+        assert [(1, "out", [(1, "markup", "'a \\\\\\nb'")])] == nodes
 
     def test_var(self) -> None:
         """Test parse_markup."""
@@ -285,7 +285,7 @@ class BuilderTestCase(unittest.TestCase):
     def test_line_join(self) -> None:
         assert "" == self.build_source("\\\n")
         assert "w('a b')" == self.build_source("a \\\nb")
-        assert "w('a \\\\b')" == self.build_source("a \\\\\nb")
+        assert "w('a \\\\\\nb')" == self.build_source("a \\\\\nb")
 
     def test_comment(self) -> None:
         assert """\
@@ -546,8 +546,7 @@ class TemplateTestCase(unittest.TestCase):
         assert "a b" == self.render("a \\\nb")
 
     def test_line_join_escape(self) -> None:
-        # TODO: escape \
-        assert "a \\b" == self.render("a \\\\\nb")
+        assert "a \\\nb \\\nc" == self.render("a \\\\\nb \\\\\nc")
 
     def test_comment(self) -> None:
         assert "Hello World" == self.render(

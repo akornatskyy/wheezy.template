@@ -461,10 +461,12 @@ class CoreExtension(object):
         # region: parser
 
         if line_join:
-            line_join += "\n"
+            line_join = re.escape(line_join)
+            re_join1 = re.compile(r"(?<!%s)%s\n" % (line_join, line_join))
+            re_join2 = re.compile(r"(?<=%s)%s\n" % (line_join, line_join))
 
             def parse_markup(value: str) -> typing.Optional[str]:
-                value = value.replace(line_join, "")
+                value = re_join2.sub("\\n", re_join1.sub("", value))
                 if value:
                     return repr(value)
                 else:
