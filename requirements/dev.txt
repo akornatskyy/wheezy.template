@@ -20,7 +20,7 @@ packaging==20.9
     # via pytest
 pep517==0.10.0
     # via pip-tools
-pip-tools==6.0.1
+pip-tools==6.1.0
     # via -r requirements/dev.in
 pluggy==0.13.1
     # via pytest
@@ -30,7 +30,7 @@ pyparsing==2.4.7
     # via packaging
 pytest-cov==2.11.1
     # via -r requirements/dev.in
-pytest==6.2.2
+pytest==6.2.3
     # via
     #   -r requirements/dev.in
     #   pytest-cov
