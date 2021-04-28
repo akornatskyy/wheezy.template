@@ -1,0 +1,20 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "03:00"
+  open-pull-requests-limit: 15
+  ignore:
+  - dependency-name: pip-tools
+    versions:
+    - 6.0.0
+    - 6.0.1
+    - 6.1.0
+  - dependency-name: sphinx-rtd-theme
+    versions:
+    - 0.5.2
+  - dependency-name: pytest
+    versions:
+    - 6.2.3
