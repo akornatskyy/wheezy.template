@@ -24,13 +24,13 @@ pep517==0.11.0
     # via pip-tools
 pip-tools==6.2.0
     # via -r requirements/dev.in
-pluggy==0.13.1
+pluggy==1.0.0
     # via pytest
 py==1.10.0
     # via pytest
 pyparsing==2.4.7
     # via packaging
-pytest==6.2.4
+pytest==6.2.5
     # via
     #   -r requirements/dev.in
     #   pytest-cov
