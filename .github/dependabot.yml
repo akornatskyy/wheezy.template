@@ -5,7 +5,7 @@ updates:
   schedule:
     interval: daily
 - package-ecosystem: pip
-  directory: '/'
+  directory: '/requirements'
   schedule:
     interval: daily
   open-pull-requests-limit: 15
