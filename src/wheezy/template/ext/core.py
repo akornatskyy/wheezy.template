@@ -406,7 +406,7 @@ def build_end(
 class CoreExtension(object):
     """Includes basic statements, variables processing and markup."""
 
-    def __init__(self, token_start: str = "@", line_join: str = "\\"):
+    def __init__(self, token_start: str = "@", token_lvalue: str = "{", token_rvalue: str = "}", line_join: str = "\\"):
         def markup_token(m: typing.Match[str]) -> Token:
             """Produces markup token."""
             return (
@@ -425,7 +425,7 @@ class CoreExtension(object):
                 stmt_token,
             ),
             200: (re.compile(r"%s(\w+(\.\w+)*)" % token_start), var_token),
-            201: (re.compile(r"%s{(.*?)}" % token_start), rvalue_token),
+            201: (re.compile(r"%s%s(.*?)%s" % (token_start, token_lvalue, token_rvalue)), rvalue_token),
             999: (
                 re.compile(
                     r".+?(?=(?<!%s)%s(?!%s))|.+"
