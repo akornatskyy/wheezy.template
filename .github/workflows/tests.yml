@@ -1,0 +1,42 @@
+name: tests
+
+on: [push, pull_request]
+
+jobs:
+  tests:
+    name: "${{ matrix.tox }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: "3.7"
+            tox: py37
+          - python: "3.8"
+            tox: py38
+          - python: "3.9"
+            tox: py39
+          - python: "3.10"
+            tox: py310
+          - python: "pypy-3.7"
+            tox: pypy3
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "${{ matrix.python }}"
+      - run: |
+          python -m pip install --upgrade pip
+          pip install tox coveralls
+      - run: tox -e ${{ matrix.tox }}
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+      - run: |
+          python -m pip install --upgrade pip
+          pip install tox
+      - run: tox -e lint
