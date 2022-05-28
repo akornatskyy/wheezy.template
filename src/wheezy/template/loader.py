@@ -155,7 +155,7 @@ class AutoReloadProxy(Engine):
         from warnings import warn
 
         self.engine = engine
-        self.names: typing.Dict[str, int] = {}
+        self.names: typing.Dict[str, float] = {}
         warn(
             "autoreload limitation: master (inherited), imported "
             "and preprocessed templates. It is recommended to use "
@@ -190,7 +190,7 @@ class AutoReloadProxy(Engine):
     def file_changed(self, name: str) -> bool:
         try:
             last_known_stamp = self.names[name]
-            current_time = int(time.time())
+            current_time = time.time()
             if current_time - last_known_stamp <= 2:
                 return False
         except KeyError:
