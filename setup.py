@@ -38,7 +38,7 @@ VERSION = (
 setup(
     name="wheezy.template",
     version=VERSION,
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     description="A lightweight template library",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -53,7 +53,6 @@ setup(
         "Natural Language :: English",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
