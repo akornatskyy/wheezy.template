@@ -6,13 +6,13 @@
 #
 alabaster==0.7.12
     # via sphinx
-babel==2.10.1
+babel==2.10.3
     # via sphinx
-certifi==2022.5.18.1
+certifi==2022.6.15
     # via requests
-charset-normalizer==2.0.12
+charset-normalizer==2.1.0
     # via requests
-colorama==0.4.4
+colorama==0.4.5
     # via sphinx
 docutils==0.17.1
     # via
@@ -20,7 +20,7 @@ docutils==0.17.1
     #   sphinx-rtd-theme
 idna==3.3
     # via requests
-imagesize==1.3.0
+imagesize==1.4.1
     # via sphinx
 jinja2==3.1.2
     # via sphinx
@@ -34,11 +34,11 @@ pyparsing==3.0.9
     # via packaging
 pytz==2022.1
     # via babel
-requests==2.28.0
+requests==2.28.1
     # via sphinx
 snowballstemmer==2.2.0
     # via sphinx
-sphinx==5.0.1
+sphinx==5.1.1
     # via sphinx-rtd-theme
 sphinx-rtd-theme==1.0.0
     # via -r requirements/docs.in
@@ -54,5 +54,5 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-urllib3==1.26.9
+urllib3==1.26.11
     # via requests
