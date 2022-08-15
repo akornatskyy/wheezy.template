@@ -10,7 +10,7 @@ babel==2.10.3
     # via sphinx
 certifi==2022.6.15
     # via requests
-charset-normalizer==2.1.0
+charset-normalizer==2.1.1
     # via requests
 colorama==0.4.5
     # via sphinx
@@ -28,11 +28,11 @@ markupsafe==2.1.1
     # via jinja2
 packaging==21.3
     # via sphinx
-pygments==2.12.0
+pygments==2.13.0
     # via sphinx
 pyparsing==3.0.9
     # via packaging
-pytz==2022.1
+pytz==2022.2.1
     # via babel
 requests==2.28.1
     # via sphinx
@@ -54,5 +54,5 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-urllib3==1.26.11
+urllib3==1.26.12
     # via requests
