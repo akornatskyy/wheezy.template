@@ -12,8 +12,6 @@ certifi==2022.6.15
     # via requests
 charset-normalizer==2.1.1
     # via requests
-colorama==0.4.5
-    # via sphinx
 docutils==0.17.1
     # via
     #   sphinx
@@ -40,14 +38,16 @@ snowballstemmer==2.2.0
     # via sphinx
 sphinx==5.1.1
     # via sphinx-rtd-theme
-sphinx-rtd-theme==1.0.0
-    # via -r requirements/docs.in
+sphinx-rtd-theme==1.2.0
+    # via -r docs.in
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
 sphinxcontrib-devhelp==1.0.2
     # via sphinx
 sphinxcontrib-htmlhelp==2.0.0
     # via sphinx
+sphinxcontrib-jquery==2.0.0
+    # via sphinx-rtd-theme
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
 sphinxcontrib-qthelp==1.0.3
