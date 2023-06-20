@@ -16,7 +16,6 @@ def builder_scan(
 
 
 class BlockBuilder(Builder):
-
     __slots__ = ("rules", "indent", "lineno", "buf")
 
     def __init__(
@@ -87,7 +86,6 @@ class BlockBuilder(Builder):
 
 
 class SourceBuilder(object):
-
     __slots__ = ("rules", "lineno")
 
     def __init__(

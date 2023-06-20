@@ -48,7 +48,6 @@ class CodeExtension:
     """Includes support for embedded python code."""
 
     def __init__(self, token_start: str = "@") -> None:
-
         self.lexer_rules: typing.Mapping[int, LexerRule] = {
             300: (re.compile(r"\s*%s(?=\()" % token_start), code_token),
         }

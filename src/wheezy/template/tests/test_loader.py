@@ -87,7 +87,6 @@ class ChainLoaderTestCase(unittest.TestCase):
     """Test the ``ChainLoader``."""
 
     def setUp(self) -> None:
-
         self.loader = ChainLoader(
             loaders=[
                 DictLoader(
