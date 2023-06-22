@@ -1,7 +1,11 @@
+import sys
 import typing
 from abc import abstractmethod
 
-Token = typing.Tuple[int, str, str]
+if sys.version_info <= (3, 9, 0):
+    Token = typing.Tuple[int, str, str]
+else:
+    Token = tuple[int, str, str]  # type: ignore[misc]
 
 
 class Builder:
