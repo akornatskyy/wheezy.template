@@ -2,9 +2,9 @@ import sys
 import typing
 from abc import abstractmethod
 
-if sys.version_info <= (3, 9, 0):
+if sys.version_info <= (3, 9, 0):  # pragma: nocover
     Token = typing.Tuple[int, str, str]
-else:
+else:  # pragma: nocover
     Token = tuple[int, str, str]  # type: ignore[misc]
 
 
