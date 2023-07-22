@@ -4,6 +4,7 @@ import stat
 import time
 import typing
 
+from wheezy.template.comp import Tuple
 from wheezy.template.engine import Engine
 from wheezy.template.typing import Loader, SupportsRender
 
@@ -27,7 +28,7 @@ class FileLoader(Loader):
         self.searchpath = searchpath
         self.encoding = encoding
 
-    def list_names(self) -> typing.Tuple[str, ...]:
+    def list_names(self) -> Tuple[str, ...]:
         """Return a list of names relative to directories. Ignores any files
         and directories that start with dot.
         """
@@ -83,7 +84,7 @@ class DictLoader(Loader):
     def __init__(self, templates: typing.Mapping[str, str]) -> None:
         self.templates = templates
 
-    def list_names(self) -> typing.Tuple[str, ...]:
+    def list_names(self) -> Tuple[str, ...]:
         """List all keys from internal dict."""
         return tuple(sorted(self.templates.keys()))
 
@@ -100,7 +101,7 @@ class ChainLoader(Loader):
     def __init__(self, loaders: typing.List[Loader]) -> None:
         self.loaders = loaders
 
-    def list_names(self) -> typing.Tuple[str, ...]:
+    def list_names(self) -> Tuple[str, ...]:
         """Returns as list of names from all loaders."""
         names = set()
         for loader in self.loaders:
@@ -127,7 +128,7 @@ class PreprocessLoader(Loader):
         self.engine = engine
         self.ctx = ctx or {}
 
-    def list_names(self) -> typing.Tuple[str, ...]:
+    def list_names(self) -> Tuple[str, ...]:
         return self.engine.loader.list_names()
 
     def load(self, name: str) -> str:

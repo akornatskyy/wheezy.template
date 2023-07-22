@@ -1,6 +1,7 @@
 import re
 import typing
 
+from wheezy.template.comp import Tuple
 from wheezy.template.typing import Builder, LexerRule, ParserConfig, Token
 from wheezy.template.utils import find_all_balanced
 
@@ -83,12 +84,12 @@ def parse_include(value: str) -> str:
     return value.rstrip()[8:-1]
 
 
-def parse_import(value: str) -> typing.Tuple[str, str]:
+def parse_import(value: str) -> Tuple[str, str]:
     name, var = value[7:].rsplit(" as ", 1)
     return name, var
 
 
-def parse_from(value: str) -> typing.Tuple[str, str, str]:
+def parse_from(value: str) -> Tuple[str, str, str]:
     name, var = value[5:].rsplit(" import ", 1)
     s = var.rsplit(" as ", 1)
     if len(s) == 2:
@@ -100,7 +101,7 @@ def parse_from(value: str) -> typing.Tuple[str, str, str]:
 
 def parse_var(
     value: str,
-) -> typing.Tuple[str, typing.Optional[typing.List[str]]]:
+) -> Tuple[str, typing.Optional[typing.List[str]]]:
     if "!!" not in value:
         return value, None
     var, var_filter = value.rsplit("!!", 1)
@@ -144,7 +145,7 @@ def build_module(
 
 
 def build_import(
-    builder: Builder, lineno: int, token: str, value: typing.Tuple[str, str]
+    builder: Builder, lineno: int, token: str, value: Tuple[str, str]
 ) -> bool:
     assert token == "import "
     name, var = value
@@ -156,7 +157,7 @@ def build_from(
     builder: Builder,
     lineno: int,
     token: str,
-    value: typing.Tuple[str, str, str],
+    value: Tuple[str, str, str],
 ) -> bool:
     assert token == "from "
     name, var, alias = value

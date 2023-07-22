@@ -1,6 +1,7 @@
 import re
 import typing
 
+from wheezy.template.comp import Tuple
 from wheezy.template.utils import find_balanced
 
 RE_ARGS = re.compile(r'\s*(?P<expr>(([\'"]).*?\3|.+?))\s*\,')
@@ -117,7 +118,7 @@ def parse_args(text: str) -> typing.List[str]:
 
 def parse_params(
     text: str,
-) -> typing.Tuple[typing.List[str], typing.Mapping[str, str]]:
+) -> Tuple[typing.List[str], typing.Mapping[str, str]]:
     """Parses function parameters.
 
     >>> parse_params('')

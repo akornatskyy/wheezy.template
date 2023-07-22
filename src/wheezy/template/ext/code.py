@@ -1,6 +1,7 @@
 import re
 import typing
 
+from wheezy.template.comp import Tuple
 from wheezy.template.typing import Builder, LexerRule, ParserRule, Token
 from wheezy.template.utils import find_balanced
 
@@ -54,6 +55,4 @@ class CodeExtension:
 
     parser_rules: typing.Mapping[str, ParserRule] = {"code": parse_code}
 
-    builder_rules: typing.List[typing.Tuple[str, typing.Any]] = [
-        ("code", build_code)
-    ]
+    builder_rules: typing.List[Tuple[str, typing.Any]] = [("code", build_code)]
