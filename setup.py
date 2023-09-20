@@ -69,7 +69,6 @@ setup(
     packages=["wheezy", "wheezy.template", "wheezy.template.ext"],
     package_data={"wheezy.template": ["py.typed"]},
     package_dir={"": "src"},
-    namespace_packages=["wheezy"],
     zip_safe=False,
     install_requires=[],
     entry_points={
