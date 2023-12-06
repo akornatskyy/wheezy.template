@@ -44,7 +44,7 @@ BuilderRule = typing.Callable[
         Builder,
         int,
         str,
-        typing.Union[str, List[str], typing.Iterable[Token]],
+        typing.Union[str, List[str], typing.Iterable[Token], None],
     ],
     bool,
 ]
