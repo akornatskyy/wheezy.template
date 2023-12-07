@@ -354,7 +354,7 @@ def build_var(
 
 
 def build_markup(
-    builder: Builder, lineno: int, token: str, value: str
+    builder: Builder, lineno: int, token: str, value: typing.Union[str, None]
 ) -> bool:
     assert token == "markup"
     if value:
