@@ -10,7 +10,7 @@ from wheezy.template.ext.core import CoreExtension
 from wheezy.template.loader import FileLoader
 
 try:
-    from wheezy.html.utils import escape_html as escape  # type: ignore[import]
+    from wheezy.html.utils import escape_html as escape
 except ImportError:  # pragma: nocover
     from html import escape
 
@@ -77,9 +77,7 @@ def parse_args(  # noqa: C901
         elif o == "-s":
             d.searchpath = a.split(";")
         elif o == "-w":  # pragma: nocover
-            from wheezy.html.ext.template import (  # type: ignore[import]
-                WhitespaceExtension,
-            )
+            from wheezy.html.ext.template import WhitespaceExtension
 
             d.extensions.append(WhitespaceExtension())
     if not value:

@@ -35,8 +35,8 @@ class Builder:
         ...  # pragma: nocover
 
 
-Tokenizer = typing.Callable[[typing.Match], Token]
-LexerRule = Tuple[typing.Pattern, Tokenizer]
+Tokenizer = typing.Callable[[typing.Match[str]], Token]
+LexerRule = Tuple[typing.Pattern[str], Tokenizer]
 PreProcessorRule = typing.Callable[[str], str]
 PostProcessorRule = typing.Callable[[List[Token]], str]
 BuilderRule = typing.Callable[

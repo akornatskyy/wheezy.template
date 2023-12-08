@@ -10,7 +10,7 @@ from wheezy.template.loader import DictLoader
 from wheezy.template.typing import Builder
 
 try:
-    from wheezy.html.utils import escape_html as escape  # type: ignore[import]
+    from wheezy.html.utils import escape_html as escape
 except ImportError:
     from html import escape
 
