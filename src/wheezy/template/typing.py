@@ -3,6 +3,8 @@ from abc import abstractmethod
 
 from wheezy.template.comp import List, Tuple
 
+# flake8: noqa: E704
+
 Token = Tuple[int, str, str]
 
 
@@ -10,20 +12,18 @@ class Builder:
     lineno: int
 
     @abstractmethod
-    def start_block(self) -> None:
-        ...  # pragma: nocover
+    def start_block(self) -> None: ...  # pragma: nocover
 
     @abstractmethod
-    def end_block(self) -> None:
-        ...  # pragma: nocover
+    def end_block(self) -> None: ...  # pragma: nocover
 
     @abstractmethod
-    def add(self, lineno: int, code: str) -> None:
-        ...  # pragma: nocover
+    def add(self, lineno: int, code: str) -> None: ...  # pragma: nocover
 
     @abstractmethod
-    def build_block(self, nodes: typing.Iterable[Token]) -> None:
-        ...  # pragma: nocover
+    def build_block(
+        self, nodes: typing.Iterable[Token]
+    ) -> None: ...  # pragma: nocover
 
     @abstractmethod
     def build_token(
@@ -31,8 +31,7 @@ class Builder:
         lineno: int,
         token: str,
         value: typing.Union[str, typing.Iterable[Token]],
-    ) -> None:
-        ...  # pragma: nocover
+    ) -> None: ...  # pragma: nocover
 
 
 Tokenizer = typing.Callable[[typing.Match[str]], Token]
@@ -70,8 +69,9 @@ RenderTemplate = typing.Callable[
 
 class SupportsRender:
     @abstractmethod
-    def render(self, ctx: typing.Mapping[str, typing.Any]) -> str:
-        ...  # pragma: nocover
+    def render(
+        self, ctx: typing.Mapping[str, typing.Any]
+    ) -> str: ...  # pragma: nocover
 
 
 TemplateClass = typing.Callable[[str, RenderTemplate], SupportsRender]
@@ -79,9 +79,7 @@ TemplateClass = typing.Callable[[str, RenderTemplate], SupportsRender]
 
 class Loader:
     @abstractmethod
-    def list_names(self) -> Tuple[str, ...]:
-        ...  # pragma: nocover
+    def list_names(self) -> Tuple[str, ...]: ...  # pragma: nocover
 
     @abstractmethod
-    def load(self, name: str) -> typing.Optional[str]:
-        ...  # pragma: nocover
+    def load(self, name: str) -> typing.Optional[str]: ...  # pragma: nocover
