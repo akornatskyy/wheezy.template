@@ -8,7 +8,7 @@ alabaster==0.7.16
     # via sphinx
 babel==2.15.0
     # via sphinx
-certifi==2024.6.2
+certifi==2024.7.4
     # via requests
 charset-normalizer==3.3.2
     # via requests
@@ -34,7 +34,7 @@ requests==2.32.3
     # via sphinx
 snowballstemmer==2.2.0
     # via sphinx
-sphinx==7.3.7
+sphinx==7.4.6
     # via
     #   sphinx-rtd-theme
     #   sphinxcontrib-jquery
