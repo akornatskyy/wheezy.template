@@ -8,11 +8,6 @@ build==1.2.2
     # via pip-tools
 click==8.1.7
     # via pip-tools
-colorama==0.4.6
-    # via
-    #   build
-    #   click
-    #   pytest
 coverage==7.6.1
     # via pytest-cov
 iniconfig==2.0.0
@@ -22,7 +17,7 @@ packaging==24.1
     #   build
     #   pytest
 pip-tools==7.4.1
-    # via -r requirements/dev.in
+    # via -r dev.in
 pluggy==1.5.0
     # via pytest
 pyproject-hooks==1.2.0
@@ -31,10 +26,10 @@ pyproject-hooks==1.2.0
     #   pip-tools
 pytest==8.3.3
     # via
-    #   -r requirements/dev.in
+    #   -r dev.in
     #   pytest-cov
-pytest-cov==5.0.0
-    # via -r requirements/dev.in
+pytest-cov==6.0.0
+    # via -r dev.in
 wheel==0.44.0
     # via pip-tools
 
