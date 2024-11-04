@@ -47,12 +47,16 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
 
 def load_context(sources: typing.List[str]) -> typing.Mapping[str, typing.Any]:
     c: typing.Dict[str, typing.Any] = {}
+    args: typing.List[typing.Any] = []
     for s in sources:
         if os.path.isfile(s):
             d = json.load(open(s))
         else:
             d = json.loads(s)
-        c.update(d)
+        args.append(d)
+        if isinstance(d, dict):
+            c.update(d)
+    c["__args__"] = args
     return c
 
 
@@ -69,6 +73,7 @@ def parse_args(  # noqa: C901
     d = Options(token_start="@", searchpath=["."], extensions=[])
     for o, a in opts:
         if o == "-h":
+            usage()
             return None
         elif o == "-t":
             d.token_start = a
@@ -89,34 +94,28 @@ def parse_args(  # noqa: C901
 
 
 def usage() -> None:
-    from datetime import datetime
     from os.path import basename
-
-    from wheezy.template import __version__
 
     print(
         """\
-wheezy.template %s
-Copyright (C) 2012-%d by Andriy Kornatskyy
 
-renders a template with the given context.
+Renders a template with the provided context.
 
-usage: %s template [ context ... ]
+Usage: %s template [ context ... ]
 
-positional arguments:
+Positional arguments:
+  template    The template filename.
+  context     A filename or JSON string representing the context.
 
-  template    a filename
-  context     a filename or JSON string
+Optional arguments:
+  -s path     Search path for templates (default ".").
+  -t token    Token start (default "@").
+  -j token    Line join token (default "\\").
+  -w          Enable whitespace cleanup.
+  -h          Show this help message.
 
-optional arguments:
-
-  -s path     search path for templates ( . )
-  -t token    token start ( @ )
-  -j token    line join ( \\ )
-  -w          whitespace clean up
-  -h          show this help message
-"""
-        % (__version__, datetime.now().year, basename(sys.argv[0]))
+The contexts passed are available as the __args__ list variable."""
+        % basename(sys.argv[0])
     )
 
 

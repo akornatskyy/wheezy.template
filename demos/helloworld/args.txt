@@ -1,0 +1,2 @@
+@require(__args__)
+Hello, @__args__[0]!

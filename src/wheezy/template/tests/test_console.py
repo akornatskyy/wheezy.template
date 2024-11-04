@@ -23,6 +23,9 @@ class ConsoleTestCase(unittest.TestCase):
     def test_context_string(self) -> None:
         assert 0 == main(["demos/helloworld/hello.txt", '{"name": "World"}'])
 
+    def test_context_args(self) -> None:
+        assert 0 == main(["demos/helloworld/args.txt", '"World"'])
+
     def test_master(self) -> None:
         assert 0 == main(["-s", "demos/master", "index.html"])
 
