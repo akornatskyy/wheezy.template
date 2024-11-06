@@ -18,7 +18,7 @@ jobs:
             tox: py311
           - python: "3.12"
             tox: py312
-          - python: "pypy-3.9"
+          - python: "pypy-3.10"
             tox: pypy3
     steps:
       - uses: actions/checkout@v4
