@@ -13,7 +13,7 @@ colorama==0.4.6
     #   build
     #   click
     #   pytest
-coverage==7.6.4
+coverage==7.6.9
     # via pytest-cov
 iniconfig==2.0.0
     # via pytest
@@ -29,13 +29,13 @@ pyproject-hooks==1.2.0
     # via
     #   build
     #   pip-tools
-pytest==8.3.3
+pytest==8.3.4
     # via
     #   -r requirements/dev.in
     #   pytest-cov
 pytest-cov==6.0.0
     # via -r requirements/dev.in
-wheel==0.45.0
+wheel==0.45.1
     # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
