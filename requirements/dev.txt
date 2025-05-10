@@ -6,14 +6,14 @@
 #
 build==1.2.2.post1
     # via pip-tools
-click==8.1.8
+click==8.2.1
     # via pip-tools
 colorama==0.4.6
     # via
     #   build
     #   click
     #   pytest
-coverage==7.8.0
+coverage==7.8.2
     # via pytest-cov
 iniconfig==2.1.0
     # via pytest
@@ -23,7 +23,7 @@ packaging==25.0
     #   pytest
 pip-tools==7.4.1
     # via -r requirements/dev.in
-pluggy==1.5.0
+pluggy==1.6.0
     # via pytest
 pyproject-hooks==1.2.0
     # via
