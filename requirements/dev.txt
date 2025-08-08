@@ -13,7 +13,7 @@ colorama==0.4.6
     #   build
     #   click
     #   pytest
-coverage==7.10.1
+coverage==7.10.6
     # via pytest-cov
 iniconfig==2.1.0
     # via pytest
