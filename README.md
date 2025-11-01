@@ -51,7 +51,7 @@ Resources:
 ## Install
 
 [wheezy.template](https://pypi.org/project/wheezy.template/) requires
-[python](https://www.python.org) version 3.9+. It is independent of
+[python](https://www.python.org) version 3.10+. It is independent of
 operating system. You can install it from
 [pypi](https://pypi.org/project/wheezy.template/) site:
 
