@@ -1,7 +1,7 @@
-""" Demo: `page_a` and `page_b` are rendered into `page_all`.
+"""Demo: `page_a` and `page_b` are rendered into `page_all`.
 
-    Note: both `page_a` and `page_b` extend same `master`, inheritance
-    chains intersect at `content` placeholder.
+Note: both `page_a` and `page_b` extend same `master`, inheritance
+chains intersect at `content` placeholder.
 """
 
 import unittest

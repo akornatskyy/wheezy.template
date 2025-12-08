@@ -1,6 +1,6 @@
-""" Demo: overrides `include` directive.
+"""Demo: overrides `include` directive.
 
-    Note: an alternative implementation for `render` demo.
+Note: an alternative implementation for `render` demo.
 """
 
 import unittest

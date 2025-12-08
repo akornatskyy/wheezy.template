@@ -1,5 +1,5 @@
-""" Demo: `content_b` of `page_a` is substituted via include from `page_b`
-    while rendering `page_all`.
+"""Demo: `content_b` of `page_a` is substituted via include from `page_b`
+while rendering `page_all`.
 """
 
 import unittest

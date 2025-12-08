@@ -1,6 +1,6 @@
-""" Demo: `page_a` and `page_b` are included into `page_all`.
+"""Demo: `page_a` and `page_b` are included into `page_all`.
 
-    Note: inheritance chains do not intersect.
+Note: inheritance chains do not intersect.
 """
 
 import unittest

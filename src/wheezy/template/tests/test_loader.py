@@ -141,9 +141,9 @@ class AutoReloadProxyTestCase(unittest.TestCase):
         self.mock_template = Mock()
         self.mock_engine.get_template.return_value = self.mock_template
         self.mock_engine.render.return_value = "x"
-        warnings.simplefilter("ignore")
-        self.proxy = AutoReloadProxy(self.mock_engine)
-        warnings.simplefilter("default")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.proxy = AutoReloadProxy(self.mock_engine)
 
     def test_disabled(self) -> None:
         """Tests autoreload disabled."""
@@ -151,9 +151,10 @@ class AutoReloadProxyTestCase(unittest.TestCase):
 
     def test_enabled(self) -> None:
         """Tests autoreload enabled."""
-        assert (
-            autoreload(self.mock_engine, enabled=True) is not self.mock_engine
-        )
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            engine = autoreload(self.mock_engine, enabled=True)
+        assert engine is not self.mock_engine
 
     @patch("os.stat")
     def test_get_template(self, mock_stat: Mock) -> None:

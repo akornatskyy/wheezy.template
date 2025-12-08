@@ -34,7 +34,7 @@ class Parser(ParserConfig):
         parser_configs: typing.Optional[
             typing.List[typing.Callable[[ParserConfig], None]]
         ] = None,
-        **ignore: typing.Any
+        **ignore: typing.Any,
     ) -> None:
         self.end_tokens: typing.List[str] = []
         self.continue_tokens: typing.List[str] = []

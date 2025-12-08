@@ -1,11 +1,10 @@
 import typing
 from abc import abstractmethod
-
-from wheezy.template.comp import List, Tuple
+from typing import TypeAlias
 
 # flake8: noqa: E704
 
-Token = Tuple[int, str, str]
+Token: TypeAlias = tuple[int, str, str]
 
 
 class Builder:
@@ -35,26 +34,26 @@ class Builder:
 
 
 Tokenizer = typing.Callable[[typing.Match[str]], Token]
-LexerRule = Tuple[typing.Pattern[str], Tokenizer]
+LexerRule = tuple[typing.Pattern[str], Tokenizer]
 PreProcessorRule = typing.Callable[[str], str]
-PostProcessorRule = typing.Callable[[List[Token]], str]
+PostProcessorRule = typing.Callable[[list[Token]], str]
 BuilderRule = typing.Callable[
     [
         Builder,
         int,
         str,
-        typing.Union[str, List[str], typing.Iterable[Token], None],
+        typing.Union[str, list[str], typing.Iterable[Token], None],
     ],
     bool,
 ]
-ParserRule = typing.Callable[[str], typing.Union[str, List[str]]]
+ParserRule = typing.Callable[[str], typing.Union[str, list[str]]]
 
 
 class ParserConfig:
-    end_tokens: List[str]
-    continue_tokens: List[str]
-    compound_tokens: List[str]
-    out_tokens: List[str]
+    end_tokens: list[str]
+    continue_tokens: list[str]
+    compound_tokens: list[str]
+    out_tokens: list[str]
 
 
 RenderTemplate = typing.Callable[
@@ -79,7 +78,7 @@ TemplateClass = typing.Callable[[str, RenderTemplate], SupportsRender]
 
 class Loader:
     @abstractmethod
-    def list_names(self) -> Tuple[str, ...]: ...  # pragma: nocover
+    def list_names(self) -> tuple[str, ...]: ...  # pragma: nocover
 
     @abstractmethod
     def load(self, name: str) -> typing.Optional[str]: ...  # pragma: nocover

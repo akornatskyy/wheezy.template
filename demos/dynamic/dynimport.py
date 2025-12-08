@@ -1,5 +1,4 @@
-""" Dynamically import a page.
-"""
+"""Dynamically import a page."""
 
 import unittest
 

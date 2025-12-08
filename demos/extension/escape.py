@@ -1,5 +1,4 @@
-""" Custom HTML escape by default extension.
-"""
+"""Custom HTML escape by default extension."""
 
 import typing
 import unittest

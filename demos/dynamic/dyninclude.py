@@ -1,5 +1,4 @@
-""" Dynamically include a page.
-"""
+"""Dynamically include a page."""
 
 import unittest
 

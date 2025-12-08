@@ -1,5 +1,4 @@
-""" Master page placeholders as an alternative for `super` directive.
-"""
+"""Master page placeholders as an alternative for `super` directive."""
 
 import unittest
 

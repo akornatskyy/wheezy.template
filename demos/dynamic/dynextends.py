@@ -1,5 +1,4 @@
-""" Dynamically extends a master page.
-"""
+"""Dynamically extends a master page."""
 
 import unittest
 

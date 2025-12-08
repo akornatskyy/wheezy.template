@@ -1,5 +1,4 @@
-""" Unit tests for ``wheezy.templates.console``.
-"""
+"""Unit tests for ``wheezy.templates.console``."""
 
 import unittest
 

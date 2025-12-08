@@ -621,7 +621,8 @@ def run() -> None:
                         number / t,
                         st.total_calls,
                         len(st.stats),
-                    )
+                    ),
+                    flush=True,
                 )
             except Exception:
                 print("%-26s failed" % name)

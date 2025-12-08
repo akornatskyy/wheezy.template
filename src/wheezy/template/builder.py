@@ -92,7 +92,7 @@ class SourceBuilder(object):
         self,
         builder_rules: typing.Dict[str, typing.List[BuilderRule]],
         builder_offset: int = 2,
-        **ignore: typing.Any
+        **ignore: typing.Any,
     ) -> None:
         self.rules = builder_rules
         self.lineno = 0 - builder_offset

@@ -1,5 +1,4 @@
-""" Custom directive `super` to include a parent placeholder content.
-"""
+"""Custom directive `super` to include a parent placeholder content."""
 
 import re
 import typing

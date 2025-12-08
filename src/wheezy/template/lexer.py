@@ -39,7 +39,7 @@ class Lexer(object):
         lexer_rules: typing.List[LexerRule],
         preprocessors: typing.Optional[typing.List[PreProcessorRule]] = None,
         postprocessors: typing.Optional[typing.List[PostProcessorRule]] = None,
-        **ignore: typing.Any
+        **ignore: typing.Any,
     ) -> None:
         """Initializes with ``rules``. Rules must be a list of
         two elements tuple: ``(regex, tokenizer)`` where
