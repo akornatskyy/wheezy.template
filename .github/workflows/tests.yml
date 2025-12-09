@@ -20,6 +20,8 @@ jobs:
             tox: py313
           - python: "3.14"
             tox: py314
+          - python: "3.14"
+            tox: cython
           - python: "pypy-3.10"
             tox: pypy3
     steps:

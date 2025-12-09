@@ -59,5 +59,15 @@ operating system. You can install it from
 pip install -U wheezy.template
 ```
 
+To build from source with optional C extensions, install Cython and build
+without PEP 517 isolation so the build can see your environment:
+
+```sh
+pip install -U "wheezy.template[cython]"  # installs Cython
+pip install -U . --no-build-isolation
+```
+
+Note: compiling extensions requires a working C compiler toolchain.
+
 If you run into any issue or have comments, go ahead and add on
 [github](https://github.com/akornatskyy/wheezy.template).

@@ -13,7 +13,7 @@ jobs:
         python-version: '3.x'
     - run: |
         python -m pip install --upgrade pip
-        pip install setuptools twine
+        pip install build twine
     - env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
@@ -21,7 +21,7 @@ jobs:
         version=$(git describe --tags --always)
         sed -i 's/^__version__ = .*$/__version__ = "'"${version}"'"/' \
           src/wheezy/template/__init__.py
-        python setup.py sdist
+        python -m build --sdist
         twine upload dist/*
     - uses: actions/create-release@v1
       env:
