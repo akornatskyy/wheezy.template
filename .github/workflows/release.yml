@@ -7,7 +7,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - uses: actions/setup-python@v6
       with:
         python-version: '3.x'
@@ -23,9 +23,4 @@ jobs:
           src/wheezy/template/__init__.py
         python -m build --sdist
         twine upload dist/*
-    - uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+    - uses: softprops/action-gh-release@v2

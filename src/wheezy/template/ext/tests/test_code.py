@@ -53,14 +53,12 @@ class ParserTestCase(unittest.TestCase):
 
     def test_code_multiline(self) -> None:
         """Test parse_code multiline."""
-        nodes = self.parse(
-            """\
+        nodes = self.parse("""\
 @(
     i = 1
     j = 0
 )
-"""
-        )
+""")
         assert [(1, "code", ["", "i = 1", "j = 0", ""])] == nodes
 
 
@@ -141,11 +139,9 @@ class TemplateTestCase(unittest.TestCase):
         assert "x = 1" == self.render("x @(i = 1)= @i!s")
 
     def test_code_multiline(self) -> None:
-        assert "x = 1" == self.render(
-            """\
+        assert "x = 1" == self.render("""\
 x \
 @(
     i = 1
 )\
-= @i!s"""
-        )
+= @i!s""")

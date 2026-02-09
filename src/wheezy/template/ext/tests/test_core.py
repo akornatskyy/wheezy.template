@@ -169,11 +169,9 @@ class ParserTestCase(unittest.TestCase):
 
     def test_markup(self) -> None:
         """Test parse_markup."""
-        nodes = self.parse(
-            """
+        nodes = self.parse("""
  Welcome, @name!
-"""
-        )
+""")
         assert [
             (
                 1,
@@ -316,18 +314,14 @@ w(username)""" == self.build_source(
 w('\\n<i>\\n    ')
 
 w(username); w('\\n</i>')"""
-        assert expected == self.build_source(
-            """
+        assert expected == self.build_source("""
 <i>
     @username
-</i>"""
-        )
-        assert expected == self.build_source(
-            """
+</i>""")
+        assert expected == self.build_source("""
 <i>
     @{ username }
-</i>"""
-        )
+</i>""")
 
     def test_include(self) -> None:
         """Test build_include."""
@@ -418,44 +412,34 @@ def title(x):
     _b = []; w = _b.append; w(x); return ''.join(_b)
 super_defs['title'] = title; title = local_defs.setdefault('title', title); \
 w(title()); w('.')"""
-        assert expected == self.build_source(
-            """\
+        assert expected == self.build_source("""\
 @def title(x):
 @x\
 @end
-@title()."""
-        )
-        assert expected == self.build_source(
-            """\
+@title().""")
+        assert expected == self.build_source("""\
 @def title(x):
 @{ x }\
 @end
-@title()."""
-        )
+@title().""")
 
     def test_render(self) -> None:
         """Test build_render."""
         assert """\
 def render(ctx, local_defs, super_defs):
 
-    return 'Hello'""" == self.build_render(
-            "Hello"
-        )
+    return 'Hello'""" == self.build_render("Hello")
 
     def test_render_empty(self) -> None:
         """Test build_render with return of empty string."""
         assert """\
 def render(ctx, local_defs, super_defs):
-    return ''""" == self.build_render(
-            ""
-        )
+    return ''""" == self.build_render("")
         """ Test build_render with return of empty string.
         """
         assert """\
 def render(ctx, local_defs, super_defs):
-    return ''""" == self.build_render(
-            ""
-        )
+    return ''""" == self.build_render("")
 
     def test_render_var(self) -> None:
         """Test build_render with return of var."""
@@ -463,9 +447,7 @@ def render(ctx, local_defs, super_defs):
 def render(ctx, local_defs, super_defs):
     _b = []; w = _b.append
     w(h(a))
-    return ''.join(_b)""" == self.build_render(
-            "@a!h"
-        )
+    return ''.join(_b)""" == self.build_render("@a!h")
 
     def test_extends(self) -> None:
         """Test build_extends."""
@@ -549,12 +531,10 @@ class TemplateTestCase(unittest.TestCase):
         assert "a \\\nb \\\nc" == self.render("a \\\\\nb \\\\\nc")
 
     def test_comment(self) -> None:
-        assert "Hello World" == self.render(
-            """\
+        assert "Hello World" == self.render("""\
 Hello\\
 @# comment
- World"""
-        )
+ World""")
 
     def test_var(self) -> None:
         ctx = {"username": "John"}
@@ -649,57 +629,47 @@ age: @{ age !! s }""",
         )
 
     def test_def(self) -> None:
-        assert "Welcome, John!" == self.render(
-            """\
+        assert "Welcome, John!" == self.render("""\
 @def welcome(name):
 Welcome, @name!\\
 @end
-@welcome('John')"""
-        )
+@welcome('John')""")
 
     def test_def_empty(self) -> None:
-        assert "." == self.render(
-            """\
+        assert "." == self.render("""\
 @def title():
 @end
-@title()."""
-        )
+@title().""")
 
     def test_def_syntax_error_compound(self) -> None:
         self.assertRaises(
             SyntaxError,
-            lambda: self.render(
-                """\
+            lambda: self.render("""\
 @def welcome(name):
 @if name:
 Welcome, @name!\\
 @end
 @end
-@welcome('John')"""
-            ),
+@welcome('John')"""),
         )
 
     def test_def_no_syntax_error(self) -> None:
-        assert "Welcome, John!" == self.render(
-            """\
+        assert "Welcome, John!" == self.render("""\
 @def welcome(name):
 @#ignore
 @if name:
 Welcome, @name!\\
 @end
 @end
-@welcome('John')"""
-        )
-        assert "\nWelcome, John!" == self.render(
-            """\
+@welcome('John')""")
+        assert "\nWelcome, John!" == self.render("""\
 @def welcome(name):
 
 @if name:
 Welcome, @name!\\
 @end
 @end
-@welcome('John')"""
-        )
+@welcome('John')""")
 
 
 class MultiTemplateTestCase(unittest.TestCase):
@@ -790,9 +760,7 @@ Welcome to my site.
         ctx = {"name": "John"}
         assert """\
 Welcome to my site.
-Thanks, John""" == self.render(
-            "tmpl.html", ctx
-        )
+Thanks, John""" == self.render("tmpl.html", ctx)
         assert "Thanks, John" == self.render("footer.html", ctx)
 
     def test_import(self) -> None:
@@ -808,9 +776,7 @@ Hi, @name\
             }
         )
         assert """\
-Hi, John""" == self.render(
-            "tmpl.html", {}
-        )
+Hi, John""" == self.render("tmpl.html", {})
 
     def test_import_dynamic(self) -> None:
         self.templates.update(
@@ -826,9 +792,7 @@ Hi, @name\
             }
         )
         assert """\
-Hi, John""" == self.render(
-            "tmpl.html", {"helpers_impl": "helpers.html"}
-        )
+Hi, John""" == self.render("tmpl.html", {"helpers_impl": "helpers.html"})
 
     def test_from_import(self) -> None:
         self.templates.update(
@@ -843,9 +807,7 @@ Hi, @name\
             }
         )
         assert """\
-Hi, John""" == self.render(
-            "tmpl.html", {}
-        )
+Hi, John""" == self.render("tmpl.html", {})
 
     def test_from_import_dynamic(self) -> None:
         self.templates.update(
@@ -861,9 +823,7 @@ Hi, @name\
             }
         )
         assert """\
-Hi, John""" == self.render(
-            "tmpl.html", {"helpers_impl": "helpers.html"}
-        )
+Hi, John""" == self.render("tmpl.html", {"helpers_impl": "helpers.html"})
 
     def test_from_import_as(self) -> None:
         self.templates.update(
@@ -878,6 +838,4 @@ Hi, @name\
             }
         )
         assert """\
-Hi, John""" == self.render(
-            "tmpl.html", {}
-        )
+Hi, John""" == self.render("tmpl.html", {})

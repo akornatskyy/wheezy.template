@@ -63,8 +63,8 @@ To build from source with optional C extensions, install Cython and build
 without PEP 517 isolation so the build can see your environment:
 
 ```sh
-pip install -U "wheezy.template[cython]"  # installs Cython
-pip install -U . --no-build-isolation
+pip install Cython setuptools
+pip install -U --no-build-isolation --no-cache-dir wheezy.security[cython]
 ```
 
 Note: compiling extensions requires a working C compiler toolchain.

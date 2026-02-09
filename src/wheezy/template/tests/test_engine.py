@@ -48,9 +48,7 @@ class EngineSyntaxErrorTestCase(unittest.TestCase):
 
     def test_compile_template_error(self) -> None:
         """Raises SyntaxError."""
-        self.templates[
-            "x"
-        ] = """
+        self.templates["x"] = """
             @if :
             @end
         """
@@ -60,9 +58,7 @@ class EngineSyntaxErrorTestCase(unittest.TestCase):
 
     def test_compile_import_error(self) -> None:
         """Raises SyntaxError."""
-        self.templates[
-            "m"
-        ] = """
+        self.templates["m"] = """
             @def x():
                 @# ignore
                 @if :

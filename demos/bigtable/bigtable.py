@@ -120,10 +120,7 @@ except ImportError:
     test(name="wheezy_template")
 else:
     engine = Engine(
-        loader=DictLoader(
-            {
-                "x": s(
-                    """\
+        loader=DictLoader({"x": s("""\
 @require(table)
 <table>
     @for row in table:
@@ -134,10 +131,7 @@ else:
     </tr>
     @end
 </table>
-"""
-                )
-            }
-        ),
+""")}),
         extensions=[CoreExtension()],
     )
     engine.global_vars.update({"h": escape})
@@ -155,9 +149,7 @@ try:
 except ImportError:
     test(name="jinja2")
 else:
-    jinja2_template = Environment().from_string(
-        s(
-            """\
+    jinja2_template = Environment().from_string(s("""\
 <table>
     {% for row in table: %}
     <tr>
@@ -167,9 +159,7 @@ else:
     </tr>
     {% endfor %}
 </table>
-"""
-        )
-    )
+"""))
 
     @test()
     def test_jinja2() -> str:
@@ -183,9 +173,7 @@ try:
 except ImportError:
     test(name="tornado")
 else:
-    tornado_template = Template(
-        s(
-            """\
+    tornado_template = Template(s("""\
 <table>
     {% for row in table %}
     <tr>
@@ -195,9 +183,7 @@ else:
     </tr>
     {% end %}
 </table>
-"""
-        )
-    )
+"""))
 
     @test(10)
     def test_tornado() -> str:
@@ -211,9 +197,7 @@ try:
 except ImportError:
     test(name="mako")
 else:
-    mako_template = Template(
-        s(
-            """\
+    mako_template = Template(s("""\
 <table>
     % for row in table:
     <tr>
@@ -223,9 +207,7 @@ else:
     </tr>
     % endfor
 </table>
-"""
-        )
-    )
+"""))
 
     @test()
     def test_mako() -> str:
@@ -249,9 +231,7 @@ else:
             "escape": tenjin.helpers.escape,
         }
     tenjin_template = tenjin.Template(encoding="utf8")
-    tenjin_template.convert(
-        s(
-            """\
+    tenjin_template.convert(s("""\
 <table>
     <?py for row in table: ?>
     <tr>
@@ -261,9 +241,7 @@ else:
     </tr>
     <?py #end ?>
 </table>
-"""
-        )
-    )
+"""))
 
     @test(40)
     def test_tenjin() -> str:
@@ -291,9 +269,7 @@ else:
                 self.body.write(xmlescape(data))
 
     web2py_template = compile(
-        get_parsed(
-            s(
-                """\
+        get_parsed(s("""\
 <table>
     {{ for row in table: }}
     <tr>
@@ -303,9 +279,7 @@ else:
     </tr>
     {{ pass }}
 </table>
-"""
-            )
-        ),
+""")),
         "",
         "exec",
     )
@@ -333,9 +307,7 @@ try:
 except ImportError:
     test(name="django")
 else:
-    django_template = Template(
-        s(
-            """\
+    django_template = Template(s("""\
 <table>
     {% for row in table %}
     <tr>
@@ -345,9 +317,7 @@ else:
     </tr>
     {% endfor %}
 </table>
-"""
-        )
-    )
+"""))
 
     @test(1)
     def test_django() -> str:
@@ -361,9 +331,7 @@ try:
 except ImportError:
     test(name="chameleon")
 else:
-    chameleon_template = PageTemplate(
-        s(
-            """\
+    chameleon_template = PageTemplate(s("""\
 <table>
     <tr tal:repeat="row table">
         <i tal:omit-tag="" tal:repeat="key row">
@@ -371,9 +339,7 @@ else:
         </i>
     </tr>
 </table>
-"""
-        )
-    )
+"""))
 
     @test(10)
     def test_chameleon() -> str:
@@ -389,8 +355,7 @@ except ImportError:
 else:
     cheetah_ctx: typing.Dict[str, typing.Any] = {}
     cheetah_template = Template(
-        s(
-            """\
+        s("""\
 <table>
     #for $row in $table
     <tr>
@@ -405,8 +370,7 @@ else:
     </tr>
     #end for
 </table>
-"""
-        ),
+"""),
         searchList=[cheetah_ctx],
     )
 
@@ -427,8 +391,7 @@ except ImportError:
     test(name="spitfire")
 else:
     spitfire_template = spitfire.compiler.util.load_template(
-        s(
-            """\
+        s("""\
 #from cgi import escape
 <table>
     #for $row in $table
@@ -439,8 +402,7 @@ else:
     </tr>
     #end for
 </table>
-"""
-        ),
+"""),
         "spitfire_template",
         spitfire.compiler.analyzer.o3_options,
         {"enable_filters": True},
@@ -485,9 +447,7 @@ try:
 except ImportError:
     test(name="bottle")
 else:
-    bottle_template = SimpleTemplate(
-        s(
-            """\
+    bottle_template = SimpleTemplate(s("""\
 <table>
     % for row in table:
     <tr>
@@ -497,9 +457,7 @@ else:
     </tr>
     % end
 </table>
-"""
-        )
-    )
+"""))
 
     @test(30)
     def test_bottle() -> str:
@@ -513,9 +471,7 @@ try:
 except ImportError:
     test(name="chevron")
 else:
-    chevron_template = tuple(
-        chevron.tokenizer.tokenize(
-            """
+    chevron_template = tuple(chevron.tokenizer.tokenize("""
 <table>
     {{#table}}
     <tr>
@@ -525,9 +481,7 @@ else:
     </tr>
     {{/table}}
 </table>
-"""
-        )
-    )
+"""))
     ctx2 = {
         "table": [
             {"key": k, "value": v}
@@ -548,9 +502,7 @@ try:
 except ImportError:
     test(name="liquid")
 else:
-    liquid_args: typing.List[typing.Any] = [
-        s(
-            """
+    liquid_args: typing.List[typing.Any] = [s("""
 <table>
     {% for row in table %}
     <tr>
@@ -560,9 +512,7 @@ else:
     </tr>
     {% endfor %}
 </table>
-"""
-        )
-    ]
+""")]
     liquid_args.append({"mode": "python"})
     liquid_template = Liquid(*liquid_args)
 
@@ -579,9 +529,7 @@ except ImportError:
     test(name="pybars3")
 else:
     compiler = Compiler()
-    pybars3_template = compiler.compile(
-        s(
-            """
+    pybars3_template = compiler.compile(s("""
 <table>
     {{#each table }}
     <tr>
@@ -591,9 +539,7 @@ else:
     </tr>
     {{/each}}
 </table>
-"""
-        )
-    )
+"""))
 
     @test(1)
     def test_pybars3() -> str:

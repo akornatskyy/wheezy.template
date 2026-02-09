@@ -37,9 +37,7 @@ class PreprocessorTestCase(unittest.TestCase):
         return template.render(ctx)
 
     def test_render(self) -> None:
-        self.templates[
-            "test.html"
-        ] = """\
+        self.templates["test.html"] = """\
 #require(_)
 @require(username)
 #_('Welcome,') @username!"""

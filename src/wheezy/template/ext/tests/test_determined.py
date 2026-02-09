@@ -1,5 +1,3 @@
-"""Unit tests for ``wheezy.templates.ext.determined``."""
-
 import unittest
 
 from wheezy.template.ext.determined import DeterminedExtension

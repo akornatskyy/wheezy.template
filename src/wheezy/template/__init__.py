@@ -1,5 +1,3 @@
-""" """
-
 from wheezy.template.engine import Engine
 from wheezy.template.ext.code import CodeExtension
 from wheezy.template.ext.core import CoreExtension

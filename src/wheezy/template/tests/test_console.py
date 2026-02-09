@@ -1,5 +1,3 @@
-"""Unit tests for ``wheezy.templates.console``."""
-
 import unittest
 
 from wheezy.template.console import main

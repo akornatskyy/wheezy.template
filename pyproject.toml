@@ -1,8 +1,5 @@
 [build-system]
-requires = [
-  "setuptools>=61.0",
-  "wheel",
-]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -13,9 +10,7 @@ readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE"]
-authors = [
-  { name = "Andriy Kornatskyy", email = "andriy.kornatskyy@live.com" },
-]
+authors = [{ name = "Andriy Kornatskyy", email = "andriy.kornatskyy@live.com" }]
 keywords = ["html", "markup", "template", "preprocessor"]
 classifiers = [
   "Environment :: Web Environment",
@@ -39,7 +34,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-cython = ["Cython>=3.0"]
+cython = ["Cython>=3.0", "setuptools>=61.0"]
 
 [project.urls]
 Homepage = "https://github.com/akornatskyy/wheezy.template"
@@ -62,10 +57,5 @@ include-package-data = true
 version = { attr = "wheezy.template.__version__" }
 
 [tool.coverage.run]
-source = [
-  "src/wheezy/template",
-]
-omit = [
-  "*/test_*.py",
-  "*/tests/*",
-]
+source = ["src/wheezy/template"]
+omit = ["*/test_*.py", "*/tests/*"]
