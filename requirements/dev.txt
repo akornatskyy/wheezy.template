@@ -42,6 +42,8 @@ pytest-cov==7.0.0
     # via -r requirements/dev.in
 wheel==0.46.3
     # via pip-tools
+wheezy.html==3.2.1
+    # via -r requirements/dev.in
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
