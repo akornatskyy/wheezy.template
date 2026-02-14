@@ -1,0 +1,13 @@
+version: 2
+
+build:
+  os: ubuntu-lts-latest
+  tools:
+    python: "3.14"
+
+sphinx:
+  configuration: doc/conf.py
+
+python:
+  install:
+    - requirements: requirements/docs.txt
