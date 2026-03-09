@@ -46,7 +46,7 @@ Resources:
   and [issues](https://github.com/akornatskyy/wheezy.template/issues)
   tracker are available on
   [github](https://github.com/akornatskyy/wheezy.template)
-- [documentation](https://wheezytemplate.readthedocs.io/en/latest/)
+- [documentation](https://wheezytemplate.readthedocs.io)
 
 ## Install
 

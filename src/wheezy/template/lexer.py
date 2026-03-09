@@ -45,8 +45,8 @@ class Lexer(object):
         two elements tuple: ``(regex, tokenizer)`` where
         tokenizer if a callable of the following contract::
 
-        def tokenizer(match):
-            return end_index, token, value
+            def tokenizer(match):
+                return end_index, token, value
         """
         self.rules = lexer_rules
         self.preprocessors = preprocessors or []

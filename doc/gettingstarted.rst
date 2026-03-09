@@ -5,7 +5,7 @@ Getting Started
 Install
 -------
 
-:ref:`wheezy.template` requires `python`_ version 3.6+.
+:ref:`wheezy.template` requires `python`_ version 3.10+.
 It is operating system independent. You can install it from the `pypi`_
 site::
 
