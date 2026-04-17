@@ -4,9 +4,9 @@
 #
 #    pip-compile --output-file=requirements/dev.txt --strip-extras requirements/dev.in
 #
-build==1.4.2
+build==1.4.4
     # via pip-tools
-click==8.3.1
+click==8.3.3
     # via pip-tools
 colorama==0.4.6
     # via
@@ -17,7 +17,7 @@ coverage==7.13.5
     # via pytest-cov
 iniconfig==2.3.0
     # via pytest
-packaging==26.0
+packaging==26.2
     # via
     #   build
     #   pytest
@@ -34,13 +34,13 @@ pyproject-hooks==1.2.0
     # via
     #   build
     #   pip-tools
-pytest==9.0.2
+pytest==9.0.3
     # via
     #   -r requirements/dev.in
     #   pytest-cov
 pytest-cov==7.1.0
     # via -r requirements/dev.in
-wheel==0.46.3
+wheel==0.47.0
     # via pip-tools
 wheezy.html==3.2.2
     # via -r requirements/dev.in
