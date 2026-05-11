@@ -12,8 +12,6 @@ certifi==2026.4.22
     # via requests
 charset-normalizer==3.4.7
     # via requests
-colorama==0.4.6
-    # via sphinx
 docutils==0.22.4
     # via
     #   sphinx
@@ -41,7 +39,7 @@ sphinx==9.1.0
     #   sphinx-rtd-theme
     #   sphinxcontrib-jquery
 sphinx-rtd-theme==3.1.0
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinxcontrib-applehelp==2.0.0
     # via sphinx
 sphinxcontrib-devhelp==2.0.0
@@ -56,5 +54,5 @@ sphinxcontrib-qthelp==2.0.0
     # via sphinx
 sphinxcontrib-serializinghtml==2.0.0
     # via sphinx
-urllib3==2.6.3
+urllib3==2.7.0
     # via requests
