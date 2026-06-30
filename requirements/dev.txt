@@ -6,14 +6,14 @@
 #
 build==1.5.0
     # via pip-tools
-click==8.4.1
+click==8.4.2
     # via pip-tools
 colorama==0.4.6
     # via
     #   build
     #   click
     #   pytest
-coverage==7.14.1
+coverage==7.15.0
     # via pytest-cov
 iniconfig==2.3.0
     # via pytest
