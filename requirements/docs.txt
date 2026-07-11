@@ -10,7 +10,7 @@ babel==2.18.0
     # via sphinx
 certifi==2026.6.17
     # via requests
-charset-normalizer==3.4.7
+charset-normalizer==3.4.9
     # via requests
 colorama==0.4.6
     # via sphinx
