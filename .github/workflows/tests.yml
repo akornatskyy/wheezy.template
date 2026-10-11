@@ -10,8 +10,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - python: "3.10"
-            tox: py310
           - python: "3.11"
             tox: py311
           - python: "3.12"
@@ -20,13 +18,15 @@ jobs:
             tox: py313
           - python: "3.14"
             tox: py314
-          - python: "3.14"
+          - python: "3.15"
+            tox: py315
+          - python: "3.15"
             tox: cython
-          - python: "pypy-3.11"
-            tox: pypy3
+          - python: "pypy-3.12"
+            tox: pypy
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: "${{ matrix.python }}"
       - run: |
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.x"
       - run: |
