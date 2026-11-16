@@ -1,4 +1,3 @@
-import sys
 import typing
 from types import ModuleType
 
@@ -45,9 +44,7 @@ class Engine(object):
         self.global_vars = {"_r": self.render, "_i": self.import_name}
         self.loader = loader
         self.template_class = template_class or Template
-        self.compiler = Compiler(
-            self.global_vars, sys.version_info >= (3, 11, 0) and -1 or -2
-        )
+        self.compiler = Compiler(self.global_vars, -2)
         self.lexer = Lexer(**lexer_scan(extensions))
         self.parser = Parser(**parser_scan(extensions))
         self.builder = SourceBuilder(**builder_scan(extensions))

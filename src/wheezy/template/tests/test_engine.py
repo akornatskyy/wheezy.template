@@ -1,3 +1,4 @@
+import traceback
 import typing
 import unittest
 
@@ -34,6 +35,16 @@ class EngineTestCase(unittest.TestCase):
         self.engine.compile_import("a")
         self.engine.compile_template("a")
         self.engine.remove("a")
+
+    def test_runtime_error_lineno(self) -> None:
+        """Traceback line number matches the template source."""
+        self.templates["a"] = "1\n2\n@x\n4\n"
+        template = self.engine.get_template("a")
+        try:
+            template.render({})
+        except NameError as e:
+            tb = traceback.extract_tb(e.__traceback__)
+        self.assertEqual(3, tb[-1].lineno)
 
 
 class EngineSyntaxErrorTestCase(unittest.TestCase):
