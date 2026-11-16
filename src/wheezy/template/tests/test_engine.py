@@ -1,5 +1,4 @@
 import traceback
-import typing
 import unittest
 
 from wheezy.template.engine import Engine
@@ -11,7 +10,7 @@ class EngineTestCase(unittest.TestCase):
     """Test the ``Engine``."""
 
     def setUp(self) -> None:
-        self.templates: typing.Dict[str, str] = {"a": ""}
+        self.templates: dict[str, str] = {"a": ""}
         self.engine = Engine(
             loader=DictLoader(templates=self.templates),
             extensions=[CoreExtension()],
@@ -44,6 +43,8 @@ class EngineTestCase(unittest.TestCase):
             template.render({})
         except NameError as e:
             tb = traceback.extract_tb(e.__traceback__)
+        else:
+            self.fail("NameError not raised")
         self.assertEqual(3, tb[-1].lineno)
 
 
@@ -51,7 +52,7 @@ class EngineSyntaxErrorTestCase(unittest.TestCase):
     """Test the ``Engine``."""
 
     def setUp(self) -> None:
-        self.templates: typing.Dict[str, str] = {}
+        self.templates: dict[str, str] = {}
         self.engine = Engine(
             loader=DictLoader(templates=self.templates),
             extensions=[CoreExtension()],
