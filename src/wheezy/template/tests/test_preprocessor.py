@@ -1,5 +1,6 @@
 import typing
 import unittest
+from collections.abc import Mapping
 
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
@@ -21,7 +22,7 @@ class PreprocessorTestCase(unittest.TestCase):
             )
             return engine
 
-        self.templates: typing.Dict[str, str] = {}
+        self.templates: dict[str, str] = {}
         engine = Engine(
             loader=DictLoader(templates=self.templates),
             extensions=[
@@ -32,7 +33,7 @@ class PreprocessorTestCase(unittest.TestCase):
             runtime_engine_factory, engine, key_factory=lambda ctx: ""
         )
 
-    def render(self, name: str, ctx: typing.Mapping[str, typing.Any]) -> str:
+    def render(self, name: str, ctx: Mapping[str, typing.Any]) -> str:
         template = self.engine.get_template(name)
         return template.render(ctx)
 

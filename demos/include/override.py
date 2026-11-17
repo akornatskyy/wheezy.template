@@ -54,8 +54,9 @@ def build_include(
     return True
 
 
-class MyExtention(object):
-    builder_rules = [("include", build_include)]
+class MyExtention:
+    def __init__(self) -> None:
+        self.builder_rules = [("include", build_include)]
 
 
 engine = Engine(

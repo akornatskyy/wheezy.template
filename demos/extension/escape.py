@@ -28,8 +28,9 @@ def build_var(
     return False
 
 
-class EscapeExtension(object):
-    builder_rules = [("var", build_var)]
+class EscapeExtension:
+    def __init__(self) -> None:
+        self.builder_rules = [("var", build_var)]
 
 
 # setup

@@ -1,12 +1,13 @@
 import typing
+from collections.abc import Iterable, Mapping
 
 from wheezy.template.typing import Builder, BuilderRule, Token
 
 
 def builder_scan(
-    extensions: typing.List[typing.Any],
-) -> typing.Mapping[str, typing.Any]:
-    builder_rules: typing.Dict[str, typing.List[BuilderRule]] = {}
+    extensions: list[typing.Any],
+) -> Mapping[str, typing.Any]:
+    builder_rules: dict[str, list[BuilderRule]] = {}
     for extension in extensions:
         if hasattr(extension, "builder_rules"):
             rules = extension.builder_rules
@@ -16,18 +17,18 @@ def builder_scan(
 
 
 class BlockBuilder(Builder):
-    __slots__ = ("rules", "indent", "lineno", "buf")
+    __slots__ = ("buf", "indent", "lineno", "rules")
 
     def __init__(
         self,
-        rules: typing.Dict[str, typing.List[BuilderRule]],
+        rules: dict[str, list[BuilderRule]],
         indent: str = "",
         lineno: int = 0,
     ) -> None:
         self.rules = rules
         self.indent = indent
         self.lineno = lineno
-        self.buf: typing.List[str] = []
+        self.buf: list[str] = []
 
     def start_block(self) -> None:
         self.indent += "    "
@@ -39,9 +40,7 @@ class BlockBuilder(Builder):
 
     def add(self, lineno: int, code: str) -> None:
         if lineno < self.lineno:
-            raise SyntaxError(
-                "Inconsistence at %s : %s" % (self.lineno, lineno)
-            )
+            raise SyntaxError(f"Inconsistence at {self.lineno} : {lineno}")
         if lineno == self.lineno:
             line = self.buf[-1]
             if code:
@@ -62,7 +61,7 @@ class BlockBuilder(Builder):
                 self.buf.append("")
         self.lineno = lineno + code.count("\n")
 
-    def build_block(self, nodes: typing.Iterable[Token]) -> None:
+    def build_block(self, nodes: Iterable[Token]) -> None:
         for lineno, token, value in nodes:
             self.build_token(lineno, token, value)
 
@@ -70,7 +69,7 @@ class BlockBuilder(Builder):
         self,
         lineno: int,
         token: str,
-        value: typing.Union[str, typing.Iterable[Token]],
+        value: str | Iterable[Token],
     ) -> None:
         if token in self.rules:
             for rule in self.rules[token]:
@@ -78,31 +77,31 @@ class BlockBuilder(Builder):
                     break
         else:
             raise SyntaxError(
-                'No rule to build "%s" token at line %d.' % (token, lineno)
+                f'No rule to build "{token}" token at line {lineno}.'
             )
 
     def to_string(self) -> str:
         return "\n".join(self.buf)
 
 
-class SourceBuilder(object):
-    __slots__ = ("rules", "lineno")
+class SourceBuilder:
+    __slots__ = ("lineno", "rules")
 
     def __init__(
         self,
-        builder_rules: typing.Dict[str, typing.List[BuilderRule]],
+        builder_rules: dict[str, list[BuilderRule]],
         builder_offset: int = 2,
         **ignore: typing.Any,
     ) -> None:
         self.rules = builder_rules
         self.lineno = 0 - builder_offset
 
-    def build_source(self, nodes: typing.Iterable[Token]) -> str:
+    def build_source(self, nodes: Iterable[Token]) -> str:
         builder = BlockBuilder(self.rules)
         builder.build_block(nodes)
         return builder.to_string()
 
-    def build_render(self, nodes: typing.Iterable[Token]) -> str:
+    def build_render(self, nodes: Iterable[Token]) -> str:
         builder = BlockBuilder(self.rules, lineno=self.lineno)
         builder.add(
             self.lineno + 1, "def render(ctx, local_defs, super_defs):"
@@ -111,7 +110,7 @@ class SourceBuilder(object):
         builder.build_token(self.lineno + 2, "render", nodes)
         return builder.to_string()
 
-    def build_module(self, nodes: typing.Iterable[Token]) -> str:
+    def build_module(self, nodes: Iterable[Token]) -> str:
         builder = BlockBuilder(self.rules, lineno=self.lineno)
         builder.add(self.lineno + 1, "local_defs = {}; super_defs = {}")
         builder.build_token(self.lineno + 2, "module", nodes)

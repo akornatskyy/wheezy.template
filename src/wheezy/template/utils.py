@@ -38,6 +38,6 @@ def find_balanced(
 def print_source(source: str, lineno: int = 1) -> None:  # pragma: nocover
     lines = []
     for line in source.split("\n"):
-        lines.append("%02d " % lineno + line)
+        lines.append(f"{lineno:02d} " + line)
         lineno += line.count("\n") + 1
     print("\n".join(lines))

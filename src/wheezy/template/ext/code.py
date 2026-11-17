@@ -1,5 +1,6 @@
 import re
 import typing
+from collections.abc import Mapping
 
 from wheezy.template.typing import Builder, LexerRule, ParserRule, Token
 from wheezy.template.utils import find_balanced
@@ -7,7 +8,7 @@ from wheezy.template.utils import find_balanced
 # region: lexer extensions
 
 
-def code_token(m: typing.Match[str]) -> Token:
+def code_token(m: re.Match[str]) -> Token:
     source = m.string
     start = m.end()
     end = find_balanced(source, start)
@@ -19,7 +20,7 @@ def code_token(m: typing.Match[str]) -> Token:
 # region: parser
 
 
-def parse_code(value: str) -> typing.List[str]:
+def parse_code(value: str) -> list[str]:
     lines = value.rstrip("\n")[1:-1].split("\n")
     lines[0] = lines[0].lstrip()
     if len(lines) == 1:
@@ -33,7 +34,7 @@ def parse_code(value: str) -> typing.List[str]:
 
 
 def build_code(
-    builder: Builder, lineno: int, token: str, lines: typing.List[str]
+    builder: Builder, lineno: int, token: str, lines: list[str]
 ) -> bool:
     for line in lines:
         builder.add(lineno, line)
@@ -48,10 +49,14 @@ class CodeExtension:
     """Includes support for embedded python code."""
 
     def __init__(self, token_start: str = "@") -> None:
-        self.lexer_rules: typing.Mapping[int, LexerRule] = {
-            300: (re.compile(r"\s*%s(?=\()" % token_start), code_token),
+        self.lexer_rules: Mapping[int, LexerRule] = {
+            300: (re.compile(rf"\s*{token_start}(?=\()"), code_token),
         }
 
-    parser_rules: typing.Mapping[str, ParserRule] = {"code": parse_code}
+    parser_rules: typing.ClassVar[Mapping[str, ParserRule]] = {
+        "code": parse_code
+    }
 
-    builder_rules: typing.List[tuple[str, typing.Any]] = [("code", build_code)]
+    builder_rules: typing.ClassVar[list[tuple[str, typing.Any]]] = [
+        ("code", build_code)
+    ]

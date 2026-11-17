@@ -1,5 +1,5 @@
 import re
-import typing
+from collections.abc import Mapping
 
 from wheezy.template.utils import find_balanced
 
@@ -14,7 +14,7 @@ RE_INT_VALUE = re.compile(r"^(?P<value>(\d+))$")
 # region: core extension
 
 
-class DeterminedExtension(object):
+class DeterminedExtension:
     """Tranlates function calls between template engines.
 
     Strictly determined known calls are converted to preprocessor
@@ -30,13 +30,13 @@ class DeterminedExtension(object):
 
     def __init__(
         self,
-        known_calls: typing.List[str],
+        known_calls: list[str],
         runtime_token_start: str = "@",
         token_start: str = "#",
     ) -> None:
         self.token_start = token_start
         self.pattern = re.compile(
-            r"%s(%s)(?=\()" % (runtime_token_start, "|".join(known_calls))
+            r"{}({})(?=\()".format(runtime_token_start, "|".join(known_calls))
         )
         self.preprocessors = [self.preprocess]
 
@@ -82,7 +82,7 @@ def determined(expression: str) -> bool:
     return True
 
 
-def parse_kwargs(text: str) -> typing.Mapping[str, str]:
+def parse_kwargs(text: str) -> Mapping[str, str]:
     """Parses key-value type of parameters.
 
     >>> parse_kwargs('id=item.id')
@@ -97,7 +97,7 @@ def parse_kwargs(text: str) -> typing.Mapping[str, str]:
     return kwargs
 
 
-def parse_args(text: str) -> typing.List[str]:
+def parse_args(text: str) -> list[str]:
     """Parses argument type of parameters.
 
     >>> parse_args('')
@@ -117,7 +117,7 @@ def parse_args(text: str) -> typing.List[str]:
 
 def parse_params(
     text: str,
-) -> tuple[typing.List[str], typing.Mapping[str, str]]:
+) -> tuple[list[str], Mapping[str, str]]:
     """Parses function parameters.
 
     >>> parse_params('')

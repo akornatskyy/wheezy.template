@@ -1,4 +1,5 @@
 import typing
+from collections.abc import Callable, Iterator
 
 try:
     from wheezy.html.utils import escape_html as escape
@@ -29,8 +30,8 @@ tests = []
 
 
 def test(
-    n: int = 100, name: typing.Optional[str] = None
-) -> typing.Callable[[typing.Any], None]:
+    n: int = 100, name: str | None = None
+) -> Callable[[typing.Any], None]:
     if name:
         tests.append((name, None, None))
 
@@ -45,7 +46,7 @@ def test(
 
 @test()
 def test_list_append() -> str:
-    b: typing.List[str] = []
+    b: list[str] = []
     w = b.append
     table = ctx["table"]
     w("<table>\n")
@@ -67,7 +68,7 @@ def test_list_append() -> str:
 
 @test()
 def test_join_yield() -> str:
-    def root() -> typing.Iterator[str]:
+    def root() -> Iterator[str]:
         table = ctx["table"]
         yield "<table>\n"
         for row in table:
@@ -89,7 +90,7 @@ def test_join_yield() -> str:
 
 @test()
 def test_list_extend() -> str:
-    b: typing.List[str] = []
+    b: list[str] = []
     e = b.extend
     table = ctx["table"]
     e(("<table>\n",))
@@ -258,7 +259,7 @@ except ImportError:
     test(name="web2py")
 else:
     # see gluon.globals.Response
-    class DummyResponse(object):
+    class DummyResponse:
         def __init__(self):
             self.body = cStringIO.StringIO()
 
@@ -287,7 +288,7 @@ else:
     @test(1)
     def test_web2py() -> str:
         response = DummyResponse()
-        exec(web2py_template, {}, dict(response=response, **ctx))
+        exec(web2py_template, {}, dict(response=response, **ctx))  # noqa: S102
         return response.body.getvalue().decode("utf8")
 
 
@@ -353,7 +354,7 @@ try:
 except ImportError:
     test(name="cheetah3")
 else:
-    cheetah_ctx: typing.Dict[str, typing.Any] = {}
+    cheetah_ctx: dict[str, typing.Any] = {}
     cheetah_template = Template(
         s("""\
 <table>
@@ -415,7 +416,7 @@ else:
 
 # region: qpy
 
-try:  # noqa: C901
+try:
     from qpy import join_xml, xml, xml_quote
 except ImportError:
     test(name="qpy_list_append")
@@ -423,7 +424,7 @@ else:
 
     @test(1)
     def test_qpy_list_append() -> str:
-        b: typing.List[str] = []
+        b: list[str] = []
         w = b.append
         table = ctx["table"]
         w(xml("<table>\n"))
@@ -502,7 +503,7 @@ try:
 except ImportError:
     test(name="liquid")
 else:
-    liquid_args: typing.List[typing.Any] = [s("""
+    liquid_args: list[typing.Any] = [s("""
 <table>
     {% for row in table %}
     <tr>
@@ -560,20 +561,14 @@ def run() -> None:
                 )
                 t = min(repeat(test, number=number))
                 print(
-                    "%-17s %7.2f %6.2f %7d %6d"
-                    % (
-                        name,
-                        1000 * t / number,
-                        number / t,
-                        st.total_calls,
-                        len(st.stats),
-                    ),
+                    f"{name:<17} {1000 * t / number:7.2f} {number / t:6.2f} "
+                    f"{st.total_calls:7d} {len(st.stats):6d}",
                     flush=True,
                 )
-            except Exception:
-                print("%-26s failed" % name)
+            except Exception:  # noqa: BLE001
+                print(f"{name:<26} failed")
         else:
-            print("%-26s not installed" % name)
+            print(f"{name:<26} not installed")
 
 
 if __name__ == "__main__":

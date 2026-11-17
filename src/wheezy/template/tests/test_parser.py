@@ -62,7 +62,7 @@ class ParserTestCase(unittest.TestCase):
         ) == nodes[1]
 
     def test_compound(self) -> None:
-        """"""
+        """Compound tokens."""
         self.parser.compound_tokens = ["b"]
         self.parser.end_tokens = ["c"]
         nodes = list(self.parser.parse(self.tokens))

@@ -1,5 +1,6 @@
 import typing
 import unittest
+from collections.abc import Mapping
 
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension, all_tokens
@@ -48,7 +49,7 @@ class LexerTestCase(unittest.TestCase):
             loader=DictLoader({}), extensions=[CoreExtension()]
         )
 
-    def tokenize(self, source: str) -> typing.List[Token]:
+    def tokenize(self, source: str) -> list[Token]:
         return self.engine.lexer.tokenize(source)
 
     def test_stmt_token(self) -> None:
@@ -147,7 +148,7 @@ class ParserTestCase(unittest.TestCase):
             loader=DictLoader({}), extensions=[CoreExtension()]
         )
 
-    def parse(self, source: str) -> typing.List[typing.Any]:
+    def parse(self, source: str) -> list[typing.Any]:
         return list(
             self.engine.parser.parse(self.engine.lexer.tokenize(source))
         )
@@ -238,7 +239,7 @@ class ParserLineJoinTestCase(unittest.TestCase):
             loader=DictLoader({}), extensions=[CoreExtension(line_join="")]
         )
 
-    def parse(self, source: str) -> typing.List[typing.Any]:
+    def parse(self, source: str) -> list[typing.Any]:
         return list(
             self.engine.parser.parse(self.engine.lexer.tokenize(source))
         )
@@ -512,7 +513,7 @@ class TemplateTestCase(unittest.TestCase):
     def render(
         self,
         source: str,
-        ctx: typing.Optional[typing.Mapping[str, typing.Any]] = None,
+        ctx: Mapping[str, typing.Any] | None = None,
     ) -> str:
         loader = DictLoader({"test.html": source})
         engine = Engine(loader=loader, extensions=[CoreExtension()])
@@ -676,13 +677,13 @@ class MultiTemplateTestCase(unittest.TestCase):
     """Test the ``CoreExtension`` compiled templates."""
 
     def setUp(self) -> None:
-        self.templates: typing.Dict[str, str] = {}
+        self.templates: dict[str, str] = {}
         self.engine = Engine(
             loader=DictLoader(templates=self.templates),
             extensions=[CoreExtension()],
         )
 
-    def render(self, name: str, ctx: typing.Mapping[str, typing.Any]) -> str:
+    def render(self, name: str, ctx: Mapping[str, typing.Any]) -> str:
         template = self.engine.get_template(name)
         return template.render(ctx)
 

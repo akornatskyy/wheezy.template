@@ -3,6 +3,7 @@ import json
 import os
 import sys
 import typing
+from collections.abc import Mapping
 
 from wheezy.template.engine import Engine
 from wheezy.template.ext.code import CodeExtension
@@ -20,18 +21,18 @@ class Options:
         self,
         token_start: str = "@",
         line_join: str = "\\",
-        searchpath: typing.Optional[typing.List[str]] = None,
-        extensions: typing.Optional[typing.List[str]] = None,
+        searchpath: list[str] | None = None,
+        extensions: list[str] | None = None,
     ) -> None:
         self.token_start = token_start
         self.line_join = line_join
         self.searchpath = searchpath or ["."]
         self.extensions = extensions or []
         self.template = ""
-        self.context: typing.List[str] = []
+        self.context: list[str] = []
 
 
-def main(argv: typing.Optional[typing.List[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     if not args:
         return 2
@@ -45,12 +46,13 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     return 0
 
 
-def load_context(sources: typing.List[str]) -> typing.Mapping[str, typing.Any]:
-    c: typing.Dict[str, typing.Any] = {}
-    args: typing.List[typing.Any] = []
+def load_context(sources: list[str]) -> Mapping[str, typing.Any]:
+    c: dict[str, typing.Any] = {}
+    args: list[typing.Any] = []
     for s in sources:
         if os.path.isfile(s):
-            d = json.load(open(s))
+            with open(s) as f:
+                d = json.load(f)
         else:
             d = json.loads(s)
         args.append(d)
@@ -61,14 +63,14 @@ def load_context(sources: typing.List[str]) -> typing.Mapping[str, typing.Any]:
 
 
 def parse_args(  # noqa: C901
-    args: typing.List[str],
-) -> typing.Optional[Options]:
+    args: list[str],
+) -> Options | None:
     try:
         opts, value = getopt.getopt(args, "s:t:j:wh")
     except getopt.GetoptError:
         e = sys.exc_info()[1]
         usage()
-        print("error: %s" % e)
+        print(f"error: {e}")
         return None
     d = Options(token_start="@", searchpath=["."], extensions=[])
     for o, a in opts:
@@ -96,12 +98,11 @@ def parse_args(  # noqa: C901
 def usage() -> None:
     from os.path import basename
 
-    print(
-        """\
+    print(f"""\
 
 Renders a template with the provided context.
 
-Usage: %s template [ context ... ]
+Usage: {basename(sys.argv[0])} template [ context ... ]
 
 Positional arguments:
   template    The template filename.
@@ -114,9 +115,7 @@ Optional arguments:
   -w          Enable whitespace cleanup.
   -h          Show this help message.
 
-The contexts passed are available as the __args__ list variable."""
-        % basename(sys.argv[0])
-    )
+The contexts passed are available as the __args__ list variable.""")
 
 
 if __name__ == "__main__":  # pragma: nocover

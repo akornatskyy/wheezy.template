@@ -1,4 +1,5 @@
 import typing
+from collections.abc import Callable, Mapping
 
 from wheezy.template.comp import allocate_lock  # type: ignore[attr-defined]
 from wheezy.template.engine import Engine
@@ -6,19 +7,19 @@ from wheezy.template.loader import ChainLoader, DictLoader
 from wheezy.template.typing import Loader, SupportsRender
 
 
-class Preprocessor(object):
+class Preprocessor:
     """Preprocess templates with ``engine`` and vary runtime templates
     by ``key_factory`` function using ``runtime_engine_factory``.
     """
 
     def __init__(
         self,
-        runtime_engine_factory: typing.Callable[[Loader], Engine],
+        runtime_engine_factory: Callable[[Loader], Engine],
         engine: Engine,
-        key_factory: typing.Callable[[typing.Mapping[str, typing.Any]], str],
+        key_factory: Callable[[Mapping[str, typing.Any]], str],
     ) -> None:
         self.lock = allocate_lock()
-        self.runtime_engines: typing.Dict[str, Engine] = {}
+        self.runtime_engines: dict[str, Engine] = {}
         self.runtime_engine_factory = runtime_engine_factory
         self.engine = engine
         self.loader = engine.loader
@@ -37,9 +38,9 @@ class Preprocessor(object):
     def render(
         self,
         name: str,
-        ctx: typing.Mapping[str, typing.Any],
-        local_defs: typing.Mapping[str, typing.Any],
-        super_defs: typing.Mapping[str, typing.Any],
+        ctx: Mapping[str, typing.Any],
+        local_defs: Mapping[str, typing.Any],
+        super_defs: Mapping[str, typing.Any],
     ) -> str:
         try:
             runtime_engine = self.runtime_engines[self.key_factory(ctx)]
@@ -74,9 +75,9 @@ class Preprocessor(object):
 
             def render(
                 name: str,
-                ctx: typing.Mapping[str, typing.Any],
-                local_defs: typing.Mapping[str, typing.Any],
-                super_defs: typing.Mapping[str, typing.Any],
+                ctx: Mapping[str, typing.Any],
+                local_defs: Mapping[str, typing.Any],
+                super_defs: Mapping[str, typing.Any],
             ) -> str:
                 try:
                     return engine.renders[name](ctx, local_defs, super_defs)
@@ -93,7 +94,7 @@ class Preprocessor(object):
         self,
         runtime_engine: Engine,
         name: str,
-        ctx: typing.Mapping[str, typing.Any],
+        ctx: Mapping[str, typing.Any],
     ) -> None:
         self.lock.acquire(True)
         try:

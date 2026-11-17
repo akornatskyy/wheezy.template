@@ -5,10 +5,10 @@ from wheezy.template.loader import DictLoader, FileLoader, PreprocessLoader
 from wheezy.template.preprocessor import Preprocessor
 
 __all__ = (
-    "Engine",
     "CodeExtension",
     "CoreExtension",
     "DictLoader",
+    "Engine",
     "FileLoader",
     "PreprocessLoader",
     "Preprocessor",

@@ -12,28 +12,28 @@ class LexerTestCase(unittest.TestCase):
     def test_tokenize(self) -> None:
         """Test with simple rules"""
 
-        def word_token(m: typing.Match[str]) -> Token:
+        def word_token(m: re.Match[str]) -> Token:
             return m.end(), "w", m.group()
 
-        def blank_token(m: typing.Match[str]) -> Token:
+        def blank_token(m: re.Match[str]) -> Token:
             return m.end(), "b", m.group()
 
         def to_upper(s: str) -> str:
             return s.upper()
 
-        def cleanup(tokens: typing.List[Token]) -> None:
+        def cleanup(tokens: list[Token]) -> None:
             for i in range(len(tokens)):
                 t = tokens[i]
                 if t[i] == "b":
                     tokens[i] = (t[0], "b", " ")
 
-        class Extension(object):
-            lexer_rules = {
+        class Extension:
+            lexer_rules: typing.ClassVar = {
                 100: (re.compile(r"\w+"), word_token),
                 200: (re.compile(r"\s+"), blank_token),
             }
-            preprocessors = [to_upper]
-            postprocessors = [cleanup]
+            preprocessors: typing.ClassVar = [to_upper]
+            postprocessors: typing.ClassVar = [cleanup]
 
         lexer = Lexer(**lexer_scan([Extension]))
         assert [

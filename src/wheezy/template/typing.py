@@ -1,13 +1,15 @@
+import re
 import typing
-from abc import abstractmethod
-from typing import TypeAlias
+from abc import ABC, abstractmethod
+from collections.abc import Callable, Iterable, Mapping
+from typing import Protocol, TypeAlias
 
 # flake8: noqa: E704
 
 Token: TypeAlias = tuple[int, str, str]
 
 
-class Builder:
+class Builder(ABC):
     lineno: int
 
     @abstractmethod
@@ -21,7 +23,7 @@ class Builder:
 
     @abstractmethod
     def build_block(
-        self, nodes: typing.Iterable[Token]
+        self, nodes: Iterable[Token]
     ) -> None: ...  # pragma: nocover
 
     @abstractmethod
@@ -29,56 +31,56 @@ class Builder:
         self,
         lineno: int,
         token: str,
-        value: typing.Union[str, typing.Iterable[Token]],
+        value: str | Iterable[Token],
     ) -> None: ...  # pragma: nocover
 
 
-Tokenizer = typing.Callable[[typing.Match[str]], Token]
-LexerRule = tuple[typing.Pattern[str], Tokenizer]
-PreProcessorRule = typing.Callable[[str], str]
-PostProcessorRule = typing.Callable[[list[Token]], str]
-BuilderRule = typing.Callable[
+Tokenizer = Callable[[re.Match[str]], Token]
+LexerRule = tuple[re.Pattern[str], Tokenizer]
+PreProcessorRule = Callable[[str], str]
+PostProcessorRule = Callable[[list[Token]], str]
+BuilderRule = Callable[
     [
         Builder,
         int,
         str,
-        typing.Union[str, list[str], typing.Iterable[Token], None],
+        str | list[str] | Iterable[Token] | None,
     ],
     bool,
 ]
-ParserRule = typing.Callable[[str], typing.Union[str, list[str]]]
+ParserRule = Callable[[str], str | list[str]]
 
 
-class ParserConfig:
+class ParserConfig(Protocol):
     end_tokens: list[str]
     continue_tokens: list[str]
     compound_tokens: list[str]
     out_tokens: list[str]
 
 
-RenderTemplate = typing.Callable[
+RenderTemplate = Callable[
     [
-        typing.Mapping[str, typing.Any],
-        typing.Mapping[str, typing.Any],
-        typing.Mapping[str, typing.Any],
+        Mapping[str, typing.Any],
+        Mapping[str, typing.Any],
+        Mapping[str, typing.Any],
     ],
     str,
 ]
 
 
-class SupportsRender:
+class SupportsRender(ABC):
     @abstractmethod
     def render(
-        self, ctx: typing.Mapping[str, typing.Any]
+        self, ctx: Mapping[str, typing.Any]
     ) -> str: ...  # pragma: nocover
 
 
-TemplateClass = typing.Callable[[str, RenderTemplate], SupportsRender]
+TemplateClass = Callable[[str, RenderTemplate], SupportsRender]
 
 
-class Loader:
+class Loader(ABC):
     @abstractmethod
     def list_names(self) -> tuple[str, ...]: ...  # pragma: nocover
 
     @abstractmethod
-    def load(self, name: str) -> typing.Optional[str]: ...  # pragma: nocover
+    def load(self, name: str) -> str | None: ...  # pragma: nocover

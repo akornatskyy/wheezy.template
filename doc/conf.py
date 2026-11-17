@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # wheezy.core documentation build configuration file, created by
 # sphinx-quickstart on Fri Sep  9 20:36:50 2011.

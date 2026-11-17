@@ -3,6 +3,7 @@ import os.path
 import stat
 import time
 import typing
+from collections.abc import Mapping
 
 from wheezy.template.engine import Engine
 from wheezy.template.typing import Loader, SupportsRender
@@ -16,9 +17,9 @@ class FileLoader(Loader):
     """
 
     def __init__(
-        self, directories: typing.List[str], encoding: str = "UTF-8"
+        self, directories: list[str], encoding: str = "UTF-8"
     ) -> None:
-        searchpath: typing.List[str] = []
+        searchpath: list[str] = []
         for path in directories:
             abspath = os.path.abspath(path)
             assert os.path.exists(abspath)
@@ -49,7 +50,7 @@ class FileLoader(Loader):
                     names.append(name)
         return tuple(sorted(names))
 
-    def get_fullname(self, name: str) -> typing.Optional[str]:
+    def get_fullname(self, name: str) -> str | None:
         """Returns a full path by a template name."""
         for path in self.searchpath:
             filename = os.path.join(path, name)
@@ -58,18 +59,14 @@ class FileLoader(Loader):
             if not os.path.isfile(filename):
                 continue
             return filename
-        else:
-            return None
+        return None
 
-    def load(self, name: str) -> typing.Optional[str]:
+    def load(self, name: str) -> str | None:
         """Loads a template by name from file system."""
         filename = self.get_fullname(name)
         if filename:
-            f = open(filename, "rb")
-            try:
+            with open(filename, "rb") as f:
                 return f.read().decode(self.encoding)
-            finally:
-                f.close()
         return None
 
 
@@ -80,14 +77,14 @@ class DictLoader(Loader):
     value to template content.
     """
 
-    def __init__(self, templates: typing.Mapping[str, str]) -> None:
+    def __init__(self, templates: Mapping[str, str]) -> None:
         self.templates = templates
 
     def list_names(self) -> tuple[str, ...]:
         """List all keys from internal dict."""
         return tuple(sorted(self.templates.keys()))
 
-    def load(self, name: str) -> typing.Optional[str]:
+    def load(self, name: str) -> str | None:
         """Returns template by name."""
         if name not in self.templates:
             return None
@@ -97,7 +94,7 @@ class DictLoader(Loader):
 class ChainLoader(Loader):
     """Loads templates from ``loaders`` until first succeed."""
 
-    def __init__(self, loaders: typing.List[Loader]) -> None:
+    def __init__(self, loaders: list[Loader]) -> None:
         self.loaders = loaders
 
     def list_names(self) -> tuple[str, ...]:
@@ -107,7 +104,7 @@ class ChainLoader(Loader):
             names |= set(loader.list_names())
         return tuple(sorted(names))
 
-    def load(self, name: str) -> typing.Optional[str]:
+    def load(self, name: str) -> str | None:
         """Returns template by name from the first loader that succeed."""
         for loader in self.loaders:
             source = loader.load(name)
@@ -122,7 +119,7 @@ class PreprocessLoader(Loader):
     def __init__(
         self,
         engine: Engine,
-        ctx: typing.Optional[typing.Mapping[str, typing.Any]] = None,
+        ctx: Mapping[str, typing.Any] | None = None,
     ) -> None:
         self.engine = engine
         self.ctx = ctx or {}
@@ -155,7 +152,7 @@ class AutoReloadProxy(Engine):
         from warnings import warn
 
         self.engine = engine
-        self.names: typing.Dict[str, float] = {}
+        self.names: dict[str, float] = {}
         warn(
             "autoreload limitation: master (inherited), imported "
             "and preprocessed templates. It is recommended to use "
@@ -171,9 +168,9 @@ class AutoReloadProxy(Engine):
     def render(
         self,
         name: str,
-        ctx: typing.Mapping[str, typing.Any],
-        local_defs: typing.Mapping[str, typing.Any],
-        super_defs: typing.Mapping[str, typing.Any],
+        ctx: Mapping[str, typing.Any],
+        local_defs: Mapping[str, typing.Any],
+        super_defs: Mapping[str, typing.Any],
     ) -> str:
         if self.file_changed(name):
             self.remove(name)

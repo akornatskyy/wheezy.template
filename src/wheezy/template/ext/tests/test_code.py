@@ -16,7 +16,7 @@ class LexerTestCase(unittest.TestCase):
             loader=DictLoader({}), extensions=[CodeExtension()]
         )
 
-    def tokenize(self, source: str) -> typing.List[Token]:
+    def tokenize(self, source: str) -> list[Token]:
         return self.engine.lexer.tokenize(source)
 
     def test_code_token(self) -> None:
@@ -36,7 +36,7 @@ class ParserTestCase(unittest.TestCase):
             loader=DictLoader({}), extensions=[CodeExtension()]
         )
 
-    def parse(self, source: str) -> typing.List[typing.Any]:
+    def parse(self, source: str) -> list[typing.Any]:
         return list(
             self.engine.parser.parse(self.engine.lexer.tokenize(source))
         )
@@ -112,7 +112,7 @@ class TemplateTestCase(unittest.TestCase):
     """Test the ``CodeExtension`` compiled templates."""
 
     def setUp(self) -> None:
-        self.templates: typing.Dict[str, str] = {}
+        self.templates: dict[str, str] = {}
         self.engine = Engine(
             loader=DictLoader(templates=self.templates),
             extensions=[CoreExtension(), CodeExtension()],

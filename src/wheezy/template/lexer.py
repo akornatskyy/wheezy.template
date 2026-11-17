@@ -1,4 +1,5 @@
 import typing
+from collections.abc import Mapping
 
 from wheezy.template.typing import (
     LexerRule,
@@ -9,14 +10,14 @@ from wheezy.template.typing import (
 
 
 def lexer_scan(
-    extensions: typing.List[typing.Any],
-) -> typing.Mapping[str, typing.Any]:
+    extensions: list[typing.Any],
+) -> Mapping[str, typing.Any]:
     """Scans extensions for ``lexer_rules`` and ``preprocessors``
     attributes.
     """
-    lexer_rules: typing.Dict[int, LexerRule] = {}
-    preprocessors: typing.List[PreProcessorRule] = []
-    postprocessors: typing.List[PostProcessorRule] = []
+    lexer_rules: dict[int, LexerRule] = {}
+    preprocessors: list[PreProcessorRule] = []
+    postprocessors: list[PostProcessorRule] = []
     for extension in extensions:
         if hasattr(extension, "lexer_rules"):
             lexer_rules.update(extension.lexer_rules)
@@ -31,14 +32,14 @@ def lexer_scan(
     }
 
 
-class Lexer(object):
+class Lexer:
     """Tokenizes input source per rules supplied."""
 
     def __init__(
         self,
-        lexer_rules: typing.List[LexerRule],
-        preprocessors: typing.Optional[typing.List[PreProcessorRule]] = None,
-        postprocessors: typing.Optional[typing.List[PostProcessorRule]] = None,
+        lexer_rules: list[LexerRule],
+        preprocessors: list[PreProcessorRule] | None = None,
+        postprocessors: list[PostProcessorRule] | None = None,
         **ignore: typing.Any,
     ) -> None:
         """Initializes with ``rules``. Rules must be a list of
@@ -52,13 +53,13 @@ class Lexer(object):
         self.preprocessors = preprocessors or []
         self.postprocessors = postprocessors or []
 
-    def tokenize(self, source: str) -> typing.List[Token]:
+    def tokenize(self, source: str) -> list[Token]:
         """Translates ``source`` accoring to lexer rules into
         an iteratable of tokens.
         """
         for preprocessor in self.preprocessors:
             source = preprocessor(source)
-        tokens: typing.List[Token] = []
+        tokens: list[Token] = []
         append = tokens.append
         pos = 0
         lineno = 1

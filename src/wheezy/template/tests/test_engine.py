@@ -17,12 +17,12 @@ class EngineTestCase(unittest.TestCase):
         )
 
     def test_template_not_found(self) -> None:
-        """Raises IOError."""
-        self.assertRaises(IOError, lambda: self.engine.get_template("x"))
+        """Raises OSError."""
+        self.assertRaises(OSError, lambda: self.engine.get_template("x"))
 
     def test_import_not_found(self) -> None:
-        """Raises IOError."""
-        self.assertRaises(IOError, lambda: self.engine.import_name("x"))
+        """Raises OSError."""
+        self.assertRaises(OSError, lambda: self.engine.import_name("x"))
 
     def test_remove_unknown_name(self) -> None:
         """Invalidate name that is not known to engine."""

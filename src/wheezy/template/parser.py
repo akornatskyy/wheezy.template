@@ -1,11 +1,12 @@
 import typing
+from collections.abc import Callable, Iterator, Mapping
 
 from wheezy.template.typing import ParserConfig, ParserRule, Token
 
 
 def parser_scan(
-    extensions: typing.List[typing.Any],
-) -> typing.Mapping[str, typing.Any]:
+    extensions: list[typing.Any],
+) -> Mapping[str, typing.Any]:
     parser_rules = {}
     parser_configs = []
     for extension in extensions:
@@ -30,24 +31,20 @@ class Parser(ParserConfig):
 
     def __init__(
         self,
-        parser_rules: typing.Dict[str, ParserRule],
-        parser_configs: typing.Optional[
-            typing.List[typing.Callable[[ParserConfig], None]]
-        ] = None,
+        parser_rules: dict[str, ParserRule],
+        parser_configs: list[Callable[[ParserConfig], None]] | None = None,
         **ignore: typing.Any,
     ) -> None:
-        self.end_tokens: typing.List[str] = []
-        self.continue_tokens: typing.List[str] = []
-        self.compound_tokens: typing.List[str] = []
-        self.out_tokens: typing.List[str] = []
+        self.end_tokens: list[str] = []
+        self.continue_tokens: list[str] = []
+        self.compound_tokens: list[str] = []
+        self.out_tokens: list[str] = []
         self.rules = parser_rules
         if parser_configs:
             for config in parser_configs:
                 config(self)
 
-    def end_continue(
-        self, tokens: typing.List[Token]
-    ) -> typing.Iterator[Token]:
+    def end_continue(self, tokens: list[Token]) -> Iterator[Token]:
         """If token is in ``continue_tokens`` prepend it
         with end token so it simulate a closed block.
         """
@@ -56,9 +53,7 @@ class Parser(ParserConfig):
                 yield (t[0], "end", "")
             yield t
 
-    def parse_iter(
-        self, tokens: typing.Iterator[Token]
-    ) -> typing.Iterator[typing.Any]:
+    def parse_iter(self, tokens: Iterator[Token]) -> Iterator[typing.Any]:
         operands = []
         for lineno, token, value in tokens:
             if token in self.rules:
@@ -78,5 +73,5 @@ class Parser(ParserConfig):
         if operands:
             yield operands[0][0], "out", operands
 
-    def parse(self, tokens: typing.List[Token]) -> typing.List[typing.Any]:
+    def parse(self, tokens: list[Token]) -> list[typing.Any]:
         return list(self.parse_iter(self.end_continue(tokens)))

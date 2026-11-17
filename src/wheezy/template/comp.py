@@ -6,7 +6,7 @@ Tuple: typing.Any = tuple
 List: typing.Any = list
 
 
-def adjust_source_lineno(source: str, name: str, lineno: int) -> typing.Any:
+def adjust_source_lineno(source: str, name: str, lineno: int) -> ast.Module:
     node = compile(source, name, "exec", ast.PyCF_ONLY_AST)
     ast.increment_lineno(node, lineno)
     # The offset aligns line numbers with the template source, but it
@@ -18,7 +18,7 @@ def adjust_source_lineno(source: str, name: str, lineno: int) -> typing.Any:
         end_lineno = getattr(n, "end_lineno", None)
         if end_lineno is not None and end_lineno < 1:
             n.end_lineno, n.end_col_offset = 1, 0  # type: ignore[attr-defined]
-    return node
+    return typing.cast(ast.Module, node)
 
 
 __all__ = (

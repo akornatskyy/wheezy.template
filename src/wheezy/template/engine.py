@@ -1,4 +1,5 @@
 import typing
+from collections.abc import Mapping
 from types import ModuleType
 
 from wheezy.template.builder import SourceBuilder, builder_scan
@@ -24,23 +25,23 @@ class Template(SupportsRender):
         self.name = name
         self.render_template = render_template
 
-    def render(self, ctx: typing.Mapping[str, typing.Any]) -> str:
+    def render(self, ctx: Mapping[str, typing.Any]) -> str:
         return self.render_template(ctx, {}, {})
 
 
-class Engine(object):
+class Engine:
     """The core component of template engine."""
 
     def __init__(
         self,
         loader: Loader,
-        extensions: typing.List[typing.Any],
-        template_class: typing.Optional[TemplateClass] = None,
+        extensions: list[typing.Any],
+        template_class: TemplateClass | None = None,
     ) -> None:
         self.lock = allocate_lock()
-        self.templates: typing.Dict[str, SupportsRender] = {}
-        self.renders: typing.Dict[str, RenderTemplate] = {}
-        self.modules: typing.Dict[str, ModuleType] = {}
+        self.templates: dict[str, SupportsRender] = {}
+        self.renders: dict[str, RenderTemplate] = {}
+        self.modules: dict[str, ModuleType] = {}
         self.global_vars = {"_r": self.render, "_i": self.import_name}
         self.loader = loader
         self.template_class = template_class or Template
@@ -60,9 +61,9 @@ class Engine(object):
     def render(
         self,
         name: str,
-        ctx: typing.Mapping[str, typing.Any],
-        local_defs: typing.Mapping[str, typing.Any],
-        super_defs: typing.Mapping[str, typing.Any],
+        ctx: Mapping[str, typing.Any],
+        local_defs: Mapping[str, typing.Any],
+        super_defs: Mapping[str, typing.Any],
     ) -> str:
         """Renders template by name in given context."""
         try:
@@ -98,7 +99,7 @@ class Engine(object):
             if name not in self.renders:
                 template_source = self.loader.load(name)
                 if template_source is None:
-                    raise IOError('Template "%s" not found.' % name)
+                    raise OSError(f'Template "{name}" not found.')
                 tokens = self.lexer.tokenize(template_source)
                 nodes = self.parser.parse(tokens)
                 source = self.builder.build_render(nodes)
@@ -125,7 +126,7 @@ class Engine(object):
             if name not in self.modules:
                 template_source = self.loader.load(name)
                 if template_source is None:
-                    raise IOError('Import "%s" not found.' % name)
+                    raise OSError(f'Import "{name}" not found.')
                 tokens = self.lexer.tokenize(template_source)
                 nodes = self.parser.parse(tokens)
                 source = self.builder.build_module(nodes)
@@ -147,8 +148,8 @@ class Engine(object):
 
 def print_debug(
     name: str,
-    tokens: typing.List[Token],
-    nodes: typing.List[typing.Any],
+    tokens: list[Token],
+    nodes: list[typing.Any],
     source: str,
 ) -> None:  # pragma: nocover
     print(name.center(80, "-"))
@@ -193,14 +194,14 @@ def complement_syntax_error(
     """
     lineno = err.lineno or 0
     text = """\
-%s
+{}
 template snippet:
-%s
+{}
 
 generated snippet:
-%s
+{}
 
-    %s""" % (
+    {}""".format(
         err.text,
         source_chunk(template_source, lineno - 2, 1),
         source_chunk(source, lineno, -1),
@@ -216,5 +217,5 @@ def source_chunk(source: str, lineno: int, offset: int, extra: int = 2) -> str:
     r = []
     for i in range(s, e):
         line = lines[i]
-        r.append("  %02d %s" % (i + offset, line))
+        r.append(f"  {i + offset:02d} {line}")
     return "\n".join(r)

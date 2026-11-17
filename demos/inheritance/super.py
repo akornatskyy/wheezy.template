@@ -3,6 +3,7 @@
 import re
 import typing
 import unittest
+from collections.abc import Mapping
 
 from wheezy.template.engine import Engine as BaseEngine
 from wheezy.template.ext.core import CoreExtension, var_token
@@ -44,18 +45,18 @@ class Engine(BaseEngine):
     def render(  # type: ignore[override]
         self,
         name: str,
-        ctx: typing.Mapping[str, typing.Any],
-        local_defs: typing.Mapping[str, typing.Any],
-        super_defs: typing.Dict[str, typing.Any],
+        ctx: Mapping[str, typing.Any],
+        local_defs: Mapping[str, typing.Any],
+        super_defs: dict[str, typing.Any],
     ) -> str:
-        s: typing.Mapping[str, typing.Any] = {}
+        s: Mapping[str, typing.Any] = {}
         super_defs["__super__"] = s
-        return super(Engine, self).render(name, ctx, local_defs, s)
+        return super().render(name, ctx, local_defs, s)
 
 
-def super_token(m: typing.Match[str]) -> Token:
+def super_token(m: re.Match[str]) -> Token:
     i = m.end(1) - m.start(1)
-    end, name, value = var_token(m)
+    end, _, value = var_token(m)
     s = 'super_defs["__super__"]["' + value[:i] + '"]' + value[i:]
     return end, "var", s
 
