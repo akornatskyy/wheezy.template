@@ -12,16 +12,16 @@ colorama==0.4.6
     # via
     #   build
     #   pytest
-coverage==7.17.2
+coverage==7.17.5
     # via pytest-cov
 iniconfig==2.3.1
     # via pytest
-packaging==26.3
+packaging==26.4
     # via
     #   build
     #   pytest
     #   wheel
-pip-tools==7.6.2
+pip-tools==7.7.0
     # via -r requirements/dev.in
 pluggy==1.7.0
     # via
