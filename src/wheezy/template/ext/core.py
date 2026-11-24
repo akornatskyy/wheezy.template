@@ -2,6 +2,7 @@ import re
 import typing
 from collections.abc import Iterable
 
+from wheezy.template.comp import EXTRA_LINE
 from wheezy.template.typing import Builder, LexerRule, ParserConfig, Token
 from wheezy.template.utils import find_all_balanced
 
@@ -207,22 +208,7 @@ def build_def_syntax_check(
 ) -> bool:
     assert token == "def "
     stmt, nodes = value
-    lineno, token, value = nodes[0]
-    if token in compound_tokens:
-        builder.add(lineno, stmt)
-        builder.start_block()
-        token = token.rstrip()
-        error = f"""\
-The compound statement '{token}' is not allowed here. \
-Add a line before it with @#ignore or leave it empty.
-
-{stmt}
-    @#ignore
-    @{token} ..."""
-        builder.add(lineno, f"raise SyntaxError({error!r})")
-        builder.end_block()
-        return True
-    elif len(nodes) > 1:
+    if len(nodes) > 1:
         # token before @end
         lineno, token, value = nodes[-2]
         if token == "#":
@@ -300,7 +286,14 @@ def build_def(
     def_name = stmt[4 : stmt.index("(", 5)]
     builder.add(lineno, stmt)
     builder.start_block()
-    builder.add(lineno + 1, WRITER_DECLARE)
+    if nodes[0][1] in compound_tokens:
+        # A compound statement cannot follow "; " on the same line: give
+        # the declaration an extra line, not counted here and removed
+        # from line numbers by adjust_source_lineno.
+        builder.add(lineno + 1, WRITER_DECLARE + EXTRA_LINE)
+        builder.lineno = lineno
+    else:
+        builder.add(lineno + 1, WRITER_DECLARE)
     builder.build_block(nodes)
     lineno = builder.lineno
     builder.add(lineno, WRITER_RETURN)

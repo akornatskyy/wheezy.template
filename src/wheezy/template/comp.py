@@ -5,23 +5,39 @@ from _thread import allocate_lock  # noqa
 Tuple: typing.Any = tuple
 List: typing.Any = list
 
+# Marks a generated line that has no counterpart in the template source.
+EXTRA_LINE = "  # wheezy.template: extra line"
+
 
 def adjust_source_lineno(source: str, name: str, lineno: int) -> ast.Module:
     node = compile(source, name, "exec", ast.PyCF_ONLY_AST)
-    ast.increment_lineno(node, lineno)
-    # The offset aligns line numbers with the template source, but it
-    # moves the generated header to lines < 1, which compile() rejects
-    # since python 3.11. Move such nodes to line 1.
+    extra_lines = [
+        i
+        for i, line in enumerate(source.split("\n"), 1)
+        if line.endswith(EXTRA_LINE)
+    ]
+    # Align line numbers with the template source: apply the offset and
+    # drop the extra lines. The offset moves the generated header to
+    # lines < 1, which compile() rejects since python 3.11. Move such
+    # nodes to line 1.
     for n in ast.walk(node):
-        if getattr(n, "lineno", 1) < 1:
-            n.lineno, n.col_offset = 1, 0  # type: ignore[attr-defined]
-        end_lineno = getattr(n, "end_lineno", None)
-        if end_lineno is not None and end_lineno < 1:
-            n.end_lineno, n.end_col_offset = 1, 0  # type: ignore[attr-defined]
+        for line_attr, col_attr in (
+            ("lineno", "col_offset"),
+            ("end_lineno", "end_col_offset"),
+        ):
+            ln = getattr(n, line_attr, None)
+            if ln is None:
+                continue
+            ln += lineno - sum(x < ln for x in extra_lines)
+            if ln < 1:
+                ln = 1
+                setattr(n, col_attr, 0)
+            setattr(n, line_attr, ln)
     return typing.cast(ast.Module, node)
 
 
 __all__ = (
+    "EXTRA_LINE",
     "List",
     "Tuple",
     "adjust_source_lineno",

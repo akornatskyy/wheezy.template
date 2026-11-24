@@ -1,3 +1,4 @@
+import traceback
 import typing
 import unittest
 from collections.abc import Mapping
@@ -642,17 +643,42 @@ Welcome, @name!\\
 @end
 @title().""")
 
-    def test_def_syntax_error_compound(self) -> None:
-        self.assertRaises(
-            SyntaxError,
-            lambda: self.render("""\
+    def test_def_compound(self) -> None:
+        assert "Welcome, John!" == self.render("""\
 @def welcome(name):
-@if name:
+    @if name:
 Welcome, @name!\\
+    @end
 @end
+@welcome('John')""")
+
+    def test_def_compound_lineno(self) -> None:
+        """Traceback line numbers match the template source."""
+        source = """\
+@def one(x):
+    @if x:
+        @x.foo
+    @end
 @end
-@welcome('John')"""),
-        )
+@def two(x):
+    @for i in x:
+        @i.foo
+    @end
+@end
+@ctx['f'](one, two)"""
+        for f, lines in [
+            (lambda one, two: one(1), [11, 3]),
+            (lambda one, two: two([1]), [11, 8]),
+        ]:
+            try:
+                self.render(source, {"f": f})
+            except AttributeError as e:
+                tb = traceback.extract_tb(e.__traceback__)
+                assert lines == [
+                    t.lineno for t in tb if t.filename == "test.html"
+                ]
+            else:
+                self.fail("AttributeError not raised")
 
     def test_def_no_syntax_error(self) -> None:
         assert "Welcome, John!" == self.render("""\
@@ -705,6 +731,26 @@ class MultiTemplateTestCase(unittest.TestCase):
         )
         assert "    Hi, John!\n" == self.render("tmpl.html", {})
         assert "    Hello, John!\n" == self.render("master.html", {})
+
+    def test_extends_def_compound(self) -> None:
+        self.templates.update(
+            {
+                "master.html": """\
+@def say_hi(name):
+    Hello, @name!
+@end
+@say_hi('John')""",
+                "tmpl.html": """\
+@extends('master.html')
+@def say_hi(name):
+    @if name:
+        Hi, @name!
+    @end
+@end
+""",
+            }
+        )
+        assert "        Hi, John!\n" == self.render("tmpl.html", {})
 
     def test_extends_dynamic(self) -> None:
         self.templates.update(
